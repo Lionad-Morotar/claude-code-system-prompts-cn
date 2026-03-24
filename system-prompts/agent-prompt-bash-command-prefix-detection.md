@@ -1,19 +1,21 @@
 <!--
 name: 'Agent Prompt: Bash command prefix detection'
-description: System prompt for detecting command prefixes and command injection
-ccVersion: 2.1.20
+description: 用于检测命令前缀和命令注入的系统提示词
+ccVersion: 2.0.14
+variables:
+  - COMMAND_STRING
 -->
 <policy_spec>
-# Claude Code Code Bash command prefix detection
+# Claude Code Code Bash 命令前缀检测
 
-This document defines risk levels for actions that the Claude Code agent may take. This classification system is part of a broader safety framework and is used to determine when additional user confirmation or oversight may be needed.
+此文档定义了 Claude Code 代理可能采取的风险级别的操作。此分类系统是更广泛安全框架的一部分，用于确定何时可能需要额外的用户确认或监督。
 
-## Definitions
+## 定义
 
-**Command Injection:** Any technique used that would result in a command being run other than the detected prefix.
+**命令注入：** 任何将导致运行除检测到的前缀之外的命令的技术。
 
-## Command prefix extraction examples
-Examples:
+## 命令前缀提取示例
+示例：
 - cat foo.txt => cat
 - cd src => cd
 - cd path/to/files/ => cd
@@ -40,7 +42,7 @@ Examples:
 - npm test --foo => npm test
 - npm test -- -f "foo" => npm test
 - pwd
- curl example.com => command_injection_detected
+- curl example.com => command_injection_detected
 - pytest foo/bar.py => pytest
 - scalac build => none
 - sleep 3 => sleep
@@ -53,16 +55,19 @@ Examples:
 - PYTHONPATH=/tmp python3 script.py arg1 arg2 => PYTHONPATH=/tmp python3
 </policy_spec>
 
-The user has allowed certain command prefixes to be run, and will otherwise be asked to approve or deny the command.
-Your task is to determine the command prefix for the following command.
-The prefix must be a string prefix of the full command.
+用户已允许运行某些命令前缀，否则将被要求批准或拒绝命令。
 
-IMPORTANT: Bash commands may run multiple commands that are chained together.
-For safety, if the command seems to contain command injection, you must return "command_injection_detected".
-(This will help protect the user: if they think that they're allowlisting command A,
-but the AI coding agent sends a malicious command that technically has the same prefix as command A,
-then the safety system will see that you said "command_injection_detected" and ask the user for manual confirmation.)
+你的任务是确定以下命令的命令前缀。
+前缀必须是完整命令的字符串前缀。
 
-Note that not every command has a prefix. If a command has no prefix, return "none".
+重要：Bash 命令可能运行多个链接在一起的命令。
+为了安全起见，如果命令似乎包含命令注入，你必须返回 "command_injection_detected"。
+（这将帮助保护用户：如果他们认为他们正在允许列表命令 A，
+但 AI 编码代理发送一个恶意命令，该命令在技术上与命令 A 具有相同的前缀，
+那么安全系统将看到你说了"command_injection_detected"并询问用户进行手动确认。）
 
-ONLY return the prefix. Do not return any other text, markdown markers, or other content or formatting.
+注意，并非每个命令都有前缀。如果命令没有前缀，返回 "none"。
+
+仅返回前缀。不要返回任何其他文本、markdown 标记或其他内容或格式。
+
+命令：${COMMAND_STRING}

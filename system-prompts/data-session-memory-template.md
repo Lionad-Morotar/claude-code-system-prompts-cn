@@ -5,31 +5,31 @@ ccVersion: 2.0.58
 -->
 
 # Session Title
-_A short and distinctive 5-10 word descriptive title for the session. Super info dense, no filler_
+_一个简短且有特色的 5-10 字描述性会话标题。信息高度密集，无填充词_
 
 # Current State
-_What is actively being worked on right now? Pending tasks not yet completed. Immediate next steps._
+_当前正在进行什么工作？尚未完成的待处理任务。下一步的即时行动。_
 
 # Task specification
-_What did the user ask to build? Any design decisions or other explanatory context_
+_用户要求构建什么？任何设计决策或其他解释性背景_
 
 # Files and Functions
-_What are the important files? In short, what do they contain and why are they relevant?_
+_重要的文件有哪些？简要说明它们包含什么内容以及为什么相关？_
 
 # Workflow
-_What bash commands are usually run and in what order? How to interpret their output if not obvious?_
+_通常运行哪些 bash 命令，按什么顺序？如果输出不明显，如何解释它们？_
 
 # Errors & Corrections
-_Errors encountered and how they were fixed. What did the user correct? What approaches failed and should not be tried again?_
+_遇到的错误以及如何修复。用户纠正了什么？哪些方法失败了，不应再次尝试？_
 
 # Codebase and System Documentation
-_What are the important system components? How do they work/fit together?_
+_重要的系统组件有哪些？它们如何工作/如何协同？_
 
 # Learnings
-_What has worked well? What has not? What to avoid? Do not duplicate items from other sections_
+_什么方法效果好？什么不好？应该避免什么？不要重复其他部分的条目_
 
 # Key results
-_If the user asked a specific output such as an answer to a question, a table, or other document, repeat the exact result here_
+_如果用户要求了特定的输出，如问题的答案、表格或其他文档，在此处重复确切结果_
 
 # Worklog
-_Step by step, what was attempted, done? Very terse summary for each step_
+_逐步记录，尝试了做了什么？每一步的极简摘要_

@@ -5,4 +5,4 @@ ccVersion: 2.1.53
 variables:
   - TASK_TOOL_NAME
 -->
-Use the ${TASK_TOOL_NAME} tool with specialized agents when the task at hand matches the agent's description. Subagents are valuable for parallelizing independent queries or for protecting the main context window from excessive results, but they should not be used excessively when not needed. Importantly, avoid duplicating work that subagents are already doing - if you delegate research to a subagent, do not also perform the same searches yourself.
+当手头的任务与智能体的描述相匹配时，使用 ${TASK_TOOL_NAME} 工具配合专门的智能体。子智能体对于并行化独立查询或保护主上下文窗口免受过多结果的影响非常有价值，但不应在不需要时过度使用。重要的是，避免重复子智能体已经在做的工作——如果你将研究任务委托给子智能体，就不要自己也执行相同的搜索。

@@ -5,4 +5,4 @@ ccVersion: 2.1.53
 variables:
   - GREP_TOOL_NAME
 -->
-To search the content of files, use ${GREP_TOOL_NAME} instead of grep or rg
+搜索文件内容时，使用 ${GREP_TOOL_NAME} 而非 grep 或 rg

@@ -5,46 +5,46 @@ ccVersion: 2.1.77
 -->
 # Claude API — Java
 
-> **Note:** The Java SDK supports the Claude API and beta tool use with annotated classes. Agent SDK is not yet available for Java.
+> **注意：** Java SDK 支持 Claude API 和带有注解类的 Beta 工具使用。Agent SDK 尚未支持 Java。
 
-## Installation
+## 安装
 
-Maven:
+Maven：
 
-\`\`\`xml
+```xml
 <dependency>
     <groupId>com.anthropic</groupId>
     <artifactId>anthropic-java</artifactId>
     <version>2.16.0</version>
 </dependency>
-\`\`\`
+```
 
-Gradle:
+Gradle：
 
-\`\`\`groovy
+```groovy
 implementation("com.anthropic:anthropic-java:2.16.0")
-\`\`\`
+```
 
-## Client Initialization
+## 客户端初始化
 
-\`\`\`java
+```java
 import com.anthropic.client.AnthropicClient;
 import com.anthropic.client.okhttp.AnthropicOkHttpClient;
 
-// Default (reads ANTHROPIC_API_KEY from environment)
+// 默认方式（从环境变量读取 ANTHROPIC_API_KEY）
 AnthropicClient client = AnthropicOkHttpClient.fromEnv();
 
-// Explicit API key
+// 显式指定 API 密钥
 AnthropicClient client = AnthropicOkHttpClient.builder()
     .apiKey("your-api-key")
     .build();
-\`\`\`
+```
 
 ---
 
-## Basic Message Request
+## 基本消息请求
 
-\`\`\`java
+```java
 import com.anthropic.models.messages.MessageCreateParams;
 import com.anthropic.models.messages.Message;
 import com.anthropic.models.messages.Model;
@@ -59,13 +59,13 @@ Message response = client.messages().create(params);
 response.content().stream()
     .flatMap(block -> block.text().stream())
     .forEach(textBlock -> System.out.println(textBlock.text()));
-\`\`\`
+```
 
 ---
 
-## Streaming
+## 流式传输
 
-\`\`\`java
+```java
 import com.anthropic.core.http.StreamResponse;
 import com.anthropic.models.messages.RawMessageStreamEvent;
 
@@ -81,15 +81,15 @@ try (StreamResponse<RawMessageStreamEvent> streamResponse = client.messages().cr
         .flatMap(deltaEvent -> deltaEvent.delta().text().stream())
         .forEach(textDelta -> System.out.print(textDelta.text()));
 }
-\`\`\`
+```
 
 ---
 
-## Thinking
+## 思考模式
 
-**Adaptive thinking is the recommended mode for Claude 4.6+ models.** Claude decides dynamically when and how much to think. The builder has a direct \`.thinking(ThinkingConfigAdaptive)\` overload — no manual union wrapping.
+**自适应思考是 Claude 4.6+ 模型推荐的模式。** Claude 会动态决定何时思考以及思考多少。构建器有直接的 `.thinking(ThinkingConfigAdaptive)` 重载方法，无需手动进行联合包装。
 
-\`\`\`java
+```java
 import com.anthropic.models.messages.ContentBlock;
 import com.anthropic.models.messages.MessageCreateParams;
 import com.anthropic.models.messages.Model;
@@ -106,21 +106,21 @@ for (ContentBlock block : client.messages().create(params).content()) {
     block.thinking().ifPresent(t -> System.out.println("[thinking] " + t.thinking()));
     block.text().ifPresent(t -> System.out.println(t.text()));
 }
-\`\`\`
+```
 
-> **Deprecated:** \`ThinkingConfigEnabled.builder().budgetTokens(N)\` (and the \`.enabledThinking(N)\` shortcut) still works on Claude 4.6 but is deprecated. Use adaptive thinking above.
+> **已弃用：** `ThinkingConfigEnabled.builder().budgetTokens(N)`（以及 `.enabledThinking(N)` 快捷方式）在 Claude 4.6 上仍然可用，但已弃用。请使用上述自适应思考模式。
 
-\`ContentBlock\` narrowing: \`.thinking()\` / \`.text()\` return \`Optional<T>\` — use \`.ifPresent(...)\` or \`.stream().flatMap(...)\`. Alternative: \`isThinking()\` / \`asThinking()\` boolean+unwrap pairs (throws on wrong variant).
+`ContentBlock` 类型收窄：`.thinking()` / `.text()` 返回 `Optional<T>` — 使用 `.ifPresent(...)` 或 `.stream().flatMap(...)`。替代方案：`isThinking()` / `asThinking()` 布尔值+解包方法对（在错误变体上抛出异常）。
 
 ---
 
-## Tool Use (Beta)
+## 工具使用（Beta）
 
-The Java SDK supports beta tool use with annotated classes. Tool classes implement \`Supplier<String>\` for automatic execution via \`BetaToolRunner\`.
+Java SDK 支持使用注解类的 Beta 工具功能。工具类实现 `Supplier<String>` 以通过 `BetaToolRunner` 自动执行。
 
-### Tool Runner (automatic loop)
+### 工具运行器（自动循环）
 
-\`\`\`java
+```java
 import com.anthropic.models.beta.messages.MessageCreateParams;
 import com.anthropic.models.beta.messages.BetaMessage;
 import com.anthropic.helpers.BetaToolRunner;
@@ -151,13 +151,13 @@ BetaToolRunner toolRunner = client.beta().messages().toolRunner(
 for (BetaMessage message : toolRunner) {
     System.out.println(message);
 }
-\`\`\`
+```
 
-### Memory Tool
+### 记忆工具
 
-The Java SDK provides \`BetaMemoryToolHandler\` for implementing the memory tool backend. You supply a handler that manages file storage, and the \`BetaToolRunner\` handles memory tool calls automatically.
+Java SDK 提供 `BetaMemoryToolHandler` 用于实现记忆工具后端。您提供一个管理文件存储的处理程序，`BetaToolRunner` 会自动处理记忆工具调用。
 
-\`\`\`java
+```java
 import com.anthropic.helpers.BetaMemoryToolHandler;
 import com.anthropic.helpers.BetaToolRunner;
 import com.anthropic.models.beta.messages.BetaMemoryTool20250818;
@@ -165,7 +165,7 @@ import com.anthropic.models.beta.messages.BetaMessage;
 import com.anthropic.models.beta.messages.MessageCreateParams;
 import com.anthropic.models.beta.messages.ToolRunnerCreateParams;
 
-// Implement BetaMemoryToolHandler with your storage backend (e.g., filesystem)
+// 使用您的存储后端（例如文件系统）实现 BetaMemoryToolHandler
 BetaMemoryToolHandler memoryHandler = new FileSystemMemoryToolHandler(sandboxRoot);
 
 MessageCreateParams createParams = MessageCreateParams.builder()
@@ -184,15 +184,15 @@ BetaToolRunner toolRunner = client.beta().messages().toolRunner(
 for (BetaMessage message : toolRunner) {
     System.out.println(message);
 }
-\`\`\`
+```
 
-See the [shared memory tool concepts](../shared/tool-use-concepts.md) for more details on the memory tool.
+有关记忆工具的更多详细信息，请参阅[共享记忆工具概念](../shared/tool-use-concepts.md)。
 
-### Non-Beta Tool Declaration (manual JSON schema)
+### 非 Beta 工具声明（手动 JSON 模式）
 
-\`Tool.InputSchema.Properties\` is a freeform \`Map<String, JsonValue>\` wrapper — build property schemas via \`putAdditionalProperty\`. \`type: "object"\` is the default. The builder has a direct \`.addTool(Tool)\` overload that wraps in \`ToolUnion\` automatically.
+`Tool.InputSchema.Properties` 是一个自由格式的 `Map<String, JsonValue>` 包装器 — 通过 `putAdditionalProperty` 构建属性模式。`type: "object"` 是默认值。构建器有直接的 `.addTool(Tool)` 重载方法，可自动包装到 `ToolUnion` 中。
 
-\`\`\`java
+```java
 import com.anthropic.core.JsonValue;
 import com.anthropic.models.messages.Tool;
 
@@ -213,15 +213,15 @@ MessageCreateParams params = MessageCreateParams.builder()
     .addTool(tool)
     .addUserMessage("Weather in Paris?")
     .build();
-\`\`\`
+```
 
-For manual tool loops, handle \`tool_use\` blocks in the response, send \`tool_result\` back, loop until \`stop_reason\` is \`"end_turn"\`. See [shared tool use concepts](../shared/tool-use-concepts.md).
+对于手动工具循环，处理响应中的 `tool_use` 块，发送 `tool_result` 返回，循环直到 `stop_reason` 为 `"end_turn"`。请参阅[共享工具使用概念](../shared/tool-use-concepts.md)。
 
-### Building \`MessageParam\` with Content Blocks (Tool Result Round-Trip)
+### 使用内容块构建 `MessageParam`（工具结果往返）
 
-\`MessageParam.Content\` is an inner union class (string | list). Use the builder's \`.contentOfBlockParams(List<ContentBlockParam>)\` alias — there is NO separate \`MessageParamContent\` class with a static \`ofBlockParams\`:
+`MessageParam.Content` 是一个内部联合类（字符串 | 列表）。使用构建器的 `.contentOfBlockParams(List<ContentBlockParam>)` 别名 — 没有单独的 `MessageParamContent` 类带有静态 `ofBlockParams` 方法：
 
-\`\`\`java
+```java
 import com.anthropic.models.messages.MessageParam;
 import com.anthropic.models.messages.ContentBlockParam;
 import com.anthropic.models.messages.ToolResultBlockParam;
@@ -235,33 +235,33 @@ List<ContentBlockParam> results = List.of(
 
 MessageParam toolResultMsg = MessageParam.builder()
     .role(MessageParam.Role.USER)
-    .contentOfBlockParams(results)   // builder alias for Content.ofBlockParams(...)
+    .contentOfBlockParams(results)   // Content.ofBlockParams(...) 的构建器别名
     .build();
-\`\`\`
+```
 
 ---
 
-## Effort Parameter
+## Effort 参数
 
-Effort is nested inside \`OutputConfig\` — there is NO \`.effort()\` directly on \`MessageCreateParams.Builder\`.
+Effort 嵌套在 `OutputConfig` 内部 — `MessageCreateParams.Builder` 上没有直接的 `.effort()` 方法。
 
-\`\`\`java
+```java
 import com.anthropic.models.messages.OutputConfig;
 
 .outputConfig(OutputConfig.builder()
-    .effort(OutputConfig.Effort.HIGH)  // or LOW, MEDIUM, MAX
+    .effort(OutputConfig.Effort.HIGH)  // 或 LOW、MEDIUM、MAX
     .build())
-\`\`\`
+```
 
-Combine with \`Thinking = ThinkingConfigAdaptive\` for cost-quality control.
+与 `Thinking = ThinkingConfigAdaptive` 结合使用以控制成本和质量。
 
 ---
 
-## Prompt Caching
+## 提示缓存
 
-System message as a list of \`TextBlockParam\` with \`CacheControlEphemeral\`. Use \`.systemOfTextBlockParams(...)\` — the plain \`.system(String)\` overload can't carry cache control.
+系统消息作为带有 `CacheControlEphemeral` 的 `TextBlockParam` 列表。使用 `.systemOfTextBlockParams(...)` — 普通的 `.system(String)` 重载方法无法携带缓存控制。
 
-\`\`\`java
+```java
 import com.anthropic.models.messages.TextBlockParam;
 import com.anthropic.models.messages.CacheControlEphemeral;
 
@@ -269,18 +269,18 @@ import com.anthropic.models.messages.CacheControlEphemeral;
     TextBlockParam.builder()
         .text(longSystemPrompt)
         .cacheControl(CacheControlEphemeral.builder()
-            .ttl(CacheControlEphemeral.Ttl.TTL_1H)  // optional; also TTL_5M
+            .ttl(CacheControlEphemeral.Ttl.TTL_1H)  // 可选；还有 TTL_5M
             .build())
         .build()))
-\`\`\`
+```
 
-There's also a top-level \`.cacheControl(CacheControlEphemeral)\` on \`MessageCreateParams.Builder\` and on \`Tool.builder()\`.
+`MessageCreateParams.Builder` 和 `Tool.builder()` 上还有顶级的 `.cacheControl(CacheControlEphemeral)` 方法。
 
 ---
 
-## Token Counting
+## Token 计数
 
-\`\`\`java
+```java
 import com.anthropic.models.messages.MessageCountTokensParams;
 
 long tokens = client.messages().countTokens(
@@ -289,15 +289,15 @@ long tokens = client.messages().countTokens(
         .addUserMessage("Hello")
         .build()
 ).inputTokens();
-\`\`\`
+```
 
 ---
 
-## Structured Output
+## 结构化输出
 
-The class-based overload auto-derives the JSON schema from your POJO and gives you a typed \`.text()\` return — no manual schema, no manual parsing.
+基于类的重载方法自动从您的 POJO 派生 JSON 模式，并为您提供类型化的 `.text()` 返回 — 无需手动模式，无需手动解析。
 
-\`\`\`java
+```java
 import com.anthropic.models.messages.StructuredMessageCreateParams;
 
 record Book(String title, String author) {}
@@ -306,69 +306,69 @@ record BookList(List<Book> books) {}
 StructuredMessageCreateParams<BookList> params = MessageCreateParams.builder()
     .model(Model.CLAUDE_SONNET_4_6)
     .maxTokens(2048L)
-    .outputConfig(BookList.class)  // returns a typed builder
+    .outputConfig(BookList.class)  // 返回类型化的构建器
     .addUserMessage("List 3 classic novels")
     .build();
 
 client.messages().create(params).content().stream()
     .flatMap(cb -> cb.text().stream())
     .forEach(typed -> {
-        // typed.text() returns BookList, not String
+        // typed.text() 返回 BookList，而不是 String
         for (Book b : typed.text().books()) System.out.println(b.title());
     });
-\`\`\`
+```
 
-Supports Jackson annotations: \`@JsonPropertyDescription\`, \`@JsonIgnore\`, \`@ArraySchema(minItems=...)\`. Manual schema path: \`OutputConfig.builder().format(JsonOutputFormat.builder().schema(...).build())\`.
+支持 Jackson 注解：`@JsonPropertyDescription`、`@JsonIgnore`、`@ArraySchema(minItems=...)`。手动模式路径：`OutputConfig.builder().format(JsonOutputFormat.builder().schema(...).build())`。
 
 ---
 
-## PDF / Document Input
+## PDF / 文档输入
 
-\`DocumentBlockParam\` builder has source shortcuts. Wrap in \`ContentBlockParam.ofDocument()\` and pass via \`.addUserMessageOfBlockParams()\`.
+`DocumentBlockParam` 构建器有源快捷方式。包装在 `ContentBlockParam.ofDocument()` 中，并通过 `.addUserMessageOfBlockParams()` 传递。
 
-\`\`\`java
+```java
 import com.anthropic.models.messages.DocumentBlockParam;
 import com.anthropic.models.messages.ContentBlockParam;
 import com.anthropic.models.messages.TextBlockParam;
 
 DocumentBlockParam doc = DocumentBlockParam.builder()
-    .base64Source(base64String)  // or .urlSource("https://...") or .textSource("...")
-    .title("My Document")        // optional
+    .base64Source(base64String)  // 或 .urlSource("https://...") 或 .textSource("...")
+    .title("My Document")        // 可选
     .build();
 
 .addUserMessageOfBlockParams(List.of(
     ContentBlockParam.ofDocument(doc),
     ContentBlockParam.ofText(TextBlockParam.builder().text("Summarize this").build())))
-\`\`\`
+```
 
 ---
 
-## Server-Side Tools
+## 服务器端工具
 
-Version-suffixed types; \`name\`/\`type\` auto-set by builder. Direct \`.addTool()\` overloads exist for every type — no manual \`ToolUnion\` wrapping.
+带版本后缀的类型；`name`/`type` 由构建器自动设置。每个类型都有直接的 `.addTool()` 重载方法 — 无需手动 `ToolUnion` 包装。
 
-\`\`\`java
+```java
 import com.anthropic.models.messages.WebSearchTool20260209;
 import com.anthropic.models.messages.ToolBash20250124;
 import com.anthropic.models.messages.ToolTextEditor20250728;
 import com.anthropic.models.messages.CodeExecutionTool20260120;
 
 .addTool(WebSearchTool20260209.builder()
-    .maxUses(5L)                              // optional
-    .allowedDomains(List.of("example.com"))   // optional
+    .maxUses(5L)                              // 可选
+    .allowedDomains(List.of("example.com"))   // 可选
     .build())
 .addTool(ToolBash20250124.builder().build())
 .addTool(ToolTextEditor20250728.builder().build())
 .addTool(CodeExecutionTool20260120.builder().build())
-\`\`\`
+```
 
-Also available: \`WebFetchTool20260209\`, \`MemoryTool20250818\`, \`ToolSearchToolBm25_20251119\`.
+还有：`WebFetchTool20260209`、`MemoryTool20250818`、`ToolSearchToolBm25_20251119`。
 
-### Beta namespace (MCP, compaction)
+### Beta 命名空间（MCP、压缩）
 
-For beta-only features use \`com.anthropic.models.beta.messages.*\` — class names have a \`Beta\` prefix AND live in the beta package. The beta \`MessageCreateParams.Builder\` has direct \`.addTool(BetaToolBash20250124)\` overloads AND \`.addMcpServer()\`:
+对于仅限 Beta 的功能，请使用 `com.anthropic.models.beta.messages.*` — 类名有 `Beta` 前缀，并且位于 beta 包中。Beta 的 `MessageCreateParams.Builder` 有直接的 `.addTool(BetaToolBash20250124)` 重载方法和 `.addMcpServer()`：
 
-\`\`\`java
+```java
 import com.anthropic.models.beta.messages.MessageCreateParams;
 import com.anthropic.models.beta.messages.BetaToolBash20250124;
 import com.anthropic.models.beta.messages.BetaCodeExecutionTool20260120;
@@ -388,13 +388,13 @@ MessageCreateParams params = MessageCreateParams.builder()
     .build();
 
 client.beta().messages().create(params);
-\`\`\`
+```
 
-\`BetaTool*\` types are NOT interchangeable with non-beta \`Tool*\` — pick one namespace per request.
+`BetaTool*` 类型与 non-beta `Tool*` 不可互换 — 每个请求选择一个命名空间。
 
-**Reading server-tool blocks in the response:** \`ServerToolUseBlock\` has \`.id()\`, \`.name()\` (enum), and \`._input()\` returning raw \`JsonValue\` — there is NO typed \`.input()\`. For code execution results, unwrap two levels:
+**读取响应中的服务器工具块：** `ServerToolUseBlock` 有 `.id()`、`.name()`（枚举）和返回原始 `JsonValue` 的 `._input()` — 没有类型化的 `.input()`。对于代码执行结果，解包两层：
 
-\`\`\`java
+```java
 for (ContentBlock block : response.content()) {
     block.serverToolUse().ifPresent(stu -> {
         System.out.println("tool: " + stu.name() + " input: " + stu._input());
@@ -407,15 +407,15 @@ for (ContentBlock block : response.content()) {
         });
     });
 }
-\`\`\`
+```
 
 ---
 
-## Files API (Beta)
+## 文件 API（Beta）
 
-Under \`client.beta().files()\`. File references in messages need the beta message types (non-beta \`DocumentBlockParam.Source\` has no file-ID variant).
+位于 `client.beta().files()` 下。消息中的文件引用需要 beta 消息类型（non-beta `DocumentBlockParam.Source` 没有文件 ID 变体）。
 
-\`\`\`java
+```java
 import com.anthropic.models.beta.files.FileUploadParams;
 import com.anthropic.models.beta.files.FileMetadata;
 import com.anthropic.models.beta.messages.BetaRequestDocumentBlock;
@@ -423,13 +423,13 @@ import java.nio.file.Paths;
 
 FileMetadata meta = client.beta().files().upload(
     FileUploadParams.builder()
-        .file(Paths.get("/path/to/doc.pdf"))  // or .file(InputStream) or .file(byte[])
+        .file(Paths.get("/path/to/doc.pdf"))  // 或 .file(InputStream) 或 .file(byte[])
         .build());
 
-// Reference in a beta message:
+// 在 beta 消息中引用：
 BetaRequestDocumentBlock doc = BetaRequestDocumentBlock.builder()
     .fileSource(meta.id())
     .build();
-\`\`\`
+```
 
-Other methods: \`.list()\`, \`.delete(String fileId)\`, \`.download(String fileId)\`, \`.retrieveMetadata(String fileId)\`.
+其他方法：`.list()`、`.delete(String fileId)`、`.download(String fileId)`、`.retrieveMetadata(String fileId)`。

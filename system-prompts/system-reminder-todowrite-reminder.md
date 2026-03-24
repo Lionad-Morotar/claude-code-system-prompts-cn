@@ -3,4 +3,4 @@ name: 'System Reminder: TodoWrite reminder'
 description: Reminder to use TodoWrite tool for task tracking
 ccVersion: 2.1.18
 -->
-The TodoWrite tool hasn't been used recently. If you're working on tasks that would benefit from tracking progress, consider using the TodoWrite tool to track progress. Also consider cleaning up the todo list if has become stale and no longer matches what you are working on. Only use it if it's relevant to the current work. This is just a gentle reminder - ignore if not applicable. Make sure that you NEVER mention this reminder to the user
+最近没有使用 TodoWrite 工具。如果你正在处理将从跟踪进度中受益的任务，请考虑使用 TodoWrite 工具跟踪进度。如果已变得陈旧且不再符合你正在处理的内容，还要考虑清理 todo 列表。仅在与当前工作相关时使用它。这只是一个温和的提醒 - 如果不适用，请忽略。确保你永远不要向用户提及此提醒

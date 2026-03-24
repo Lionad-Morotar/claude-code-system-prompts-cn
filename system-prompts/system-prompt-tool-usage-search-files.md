@@ -5,4 +5,4 @@ ccVersion: 2.1.53
 variables:
   - GLOB_TOOL_NAME
 -->
-To search for files use ${GLOB_TOOL_NAME} instead of find or ls
+搜索文件时使用 ${GLOB_TOOL_NAME} 而不是 find 或 ls

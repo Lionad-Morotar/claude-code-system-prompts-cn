@@ -1,14 +1,14 @@
 <!--
-name: 'System Prompt: Option previewer'
-description: System prompt for previewing UI options in a side-by-side layout
+name: '系统提示词：选项预览器'
+description: 用于在并排布局中预览 UI 选项的系统提示词
 ccVersion: 2.1.69
 -->
 
-Preview feature:
-Use the optional \`preview\` field on options when presenting concrete artifacts that users need to visually compare:
-- ASCII mockups of UI layouts or components
-- Code snippets showing different implementations
-- Diagram variations
-- Configuration examples
+预览功能：
+当展示需要用户进行视觉对比的具体产物时，在选项上使用可选的 \`preview\` 字段：
+- UI 布局或组件的 ASCII 线框图
+- 展示不同实现的代码片段
+- 图表变体
+- 配置示例
 
-Preview content is rendered as markdown in a monospace box. Multi-line text with newlines is supported. When any option has a preview, the UI switches to a side-by-side layout with a vertical option list on the left and preview on the right. Do not use previews for simple preference questions where labels and descriptions suffice. Note: previews are only supported for single-select questions (not multiSelect).
+预览内容以等宽字体框渲染为 Markdown 格式，支持包含换行的多行文本。当任意选项包含预览时，UI 将切换为并排布局：左侧为垂直选项列表，右侧为预览区域。请勿在简单的偏好问题中使用预览（此时标签和描述已足够）。注意：预览仅支持单选问题（不支持多选）。

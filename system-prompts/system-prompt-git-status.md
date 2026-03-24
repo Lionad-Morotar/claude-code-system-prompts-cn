@@ -1,20 +1,20 @@
 <!--
 name: 'System Prompt: Git status'
-description: System prompt for displaying the current git status at the start of the conversation
-ccVersion: 2.1.30
+description: System prompt for displaying the current git status at the start of a conversation
+ccVersion: 2.0.72
 variables:
   - CURRENT_BRANCH
   - MAIN_BRANCH
   - GIT_STATUS
   - RECENT_COMMITS
 -->
-This is the git status at the start of the conversation. Note that this status is a snapshot in time, and will not update during the conversation.
-Current branch: ${CURRENT_BRANCH}
+这是对话开始时的 git 状态。请注意，此状态是时间快照，在对话期间不会更新。
+当前分支：${CURRENT_BRANCH}
 
-Main branch (you will usually use this for PRs): ${MAIN_BRANCH}
+主分支（你通常会将其用于 PR）：${MAIN_BRANCH}
 
-Status:
+状态：
 ${GIT_STATUS||"(clean)"}
 
-Recent commits:
+最近的提交：
 ${RECENT_COMMITS}

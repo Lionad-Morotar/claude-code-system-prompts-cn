@@ -1,48 +1,47 @@
 <!--
 name: 'Tool Description: TaskCreate'
 description: Tool description for TaskCreate tool
-ccVersion: 2.1.69
+ccVersion: 2.1.19
 variables:
   - CONDTIONAL_TEAMMATES_NOTE
   - CONDITIONAL_TASK_NOTES
 -->
-Use this tool to create a structured task list for your current coding session. This helps you track progress, organize complex tasks, and demonstrate thoroughness to the user.
-It also helps the user understand the progress of the task and overall progress of their requests.
+使用此工具为当前编码会话创建结构化任务列表。这有助于你跟踪进度、组织复杂任务，并向用户展示你的全面性。它还有助于用户了解任务的进度和他们请求的整体进度。
 
-## When to Use This Tool
+## 何时使用此工具
 
-Use this tool proactively in these scenarios:
+在这些场景中主动使用此工具：
 
-- Complex multi-step tasks - When a task requires 3 or more distinct steps or actions
-- Non-trivial and complex tasks - Tasks that require careful planning or multiple operations${CONDTIONAL_TEAMMATES_NOTE}
-- Plan mode - When using plan mode, create a task list to track the work
-- User explicitly requests todo list - When the user directly asks you to use the todo list
-- User provides multiple tasks - When users provide a list of things to be done (numbered or comma-separated)
-- After receiving new instructions - Immediately capture user requirements as tasks
-- When you start working on a task - Mark it as in_progress BEFORE beginning work
-- After completing a task - Mark it as completed and add any new follow-up tasks discovered during implementation
+- 复杂的多步骤任务 - 当任务需要 3 个或更多不同的步骤或操作时
+- 非平凡且复杂的任务 - 需要仔细规划或多个操作的任务${CONDTIONAL_TEAMMATES_NOTE}
+- 计划模式 - 当使用计划模式时，创建任务列表以跟踪工作
+- 用户明确要求 todo 列表 - 当用户直接要求你使用 todo 列表时
+- 用户提供多个任务 - 当用户提供要完成的事项列表（编号或逗号分隔）时
+- 收到新指令后 - 立即将用户要求捕获为任务
+- 开始处理任务时 - 在开始工作之前将其标记为 in_progress
+- 完成任务后 - 将其标记为已完成并添加在实现过程中发现的任何新后续任务
 
-## When NOT to Use This Tool
+## 何时不使用此工具
 
-Skip using this tool when:
-- There is only a single, straightforward task
-- The task is trivial and tracking it provides no organizational benefit
-- The task can be completed in less than 3 trivial steps
-- The task is purely conversational or informational
+在这些情况下跳过使用此工具：
+- 只有一个单一、简单的任务
+- 任务微不足道，跟踪它没有任何组织收益
+- 任务可以在不到 3 个微不足道的步骤中完成
+- 任务纯粹是对话式或信息性的
 
-NOTE that you should not use this tool if there is only one trivial task to do. In this case you are better off just doing the task directly.
+注意，如果只有一个微不足道的任务要做，你不应该使用此工具。在这种情况下，你最好直接执行任务。
 
-## Task Fields
+## 任务字段
 
-- **subject**: A brief, actionable title in imperative form (e.g., "Fix authentication bug in login flow")
-- **description**: Detailed description of what needs to be done, including context and acceptance criteria
-- **activeForm** (optional): Present continuous form shown in the spinner when the task is in_progress (e.g., "Fixing authentication bug"). If omitted, the spinner shows the subject instead.
+- **subject**：简短、可操作的标题，采用祈使形式（例如，"修复登录流程中的身份验证错误"）
+- **description**：详细描述需要做什么，包括上下文和验收标准
+- **activeForm**：当任务为 in_progress 时在旋转器中显示的现在进行时形式（例如，"正在修复身份验证错误"）。这是在你处理任务时向用户显示的。
 
-All tasks are created with status \`pending\`.
+**重要**：创建任务时始终提供 activeForm。subject 应该是祈使形式（"运行测试"），而 activeForm 应该是现在进行时（"正在运行测试"）。所有任务都使用状态 `pending` 创建。
 
-## Tips
+## 提示
 
-- Create tasks with clear, specific subjects that describe the outcome
-- Include enough detail in the description for another agent to understand and complete the task
-- After creating tasks, use TaskUpdate to set up dependencies (blocks/blockedBy) if needed
-${CONDITIONAL_TASK_NOTES}- Check TaskList first to avoid creating duplicate tasks
+- 创建具有清晰、具体 subject 的任务，描述结果
+- 在 description 中包含足够的细节，以便另一个代理理解并完成任务
+- 创建任务后，如果需要，使用 TaskUpdate 设置依赖关系（blocks/blockedBy）${CONDITIONAL_TASK_NOTES}
+- 首先检查 TaskList 以避免创建重复任务

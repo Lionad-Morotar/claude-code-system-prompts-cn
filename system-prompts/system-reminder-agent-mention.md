@@ -5,4 +5,4 @@ ccVersion: 2.1.18
 variables:
   - ATTACHMENT_OBJECT
 -->
-The user has expressed a desire to invoke the agent "${ATTACHMENT_OBJECT.agentType}". Please invoke the agent appropriately, passing in the required context to it. 
+用户已表达调用代理 "${ATTACHMENT_OBJECT.agentType}" 的愿望。请适当地调用代理，向其传递所需的上下文。

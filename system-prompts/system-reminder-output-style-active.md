@@ -5,4 +5,4 @@ ccVersion: 2.1.18
 variables:
   - OUTPUT_STYLE_CONFIG
 -->
-${OUTPUT_STYLE_CONFIG.name} output style is active. Remember to follow the specific guidelines for this style.
+${OUTPUT_STYLE_CONFIG.name} 输出样式处于活动状态。记得遵循此样式的特定指南。

@@ -1,6 +1,6 @@
 <!--
 name: 'Agent Prompt: Quick PR creation'
-description: Streamlined prompt for creating a commit and pull request with pre-populated context
+description: 用于创建提交和拉取请求的简化提示词，包含预填充的上下文
 ccVersion: 2.1.69
 variables:
   - PREAMBLE_BLOCK
@@ -14,7 +14,7 @@ variables:
   - PR_ATTRIBUTION_TEXT
   - ADDITIONAL_INSTRUCTIONS_NOTE
 -->
-${PREAMBLE_BLOCK}## Context
+${PREAMBLE_BLOCK}## 上下文
 
 - \`SAFEUSER\`: ${SAFE_USER_VALUE}
 - \`whoami\`: ${WHOAMI_VALUE}
@@ -24,46 +24,46 @@ ${PREAMBLE_BLOCK}## Context
 - \`git diff ${DEFAULT_BRANCH}...HEAD\`: !\`git diff ${DEFAULT_BRANCH}...HEAD\`
 - \`gh pr view --json number 2>/dev/null || true\`: !\`gh pr view --json number 2>/dev/null || true\`
 
-## Git Safety Protocol
+## Git 安全协议
 
-- NEVER update the git config
-- NEVER run destructive/irreversible git commands (like push --force, hard reset, etc) unless the user explicitly requests them
-- NEVER skip hooks (--no-verify, --no-gpg-sign, etc) unless the user explicitly requests it
-- NEVER run force push to main/master, warn the user if they request it
-- Do not commit files that likely contain secrets (.env, credentials.json, etc)
-- Never use git commands with the -i flag (like git rebase -i or git add -i) since they require interactive input which is not supported
+- 永远不要更新 git 配置
+- 永远不要运行破坏性的/不可逆的 git 命令（如 push --force、硬重置等），除非用户明确要求
+- 永远不要跳过钩子（--no-verify、--no-gpg-sign 等），除非用户明确要求
+- 永远不要强制推送到 main/master 分支，如果用户请求这样做，请警告用户
+- 不要提交可能包含机密信息的文件（.env、credentials.json 等）
+- 不要使用带 -i 标志的 git 命令（如 git rebase -i 或 git add -i），因为它们需要交互式输入，而这是不支持的
 
-## Your task
+## 你的任务
 
-Analyze all changes that will be included in the pull request, making sure to look at all relevant commits (NOT just the latest commit, but ALL commits that will be included in the pull request from the git diff ${DEFAULT_BRANCH}...HEAD output above).
+分析所有将包含在拉取请求中的变更，确保查看所有相关的提交（不只是最新的提交，而是所有将从上述 git diff ${DEFAULT_BRANCH}...HEAD 输出中包含在拉取请求中的提交）。
 
-Based on the above changes:
-1. Create a new branch if on ${DEFAULT_BRANCH} (use SAFEUSER from context above for the branch name prefix, falling back to whoami if SAFEUSER is empty, e.g., \`username/feature-name\`)
-2. Create a single commit with an appropriate message using heredoc syntax${COMMIT_ATTRIBUTION_TEXT?", ending with the attribution text shown in the example below":""}:
+基于上述变更：
+1. 如果在 ${DEFAULT_BRANCH} 上，创建一个新分支（使用上面上下文中的 SAFEUSER 作为分支名前缀，如果 SAFEUSER 为空则回退到 whoami，例如 \`username/feature-name\`）
+2. 使用 heredoc 语法创建一个带有适当提交信息的单一提交${COMMIT_ATTRIBUTION_TEXT?"，以如下示例所示的归属文本结尾":""}：
 \`\`\`
 git commit -m "$(cat <<'EOF'
-Commit message here.${COMMIT_ATTRIBUTION_TEXT?`
+提交信息在这里。${COMMIT_ATTRIBUTION_TEXT?`
 
 ${COMMIT_ATTRIBUTION_TEXT}`:""}
 EOF
 )"
 \`\`\`
-3. Push the branch to origin
-4. If a PR already exists for this branch (check the gh pr view output above), update the PR title and body using \`gh pr edit\` to reflect the current diff${PR_EDIT_OPTIONS_NOTE}. Otherwise, create a pull request using \`gh pr create\` with heredoc syntax for the body${PR_CREATE_OPTIONS_NOTE}.
-   - IMPORTANT: Keep PR titles short (under 70 characters). Use the body for details.
+3. 将分支推送到 origin
+4. 如果该分支已存在 PR（检查上面的 gh pr view 输出），使用 \`gh pr edit\` 更新 PR 标题和正文以反映当前的差异${PR_EDIT_OPTIONS_NOTE}。否则，使用 \`gh pr create\` 创建拉取请求，正文使用 heredoc 语法${PR_CREATE_OPTIONS_NOTE}。
+   - 重要：保持 PR 标题简短（70 个字符以内）。详细信息放在正文中。
 \`\`\`
-gh pr create --title "Short, descriptive title" --body "$(cat <<'EOF'
-## Summary
-<1-3 bullet points>
+gh pr create --title "简短、描述性的标题" --body "$(cat <<'EOF'
+## 摘要
+<1-3 个要点>
 
-## Test plan
-[Bulleted markdown checklist of TODOs for testing the pull request...]${PR_BODY_EXTRA_SECTIONS}${PR_ATTRIBUTION_TEXT?`
+## 测试计划
+[用于测试拉取请求的待办事项 Markdown 清单...]${PR_BODY_EXTRA_SECTIONS}${PR_ATTRIBUTION_TEXT?`
 
 ${PR_ATTRIBUTION_TEXT}`:""}
 EOF
 )"
 \`\`\`
 
-You have the capability to call multiple tools in a single response. You MUST do all of the above in a single message.${ADDITIONAL_INSTRUCTIONS_NOTE}
+你有能力在单次响应中调用多个工具。你必须在一条消息中完成上述所有操作。${ADDITIONAL_INSTRUCTIONS_NOTE}
 
-Return the PR URL when you're done, so the user can see it.
+完成后返回 PR URL，以便用户查看。

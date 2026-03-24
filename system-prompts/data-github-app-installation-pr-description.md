@@ -3,44 +3,44 @@ name: 'Data: GitHub App installation PR description'
 description: Template for PR description when installing Claude Code GitHub App integration
 ccVersion: 2.0.14
 -->
-## \uD83E\uDD16 Installing Claude Code GitHub App
+## 🤖 安装 Claude Code GitHub App
 
-This PR adds a GitHub Actions workflow that enables Claude Code integration in our repository.
+此 PR 添加了一个 GitHub Actions 工作流，在我们的存储库中启用 Claude Code 集成。
 
-### What is Claude Code?
+### 什么是 Claude Code？
 
-[Claude Code](https://claude.com/claude-code) is an AI coding agent that can help with:
-- Bug fixes and improvements  
-- Documentation updates
-- Implementing new features
-- Code reviews and suggestions
-- Writing tests
-- And more!
+[Claude Code](https://claude.com/claude-code) 是一个 AI 编码代理，可以帮助：
+- 错误修复和改进
+- 文档更新
+- 实现新功能
+- 代码审查和建议
+- 编写测试
+- 以及更多！
 
-### How it works
+### 它如何工作
 
-Once this PR is merged, we'll be able to interact with Claude by mentioning @claude in a pull request or issue comment.
-Once the workflow is triggered, Claude will analyze the comment and surrounding context, and execute on the request in a GitHub action.
+一旦此 PR 合并，我们将能够通过在拉取请求或问题评论中提及 @claude 来与 Claude 交互。
+一旦工作流被触发，Claude 将分析评论和周围上下文，并在 GitHub 操作中执行请求。
 
-### Important Notes
+### 重要说明
 
-- **This workflow won't take effect until this PR is merged**
-- **@claude mentions won't work until after the merge is complete**
-- The workflow runs automatically whenever Claude is mentioned in PR or issue comments
-- Claude gets access to the entire PR or issue context including files, diffs, and previous comments
+- **此工作流在此 PR 合并之前不会生效**
+- **@claude 提及在合并完成后之前不会工作**
+- 每当在 PR 或问题评论中提及 Claude 时，工作流会自动运行
+- Claude 获得对整个 PR 或问题上下文的访问权限，包括文件、差异和以前的评论
 
-### Security
+### 安全性
 
-- Our Anthropic API key is securely stored as a GitHub Actions secret
-- Only users with write access to the repository can trigger the workflow
-- All Claude runs are stored in the GitHub Actions run history
-- Claude's default tools are limited to reading/writing files and interacting with our repo by creating comments, branches, and commits.
-- We can add more allowed tools by adding them to the workflow file like:
+- 我们的 Anthropic API 密钥作为 GitHub Actions 密钥安全存储
+- 只有对存储库具有写访问权限的用户才能触发工作流
+- 所有 Claude 运行都存储在 GitHub Actions 运行历史中
+- Claude 的默认工具限于读取/写入文件并通过创建评论、分支和提交与我们的存储库交互。
+- 我们可以通过将它们添加到工作流文件中来添加更多允许的工具，例如：
 
 \`\`\`
 allowed_tools: Bash(npm install),Bash(npm run build),Bash(npm run lint),Bash(npm run test)
 \`\`\`
 
-There's more information in the [Claude Code action repo](https://github.com/anthropics/claude-code-action).
+在 [Claude Code action repo](https://github.com/anthropics/claude-code-action) 中有更多信息。
 
-After merging this PR, let's try mentioning @claude in a comment on any PR to get started!
+合并此 PR 后，让我们尝试在任何 PR 的评论中提及 @claude 来开始！

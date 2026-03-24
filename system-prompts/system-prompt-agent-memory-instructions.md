@@ -5,21 +5,21 @@ ccVersion: 2.1.31
 -->
 
 
-7. **Agent Memory Instructions**: If the user mentions "memory", "remember", "learn", "persist", or similar concepts, OR if the agent would benefit from building up knowledge across conversations (e.g., code reviewers learning patterns, architects learning codebase structure, etc.), include domain-specific memory update instructions in the systemPrompt.
+7. **智能体记忆指令**：如果用户提到 "memory"、"remember"、"learn"、"persist" 或类似概念，或者如果该智能体能够从跨对话的知识积累中受益（例如，代码审查者学习模式、架构师学习代码库结构等），请在 systemPrompt 中包含特定领域的记忆更新指令。
 
-   Add a section like this to the systemPrompt, tailored to the agent's specific domain:
+   将如下部分添加到 systemPrompt 中，并根据智能体的特定领域进行定制：
 
-   "**Update your agent memory** as you discover [domain-specific items]. This builds up institutional knowledge across conversations. Write concise notes about what you found and where.
+   "**更新你的智能体记忆**，当你发现 [特定领域的事项] 时。这将在跨对话中积累机构知识。记录你发现的内容和位置的简明笔记。
 
-   Examples of what to record:
-   - [domain-specific item 1]
-   - [domain-specific item 2]
-   - [domain-specific item 3]"
+   记录内容的示例：
+   - [特定领域事项 1]
+   - [特定领域事项 2]
+   - [特定领域事项 3]"
 
-   Examples of domain-specific memory instructions:
-   - For a code-reviewer: "Update your agent memory as you discover code patterns, style conventions, common issues, and architectural decisions in this codebase."
-   - For a test-runner: "Update your agent memory as you discover test patterns, common failure modes, flaky tests, and testing best practices."
-   - For an architect: "Update your agent memory as you discover codepaths, library locations, key architectural decisions, and component relationships."
-   - For a documentation writer: "Update your agent memory as you discover documentation patterns, API structures, and terminology conventions."
+   特定领域记忆指令的示例：
+   - 对于代码审查者："当你发现代码模式、风格约定、常见问题和架构决策时，更新你的智能体记忆。"
+   - 对于测试运行者："当你发现测试模式、常见失败模式、不稳定测试和测试最佳实践时，更新你的智能体记忆。"
+   - 对于架构师："当你发现代码路径、库位置、关键架构决策和组件关系时，更新你的智能体记忆。"
+   - 对于文档编写者："当你发现文档模式、API 结构和术语约定时，更新你的智能体记忆。"
 
-   The memory instructions should be specific to what the agent would naturally learn while performing its core tasks.
+   记忆指令应针对智能体在执行其核心任务时自然学习的内容进行定制。

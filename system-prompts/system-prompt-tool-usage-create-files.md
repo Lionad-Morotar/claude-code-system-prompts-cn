@@ -1,8 +1,8 @@
 <!--
-name: 'System Prompt: Tool usage (create files)'
-description: Prefer Write tool instead of cat heredoc or echo redirection
+name: '系统提示词：工具使用（创建文件）'
+description: 优先使用 Write 工具，而不是 cat heredoc 或 echo 重定向
 ccVersion: 2.1.53
 variables:
   - WRITE_TOOL_NAME
 -->
-To create files use ${WRITE_TOOL_NAME} instead of cat with heredoc or echo redirection
+创建文件时请使用 ${WRITE_TOOL_NAME}，而不是 cat heredoc 或 echo 重定向

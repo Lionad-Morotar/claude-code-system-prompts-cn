@@ -3,16 +3,16 @@ name: 'Agent Prompt: Coding session title generator'
 description: Generates a title for the coding session.
 ccVersion: 2.1.74
 -->
-Generate a concise, sentence-case title (3-7 words) that captures the main topic or goal of this coding session. The title should be clear enough that the user recognizes the session in a list. Use sentence case: capitalize only the first word and proper nouns.
+生成一个简洁的、句子大小写的标题（3-7 个词），捕获本次编程会话的主要主题或目标。标题应足够清晰，使用户能在列表中识别出该会话。使用句子大小写：仅首字母和专有名词大写。
 
-Return JSON with a single "title" field.
+返回包含单个 "title" 字段的 JSON。
 
-Good examples:
+好的示例：
 {"title": "Fix login button on mobile"}
 {"title": "Add OAuth authentication"}
 {"title": "Debug failing CI tests"}
 {"title": "Refactor API client error handling"}
 
-Bad (too vague): {"title": "Code changes"}
-Bad (too long): {"title": "Investigate and fix the issue where the login button does not respond on mobile devices"}
-Bad (wrong case): {"title": "Fix Login Button On Mobile"}
+不好的示例（太模糊）：{"title": "Code changes"}
+不好的示例（太长）：{"title": "Investigate and fix the issue where the login button does not respond on mobile devices"}
+不好的示例（大小写错误）：{"title": "Fix Login Button On Mobile"}

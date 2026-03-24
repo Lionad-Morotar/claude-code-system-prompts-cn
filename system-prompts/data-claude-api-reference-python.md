@@ -5,32 +5,32 @@ ccVersion: 2.1.73
 -->
 # Claude API — Python
 
-## Installation
+## 安装
 
-\`\`\`bash
+```bash
 pip install anthropic
-\`\`\`
+```
 
-## Client Initialization
+## 客户端初始化
 
-\`\`\`python
+```python
 import anthropic
 
-# Default (uses ANTHROPIC_API_KEY env var)
+# 默认（使用 ANTHROPIC_API_KEY 环境变量）
 client = anthropic.Anthropic()
 
-# Explicit API key
+# 显式指定 API 密钥
 client = anthropic.Anthropic(api_key="your-api-key")
 
-# Async client
+# 异步客户端
 async_client = anthropic.AsyncAnthropic()
-\`\`\`
+```
 
 ---
 
-## Basic Message Request
+## 基本消息请求
 
-\`\`\`python
+```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
@@ -38,33 +38,33 @@ response = client.messages.create(
         {"role": "user", "content": "What is the capital of France?"}
     ]
 )
-# response.content is a list of content block objects (TextBlock, ThinkingBlock,
-# ToolUseBlock, ...). Check .type before accessing .text.
+# response.content 是内容块对象的列表（TextBlock、ThinkingBlock、
+# ToolUseBlock 等）。在访问 .text 前先检查 .type。
 for block in response.content:
     if block.type == "text":
         print(block.text)
-\`\`\`
+```
 
 ---
 
-## System Prompts
+## 系统提示词
 
-\`\`\`python
+```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
     system="You are a helpful coding assistant. Always provide examples in Python.",
     messages=[{"role": "user", "content": "How do I read a JSON file?"}]
 )
-\`\`\`
+```
 
 ---
 
-## Vision (Images)
+## 视觉（图像）
 
 ### Base64
 
-\`\`\`python
+```python
 import base64
 
 with open("image.png", "rb") as f:
@@ -88,11 +88,11 @@ response = client.messages.create(
         ]
     }]
 )
-\`\`\`
+```
 
 ### URL
 
-\`\`\`python
+```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
@@ -110,66 +110,66 @@ response = client.messages.create(
         ]
     }]
 )
-\`\`\`
+```
 
 ---
 
-## Prompt Caching
+## 提示词缓存
 
-Cache large context to reduce costs (up to 90% savings).
+缓存大型上下文以降低成本（最高可节省 90%）。
 
-### Automatic Caching (Recommended)
+### 自动缓存（推荐）
 
-Use top-level \`cache_control\` to automatically cache the last cacheable block in the request — no need to annotate individual content blocks:
+使用顶级的 `cache_control` 来自动缓存请求中最后一个可缓存的块——无需逐个标注内容块：
 
-\`\`\`python
+```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
-    cache_control={"type": "ephemeral"},  # auto-caches the last cacheable block
+    cache_control={"type": "ephemeral"},  # 自动缓存最后一个可缓存块
     system="You are an expert on this large document...",
     messages=[{"role": "user", "content": "Summarize the key points"}]
 )
-\`\`\`
+```
 
-### Manual Cache Control
+### 手动缓存控制
 
-For fine-grained control, add \`cache_control\` to specific content blocks:
+如需精细控制，可将 `cache_control` 添加到特定内容块：
 
-\`\`\`python
+```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
     system=[{
         "type": "text",
         "text": "You are an expert on this large document...",
-        "cache_control": {"type": "ephemeral"}  # default TTL is 5 minutes
+        "cache_control": {"type": "ephemeral"}  # 默认 TTL 为 5 分钟
     }],
     messages=[{"role": "user", "content": "Summarize the key points"}]
 )
 
-# With explicit TTL (time-to-live)
+# 使用显式 TTL（存活时间）
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
     system=[{
         "type": "text",
         "text": "You are an expert on this large document...",
-        "cache_control": {"type": "ephemeral", "ttl": "1h"}  # 1 hour TTL
+        "cache_control": {"type": "ephemeral", "ttl": "1h"}  # 1 小时 TTL
     }],
     messages=[{"role": "user", "content": "Summarize the key points"}]
 )
-\`\`\`
+```
 
 ---
 
-## Extended Thinking
+## 扩展思考
 
-> **Opus 4.6 and Sonnet 4.6:** Use adaptive thinking. \`budget_tokens\` is deprecated on both Opus 4.6 and Sonnet 4.6.
-> **Older models:** Use \`thinking: {type: "enabled", budget_tokens: N}\` (must be < \`max_tokens\`, min 1024).
+> **Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在这两个模型上已弃用。
+> **旧版模型：** 使用 `thinking: {type: "enabled", budget_tokens: N}`（必须小于 `max_tokens`，最小 1024）。
 
-\`\`\`python
-# Opus 4.6: adaptive thinking (recommended)
+```python
+# Opus 4.6：自适应思考（推荐）
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=16000,
@@ -178,19 +178,19 @@ response = client.messages.create(
     messages=[{"role": "user", "content": "Solve this step by step..."}]
 )
 
-# Access thinking and response
+# 访问思考内容和回复
 for block in response.content:
     if block.type == "thinking":
         print(f"Thinking: {block.thinking}")
     elif block.type == "text":
         print(f"Response: {block.text}")
-\`\`\`
+```
 
 ---
 
-## Error Handling
+## 错误处理
 
-\`\`\`python
+```python
 import anthropic
 
 try:
@@ -213,17 +213,17 @@ except anthropic.APIStatusError as e:
         print(f"API error: {e.message}")
 except anthropic.APIConnectionError:
     print("Network error. Check internet connection.")
-\`\`\`
+```
 
 ---
 
-## Multi-Turn Conversations
+## 多轮对话
 
-The API is stateless — send the full conversation history each time.
+API 是无状态的——每次都需要发送完整的对话历史。
 
-\`\`\`python
+```python
 class ConversationManager:
-    """Manage multi-turn conversations with the Claude API."""
+    """管理与 Claude API 的多轮对话。"""
 
     def __init__(self, client: anthropic.Anthropic, model: str, system: str = None):
         self.client = client
@@ -232,7 +232,7 @@ class ConversationManager:
         self.messages = []
 
     def send(self, user_message: str, **kwargs) -> str:
-        """Send a message and get a response."""
+        """发送消息并获取回复。"""
         self.messages.append({"role": "user", "content": user_message})
 
         response = self.client.messages.create(
@@ -250,7 +250,7 @@ class ConversationManager:
 
         return assistant_message
 
-# Usage
+# 使用示例
 conversation = ConversationManager(
     client=anthropic.Anthropic(),
     model="{{OPUS_ID}}",
@@ -258,21 +258,21 @@ conversation = ConversationManager(
 )
 
 response1 = conversation.send("My name is Alice.")
-response2 = conversation.send("What's my name?")  # Claude remembers "Alice"
-\`\`\`
+response2 = conversation.send("What's my name?")  # Claude 记得 "Alice"
+```
 
-**Rules:**
+**规则：**
 
-- Messages must alternate between \`user\` and \`assistant\`
-- First message must be \`user\`
+- 消息必须在 `user` 和 `assistant` 之间交替
+- 第一条消息必须是 `user`
 
 ---
 
-### Compaction (long conversations)
+### 压缩（长对话）
 
-> **Beta, Opus 4.6 and Sonnet 4.6.** When conversations approach the 200K context window, compaction automatically summarizes earlier context server-side. The API returns a \`compaction\` block; you must pass it back on subsequent requests — append \`response.content\`, not just the text.
+> **Beta 版，Opus 4.6 和 Sonnet 4.6。** 当对话接近 200K 上下文窗口时，压缩会在服务端自动总结较早的上下文。API 会返回一个 `compaction` 块；你必须在后续请求中将其传回——追加 `response.content`，而不仅仅是文本。
 
-\`\`\`python
+```python
 import anthropic
 
 client = anthropic.Anthropic()
@@ -291,97 +291,97 @@ def chat(user_message: str) -> str:
         }
     )
 
-    # Append full content — compaction blocks must be preserved
+    # 追加完整内容——压缩块必须保留
     messages.append({"role": "assistant", "content": response.content})
 
     return next(block.text for block in response.content if block.type == "text")
 
-# Compaction triggers automatically when context grows large
+# 当上下文增长较大时，压缩会自动触发
 print(chat("Help me build a Python web scraper"))
 print(chat("Add support for JavaScript-rendered pages"))
 print(chat("Now add rate limiting and error handling"))
-\`\`\`
+```
 
 ---
 
-## Stop Reasons
+## 停止原因
 
-The \`stop_reason\` field in the response indicates why the model stopped generating:
+响应中的 `stop_reason` 字段表示模型停止生成的原因：
 
-| Value | Meaning |
+| 值 | 含义 |
 |-------|---------|
-| \`end_turn\` | Claude finished its response naturally |
-| \`max_tokens\` | Hit the \`max_tokens\` limit — increase it or use streaming |
-| \`stop_sequence\` | Hit a custom stop sequence |
-| \`tool_use\` | Claude wants to call a tool — execute it and continue |
-| \`pause_turn\` | Model paused and can be resumed (agentic flows) |
-| \`refusal\` | Claude refused for safety reasons — output may not match your schema |
+| `end_turn` | Claude 自然完成了回复 |
+| `max_tokens` | 达到 `max_tokens` 限制——增加限制或使用流式传输 |
+| `stop_sequence` | 触发了自定义停止序列 |
+| `tool_use` | Claude 想要调用工具——执行它并继续 |
+| `pause_turn` | 模型暂停，可以继续（代理流程） |
+| `refusal` | Claude 因安全原因拒绝——输出可能不符合你的模式 |
 
 ---
 
-## Cost Optimization Strategies
+## 成本优化策略
 
-### 1. Use Prompt Caching for Repeated Context
+### 1. 对重复上下文使用提示词缓存
 
-\`\`\`python
-# Automatic caching (simplest — caches the last cacheable block)
+```python
+# 自动缓存（最简单——缓存最后一个可缓存块）
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
     cache_control={"type": "ephemeral"},
-    system=large_document_text,  # e.g., 50KB of context
+    system=large_document_text,  # 例如，50KB 的上下文
     messages=[{"role": "user", "content": "Summarize the key points"}]
 )
 
-# First request: full cost
-# Subsequent requests: ~90% cheaper for cached portion
-\`\`\`
+# 第一次请求：全价
+# 后续请求：缓存部分便宜约 90%
+```
 
-### 2. Choose the Right Model
+### 2. 选择合适的模型
 
-\`\`\`python
-# Default to Opus for most tasks
+```python
+# 默认使用 Opus 处理大多数任务
 response = client.messages.create(
-    model="{{OPUS_ID}}",  # $5.00/$25.00 per 1M tokens
+    model="{{OPUS_ID}}",  # 每 100 万 token $5.00/$25.00
     max_tokens=1024,
     messages=[{"role": "user", "content": "Explain quantum computing"}]
 )
 
-# Use Sonnet for high-volume production workloads
+# 对高容量生产工作负载使用 Sonnet
 standard_response = client.messages.create(
-    model="{{SONNET_ID}}",  # $3.00/$15.00 per 1M tokens
+    model="{{SONNET_ID}}",  # 每 100 万 token $3.00/$15.00
     max_tokens=1024,
     messages=[{"role": "user", "content": "Summarize this document"}]
 )
 
-# Use Haiku only for simple, speed-critical tasks
+# 仅对简单、速度关键的任务使用 Haiku
 simple_response = client.messages.create(
-    model="{{HAIKU_ID}}",  # $1.00/$5.00 per 1M tokens
+    model="{{HAIKU_ID}}",  # 每 100 万 token $1.00/$5.00
     max_tokens=256,
     messages=[{"role": "user", "content": "Classify this as positive or negative"}]
 )
-\`\`\`
+```
 
-### 3. Use Token Counting Before Requests
+### 3. 在请求前使用 Token 计数
 
-\`\`\`python
+```python
 count_response = client.messages.count_tokens(
     model="{{OPUS_ID}}",
     messages=messages,
     system=system
 )
 
-estimated_input_cost = count_response.input_tokens * 0.000005  # $5/1M tokens
-print(f"Estimated input cost: \${estimated_input_cost:.4f}")
-\`\`\`
+estimated_input_cost = count_response.input_tokens * 0.000005  # $5/100 万 token
+print(f"Estimated input cost: ${estimated_input_cost:.4f}")
+```
 
 ---
 
-## Retry with Exponential Backoff
+## 指数退避重试
 
-> **Note:** The Anthropic SDK automatically retries rate limit (429) and server errors (5xx) with exponential backoff. You can configure this with \`max_retries\` (default: 2). Only implement custom retry logic if you need behavior beyond what the SDK provides.
+> **注意：** Anthropic SDK 会自动对速率限制（429）和服务器错误（5xx）使用指数退避进行重试。你可以通过 `max_retries` 进行配置（默认：2）。仅当你需要 SDK 提供之外的行为时，才实现自定义重试逻辑。
 
-\`\`\`python
+```python
 import time
 import random
 import anthropic
@@ -393,7 +393,7 @@ def call_with_retry(
     max_delay: float = 60.0,
     **kwargs
 ):
-    """Call the API with exponential backoff retry."""
+    """使用指数退避重试调用 API。"""
     last_exception = None
 
     for attempt in range(max_retries):
@@ -405,11 +405,11 @@ def call_with_retry(
             if e.status_code >= 500:
                 last_exception = e
             else:
-                raise  # Client errors (4xx except 429) should not be retried
+                raise  # 客户端错误（4xx 除 429 外）不应重试
 
         delay = min(base_delay * (2 ** attempt) + random.uniform(0, 1), max_delay)
         print(f"Retry {attempt + 1}/{max_retries} after {delay:.1f}s")
         time.sleep(delay)
 
     raise last_exception
-\`\`\`
+```

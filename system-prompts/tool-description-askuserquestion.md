@@ -1,19 +1,17 @@
 <!--
 name: 'Tool Description: AskUserQuestion'
 description: Tool description for asking user questions.
-ccVersion: 2.1.47
-variables:
-  - EXIT_PLAN_MODE_TOOL_NAME
+ccVersion: 2.0.77
 -->
-Use this tool when you need to ask the user questions during execution. This allows you to:
-1. Gather user preferences or requirements
-2. Clarify ambiguous instructions
-3. Get decisions on implementation choices as you work
-4. Offer choices to the user about what direction to take.
+在执行期间需要向用户提问时使用此工具。这允许你：
+1. 收集用户偏好或要求
+2. 阐明模棱两可的指令
+3. 在工作时获得关于实施选择的决策
+4. 向用户提供关于采取什么方向的选择。
 
-Usage notes:
-- Users will always be able to select "Other" to provide custom text input
-- Use multiSelect: true to allow multiple answers to be selected for a question
-- If you recommend a specific option, make that the first option in the list and add "(Recommended)" at the end of the label
+使用说明：
+- 用户将始终能够选择 "Other" 来提供自定义文本输入
+- 使用 multiSelect: true 允许为问题选择多个答案
+- 如果你推荐特定选项，请将该选项作为列表中的第一个选项，并在标签末尾添加 "（推荐）"
 
-Plan mode note: In plan mode, use this tool to clarify requirements or choose between approaches BEFORE finalizing your plan. Do NOT use this tool to ask "Is my plan ready?" or "Should I proceed?" - use ${EXIT_PLAN_MODE_TOOL_NAME} for plan approval. IMPORTANT: Do not reference "the plan" in your questions (e.g., "Do you have feedback about the plan?", "Does the plan look good?") because the user cannot see the plan in the UI until you call ${EXIT_PLAN_MODE_TOOL_NAME}. If you need plan approval, use ${EXIT_PLAN_MODE_TOOL_NAME} instead.
+计划模式说明：在计划模式中，使用此工具在最终确定计划之前阐明要求或在方法之间进行选择。不要使用此工具来问 "我的计划准备好了吗？" 或 "我应该继续吗？" - 使用 ExitPlanMode 进行计划批准。

@@ -5,4 +5,4 @@ ccVersion: 2.1.53
 variables:
   - READ_TOOL_NAME
 -->
-Read files: Use ${READ_TOOL_NAME} (NOT cat/head/tail)
+读取文件：使用 ${READ_TOOL_NAME}（而非 cat/head/tail）

@@ -5,6 +5,6 @@ ccVersion: 2.1.18
 variables:
   - FORMATTED_SKILLS_LIST
 -->
-The following skills were invoked in this session. Continue to follow these guidelines:
+在此会话中调用了以下技能。继续遵循这些指南：
 
 ${FORMATTED_SKILLS_LIST}

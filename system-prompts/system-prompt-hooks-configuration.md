@@ -1,13 +1,13 @@
 <!--
 name: 'System Prompt: Hooks Configuration'
 description: System prompt for hooks configuration.  Used for above Claude Code config skill.
-ccVersion: 2.1.77
+ccVersion: 2.1.9
 -->
-## Hooks Configuration
+## 钩子配置
 
-Hooks run commands at specific points in Claude Code's lifecycle.
+钩子在 Claude Code 生命周期的特定点运行命令。
 
-### Hook Structure
+### 钩子结构
 \`\`\`json
 {
   "hooks": {
@@ -28,87 +28,75 @@ Hooks run commands at specific points in Claude Code's lifecycle.
 }
 \`\`\`
 
-### Hook Events
+### 钩子事件
 
-| Event | Matcher | Purpose |
+| 事件 | 匹配器 | 目的 |
 |-------|---------|---------|
-| PermissionRequest | Tool name | Run before permission prompt |
-| PreToolUse | Tool name | Run before tool, can block |
-| PostToolUse | Tool name | Run after successful tool |
-| PostToolUseFailure | Tool name | Run after tool fails |
-| Notification | Notification type | Run on notifications |
-| Stop | - | Run when Claude stops (including clear, resume, compact) |
-| PreCompact | "manual"/"auto" | Before compaction |
-| PostCompact | "manual"/"auto" | After compaction (receives summary) |
-| UserPromptSubmit | - | When user submits |
-| SessionStart | - | When session starts |
+| PermissionRequest | 工具名称 | 在权限提示之前运行 |
+| PreToolUse | 工具名称 | 在工具之前运行，可以阻止 |
+| PostToolUse | 工具名称 | 在成功工具之后运行 |
+| PostToolUseFailure | 工具名称 | 在工具失败后运行 |
+| Notification | 通知类型 | 在通知上运行 |
+| Stop | - | 当 Claude 停止时运行（包括清除、恢复、压缩） |
+| PreCompact | "manual"/"auto" | 在压缩之前 |
+| UserPromptSubmit | - | 当用户提交时 |
+| SessionStart | - | 当会话开始时 |
 
-**Common tool matchers:** \`Bash\`, \`Write\`, \`Edit\`, \`Read\`, \`Glob\`, \`Grep\`
+**常见工具匹配器：** \`Bash\`、\`Write\`、\`Edit\`、\`Read\`、\`Glob\`、\`Grep\`
 
-### Hook Types
+### 钩子类型
 
-**1. Command Hook** - Runs a shell command:
+**1. 命令钩子** - 运行 shell 命令：
 \`\`\`json
 { "type": "command", "command": "prettier --write $FILE", "timeout": 30 }
 \`\`\`
 
-**2. Prompt Hook** - Evaluates a condition with LLM:
+**2. 提示钩子** - 使用 LLM 评估条件：
 \`\`\`json
-{ "type": "prompt", "prompt": "Is this safe? $ARGUMENTS" }
+{ "type": "prompt", "prompt": "这安全吗？ $ARGUMENTS" }
 \`\`\`
-Only available for tool events: PreToolUse, PostToolUse, PermissionRequest.
+仅可用于工具事件：PreToolUse、PostToolUse、PermissionRequest。
 
-**3. Agent Hook** - Runs an agent with tools:
+**3. 代理钩子** - 使用工具运行代理：
 \`\`\`json
-{ "type": "agent", "prompt": "Verify tests pass: $ARGUMENTS" }
+{ "type": "agent", "prompt": "验证测试通过： $ARGUMENTS" }
 \`\`\`
-Only available for tool events: PreToolUse, PostToolUse, PermissionRequest.
+仅可用于工具事件：PreToolUse、PostToolUse、PermissionRequest。
 
-### Hook Input (stdin JSON)
+### 钩子输入（stdin JSON）
 \`\`\`json
 {
   "session_id": "abc123",
   "tool_name": "Write",
   "tool_input": { "file_path": "/path/to/file.txt", "content": "..." },
-  "tool_response": { "success": true }  // PostToolUse only
+  "tool_response": { "success": true }  // 仅 PostToolUse
 }
 \`\`\`
 
-### Hook JSON Output
+### 钩子 JSON 输出
 
-Hooks can return JSON to control behavior:
+钩子可以返回 JSON 来控制行为：
 
 \`\`\`json
 {
-  "systemMessage": "Warning shown to user in UI",
+  "systemMessage": "在 UI 中向用户显示的警告",
   "continue": false,
-  "stopReason": "Message shown when blocking",
-  "suppressOutput": false,
-  "decision": "block",
-  "reason": "Explanation for decision",
-  "hookSpecificOutput": {
-    "hookEventName": "PostToolUse",
-    "additionalContext": "Context injected back to model"
-  }
+  "stopReason": "当阻止时显示的消息",
+  "additionalContext": "注入回模型上下文的上下文",
+  "decision": "approve" | "block"
 }
 \`\`\`
 
-**Fields:**
-- \`systemMessage\` - Display a message to the user (all hooks)
-- \`continue\` - Set to \`false\` to block/stop (default: true)
-- \`stopReason\` - Message shown when \`continue\` is false
-- \`suppressOutput\` - Hide stdout from transcript (default: false)
-- \`decision\` - "block" for PostToolUse/Stop/UserPromptSubmit hooks (deprecated for PreToolUse, use hookSpecificOutput.permissionDecision instead)
-- \`reason\` - Explanation for decision
-- \`hookSpecificOutput\` - Event-specific output (must include \`hookEventName\`):
-  - \`additionalContext\` - Text injected into model context
-  - \`permissionDecision\` - "allow", "deny", or "ask" (PreToolUse only)
-  - \`permissionDecisionReason\` - Reason for the permission decision (PreToolUse only)
-  - \`updatedInput\` - Modified tool input (PreToolUse only)
+**字段：**
+- \`systemMessage\` - 向用户显示消息（所有钩子）
+- \`continue\` - 设置为 \`false\` 以阻止/停止（默认：true）
+- \`stopReason\` - 当 \`continue\` 为 false 时显示的消息
+- \`additionalContext\` - 注入到模型上下文中的文本（事件特定）
+- \`decision\` - PreToolUse 钩子的 "approve" 或 "block"
 
-### Common Patterns
+### 常见模式
 
-**Auto-format after writes:**
+**在写入后自动格式化：**
 \`\`\`json
 {
   "hooks": {
@@ -116,14 +104,14 @@ Hooks can return JSON to control behavior:
       "matcher": "Write|Edit",
       "hooks": [{
         "type": "command",
-        "command": "jq -r '.tool_response.filePath // .tool_input.file_path' | { read -r f; prettier --write \\"$f\\"; } 2>/dev/null || true"
+        "command": "jq -r '.tool_response.filePath // .tool_input.file_path' | xargs prettier --write 2>/dev/null || true"
       }]
     }]
   }
 }
 \`\`\`
 
-**Log all bash commands:**
+**记录所有 bash 命令：**
 \`\`\`json
 {
   "hooks": {
@@ -138,15 +126,15 @@ Hooks can return JSON to control behavior:
 }
 \`\`\`
 
-**Stop hook that displays message to user:**
+**向用户显示消息的停止钩子：**
 
-Command must output JSON with \`systemMessage\` field:
+命令必须输出带有 \`systemMessage\` 字段的 JSON：
 \`\`\`bash
-# Example command that outputs: {"systemMessage": "Session complete!"}
+# 输出以下内容的示例命令：{"systemMessage": "Session complete!"}
 echo '{"systemMessage": "Session complete!"}'
 \`\`\`
 
-**Run tests after code changes:**
+**代码更改后运行测试：**
 \`\`\`json
 {
   "hooks": {

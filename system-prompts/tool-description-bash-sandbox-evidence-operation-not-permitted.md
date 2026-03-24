@@ -3,4 +3,4 @@ name: 'Tool Description: Bash (sandbox — evidence: operation not permitted)'
 description: Sandbox evidence: operation not permitted errors
 ccVersion: 2.1.53
 -->
-"Operation not permitted" errors for file/network operations
+文件/网络操作的"不允许的操作"错误

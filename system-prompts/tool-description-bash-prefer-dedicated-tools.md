@@ -5,4 +5,4 @@ ccVersion: 2.1.71
 variables:
   - READ_ONLY_SEARCHING_BASH_COMMANDS
 -->
-IMPORTANT: Avoid using this tool to run ${READ_ONLY_SEARCHING_BASH_COMMANDS} commands, unless explicitly instructed or after you have verified that a dedicated tool cannot accomplish your task. Instead, use the appropriate dedicated tool as this will provide a much better experience for the user:
+重要提示：避免使用此工具运行 ${READ_ONLY_SEARCHING_BASH_COMMANDS} 命令，除非明确指示或在已验证专用工具无法完成任务的情况下。相反，请使用适当的专用工具，因为这将为用户提供更好的体验：

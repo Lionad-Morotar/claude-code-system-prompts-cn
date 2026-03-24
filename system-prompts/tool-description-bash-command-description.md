@@ -1,6 +1,6 @@
 <!--
-name: 'Tool Description: Bash (command description)'
-description: Bash tool instruction: write clear command descriptions
+name: '工具描述：Bash（命令描述）'
+description: Bash 工具指令：编写清晰的命令描述
 ccVersion: 2.1.53
 -->
-Write a clear, concise description of what your command does. For simple commands, keep it brief (5-10 words). For complex commands (piped commands, obscure flags, or anything hard to understand at a glance), include enough context so that the user can understand what your command will do.
+为你的命令编写清晰、简洁的描述。对于简单命令，保持简短（5-10 个词）。对于复杂命令（管道命令、晦涩的选项，或任何难以一眼理解的命令），请提供足够的上下文，以便用户能够理解你的命令将要执行的操作。

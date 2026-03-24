@@ -1,6 +1,6 @@
 <!--
-name: 'Tool Description: Bash (sandbox — response header)'
-description: Header for how to respond when seeing sandbox-caused failures
+name: '工具描述：Bash（沙盒 — 响应头）'
+description: 当检测到沙盒导致的失败时，如何响应的说明头
 ccVersion: 2.1.53
 -->
-When you see evidence of sandbox-caused failure:
+当你看到沙盒导致的失败证据时：

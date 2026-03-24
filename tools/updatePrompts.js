@@ -1,4 +1,4 @@
-import { readFileSync as readFileSyncOrig, writeFileSync as writeFileSyncOrig, readdirSync, unlinkSync, mkdirSync, existsSync } from 'fs';
+import { readFileSync, writeFileSync, readdirSync, unlinkSync, mkdirSync, existsSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -8,12 +8,12 @@ const ROOT_DIR = join(__dirname, '..');
 const SYSTEM_PROMPTS_DIR = join(ROOT_DIR, 'system-prompts');
 const README_PATH = join(ROOT_DIR, 'README.md');
 
-// Ensure system-prompts directory exists
+// 确保 system-prompts 目录存在
 if (!existsSync(SYSTEM_PROMPTS_DIR)) {
   mkdirSync(SYSTEM_PROMPTS_DIR, { recursive: true });
 }
 
-// Get API key from environment
+// 从环境变量获取 API 密钥
 const ANTHROPIC_API_KEY = process.env.ANTHROPIC_API_KEY;
 if (!ANTHROPIC_API_KEY) {
   console.error('Error: ANTHROPIC_API_KEY environment variable is required');
@@ -21,20 +21,8 @@ if (!ANTHROPIC_API_KEY) {
   process.exit(1);
 }
 
-const isWindows = process.platform === 'win32';
-
-const readFileSync = (file) => {
-  const content = readFileSyncOrig(file, 'utf-8');
-  return isWindows ? content.replace(/\r\n/g, "\n") : content;
-};
-
-const writeFileSync = (file, content) => {
-  const output = isWindows ? content.replace(/\n/g, "\r\n") : content;
-  writeFileSyncOrig(file, output);
-};
-
 /**
- * Count tokens using Anthropic's token counting API
+ * 使用 Anthropic 的 token 计数 API 统计 token 数量
  */
 async function countTokens(text) {
   const response = await fetch('https://api.anthropic.com/v1/messages/count_tokens', {
@@ -65,7 +53,7 @@ async function countTokens(text) {
 }
 
 /**
- * Fetch release date from npm for a specific version
+ * 从 npm 获取指定版本的发布日期
  */
 async function getNpmReleaseDate(version) {
   try {
@@ -80,14 +68,14 @@ async function getNpmReleaseDate(version) {
       console.warn(`Warning: No release date found for v${version}`);
       return null;
     }
-    // Parse the date and format it nicely
+    // 解析日期并格式化
     const date = new Date(timestamp);
     return date.toLocaleDateString('en-US', {
       month: 'long',
       day: 'numeric',
       year: 'numeric'
     }).replace(/(\d+)/, (match) => {
-      // Add ordinal suffix (1st, 2nd, 3rd, etc.)
+      // 添加序数后缀（1st, 2nd, 3rd 等）
       const n = parseInt(match);
       const s = ['th', 'st', 'nd', 'rd'];
       const v = n % 100;
@@ -100,7 +88,7 @@ async function getNpmReleaseDate(version) {
 }
 
 /**
- * Batch count tokens for multiple prompts with rate limiting
+ * 批量统计多个提示词的 token 数量，带速率限制
  */
 async function countTokensBatch(prompts, batchSize = 5, delayMs = 100) {
   const results = new Map();
@@ -122,7 +110,7 @@ async function countTokensBatch(prompts, batchSize = 5, delayMs = 100) {
       results.set(filename, tokens);
     });
 
-    // Rate limiting delay between batches
+    // 批次之间的速率限制延迟
     if (i + batchSize < prompts.length) {
       await new Promise(resolve => setTimeout(resolve, delayMs));
     }
@@ -132,14 +120,14 @@ async function countTokensBatch(prompts, batchSize = 5, delayMs = 100) {
 }
 
 /**
- * Convert prompt name to filename
- * Examples:
+ * 将提示词名称转换为文件名
+ * 示例：
  *   "Agent Prompt: Explore" → "agent-prompt-explore.md"
  *   "System Prompt: Main system prompt" → "system-prompt-main-system-prompt.md"
  *   "Tool Description: Bash" → "tool-description-bash.md"
  */
 function nameToFilename(name) {
-  // Determine prefix based on the name prefix
+  // 根据名称前缀确定前缀
   let prefix = '';
   let namePart = name;
 
@@ -160,19 +148,19 @@ function nameToFilename(name) {
     namePart = name.substring('Data: '.length);
   }
 
-  // Convert to lowercase and replace special chars
+  // 转换为小写并替换特殊字符
   const filename = namePart
     .toLowerCase()
-    .replace(/\s+/g, '-') // Spaces to hyphens
-    .replace(/[^a-z0-9_-]/g, '') // Remove any char not a-z, 0-9, _, or -
-    .replace(/-+/g, '-') // Collapse multiple hyphens
-    .replace(/^-|-$/g, ''); // Trim hyphens from start/end
+    .replace(/\s+/g, '-') // 空格转连字符
+    .replace(/[^a-z0-9_-]/g, '') // 移除非 a-z、0-9、_、- 的字符
+    .replace(/-+/g, '-') // 合并多个连字符
+    .replace(/^-|-$/g, ''); // 去除首尾连字符
 
   return prefix + filename + '.md';
 }
 
 /**
- * Reconstruct the full prompt content from pieces and identifiers
+ * 从片段和标识符重建完整的提示词内容
  */
 function reconstructPrompt(prompt) {
   if (prompt.pieces.length === 0) return '';
@@ -184,7 +172,7 @@ function reconstructPrompt(prompt) {
   for (let i = 0; i < prompt.pieces.length; i++) {
     result += prompt.pieces[i];
 
-    // Add variable name (pieces already contain ${ and } delimiters)
+    // 添加变量名（片段已包含 ${ 和 } 分隔符）
     if (i < prompt.pieces.length - 1 && identifierIndex < prompt.identifiers.length) {
       const identifierId = prompt.identifiers[identifierIndex].toString();
       const variableName = prompt.identifierMap[identifierId];
@@ -199,7 +187,7 @@ function reconstructPrompt(prompt) {
 }
 
 /**
- * Create markdown file content with HTML comment metadata
+ * 创建带 HTML 注释元数据的 Markdown 文件内容
  */
 function createMarkdownContent(prompt, reconstructedContent) {
   const variables = Object.values(prompt.identifierMap || {});
@@ -219,7 +207,7 @@ function createMarkdownContent(prompt, reconstructedContent) {
   content += '-->\n';
   content += reconstructedContent;
 
-  // Ensure file ends with newline
+  // 确保文件以换行符结尾
   if (!content.endsWith('\n')) {
     content += '\n';
   }
@@ -228,11 +216,11 @@ function createMarkdownContent(prompt, reconstructedContent) {
 }
 
 /**
- * Parse existing markdown file to extract metadata
+ * 解析现有的 Markdown 文件以提取元数据
  */
 function parseMarkdownFile(filepath) {
   try {
-    const content = readFileSync(filepath);
+    const content = readFileSync(filepath, 'utf-8');
     const commentMatch = content.match(/<!--\n([\s\S]*?)\n-->/);
     if (!commentMatch) return null;
 
@@ -251,12 +239,12 @@ function parseMarkdownFile(filepath) {
 }
 
 /**
- * Categorize prompts based on their name
+ * 根据名称对提示词进行分类
  */
 function categorizePrompt(name) {
   if (name.startsWith('Agent Prompt: ')) {
     const namePart = name.substring('Agent Prompt: '.length);
-    // Sub-categorize agent prompts
+    // 子分类智能体提示词
     if (['Explore', 'Plan mode (enhanced)', 'Task tool'].some(sub => namePart.startsWith(sub))) {
       return { category: 'Agent Prompts', subcategory: 'Sub-agents' };
     } else if (['Agent creation architect', 'CLAUDE.md creation', 'Status line setup'].some(sub => namePart.includes(sub))) {
@@ -271,7 +259,7 @@ function categorizePrompt(name) {
   } else if (name.startsWith('System Reminder: ')) {
     return { category: 'System Reminders', subcategory: null };
   } else if (name.startsWith('Tool Description: ')) {
-    // Check for "additional notes" subcategory
+    // 检查 "additional notes" 子类别
     if (name.includes('(') && name.includes(')')) {
       return { category: 'Builtin Tool Descriptions', subcategory: 'Additional notes for some Tool Descriptions' };
     }
@@ -284,7 +272,7 @@ function categorizePrompt(name) {
 }
 
 /**
- * Update or create README entry for a prompt
+ * 为提示词创建 README 条目
  */
 function createReadmeEntry(prompt, filename, tokens, isBold = false) {
   const link = isBold ? `[**${prompt.name}**]` : `[${prompt.name}]`;
@@ -296,82 +284,82 @@ function createReadmeEntry(prompt, filename, tokens, isBold = false) {
 }
 
 /**
- * Parse existing token counts from README
+ * 从 README 解析现有的 token 数量
  */
 function parseReadmeTokenCounts() {
   const tokenCounts = new Map();
   try {
-    const readme = readFileSync(README_PATH);
-    // Match patterns like: (./system-prompts/filename.md) (**123** tks)
+    const readme = readFileSync(README_PATH, 'utf-8');
+    // 匹配类似：(./system-prompts/filename.md) (**123** tks) 的模式
     const regex = /\(\.\/system-prompts\/([^)]+\.md)\)\s*\(\*\*(\d+)\*\*\s*tks\)/g;
     let match;
     while ((match = regex.exec(readme)) !== null) {
       tokenCounts.set(match[1], parseInt(match[2], 10));
     }
   } catch (err) {
-    // README doesn't exist yet, that's fine
+    // README 尚不存在，没关系
   }
   return tokenCounts;
 }
 
 /**
- * Main update function
+ * 主更新函数
  */
 async function updateFromJSON(jsonPath) {
   console.log(`Reading JSON from: ${jsonPath}`);
-  const jsonData = JSON.parse(readFileSync(jsonPath));
+  const jsonData = JSON.parse(readFileSync(jsonPath, 'utf-8'));
 
   console.log(`Version: ${jsonData.version}`);
   console.log(`Prompts count: ${jsonData.prompts.length}`);
 
-  // Count version files in the same directory as the input JSON
+  // 统计输入 JSON 同一目录中的版本文件数量
   const jsonDir = dirname(jsonPath);
   const versionFiles = readdirSync(jsonDir).filter(f => f.match(/^prompts-[\d.]+\.json$/));
   const versionCount = versionFiles.length;
 
-  // Get existing token counts from README
+  // 从 README 获取现有的 token 数量
   const existingTokenCounts = parseReadmeTokenCounts();
 
-  // Track all prompts by filename
+  // 按文件名跟踪所有提示词
   const promptsByFilename = new Map();
   const changedPrompts = new Set();
   const newPrompts = new Set();
   const promptsToCount = [];
   const unchangedPrompts = [];
 
-  // First pass: Process files and identify what needs token counting
+  // 第一遍：处理文件并确定需要统计 token 的内容
   for (const prompt of jsonData.prompts) {
     const filename = nameToFilename(prompt.name);
     const filepath = join(SYSTEM_PROMPTS_DIR, filename);
     const reconstructedContent = reconstructPrompt(prompt);
     const newMarkdownContent = createMarkdownContent(prompt, reconstructedContent);
 
-    // Check if file exists and compare
+    // 检查文件是否存在并进行比较
     const existingFile = parseMarkdownFile(filepath);
 
     if (existingFile) {
-      // Compare content
+      // 比较内容
       if (existingFile.fullContent.trim() !== newMarkdownContent.trim()) {
         console.log(`\x1b[33mChanged: ${filename}\x1b[0m`);
-        unlinkSync(filepath); // Delete old file
+        unlinkSync(filepath); // 删除旧文件
         writeFileSync(filepath, newMarkdownContent);
         changedPrompts.add(filename);
-        // Need to recount tokens for changed prompts
+        // 需要重新统计已更改提示词的 token
         promptsToCount.push({ filename, content: reconstructedContent, prompt });
       } else {
-        // Unchanged - use existing token count from README
+        // 未更改 - 使用 README 中的现有 token 数量
         unchangedPrompts.push({ filename, prompt });
       }
     } else {
       console.log(`\x1b[32mNew: ${filename}\x1b[0m`);
       writeFileSync(filepath, newMarkdownContent);
       newPrompts.add(filename);
-      // Need to count tokens for new prompts
+      // 需要统计新提示词的 token
       promptsToCount.push({ filename, content: reconstructedContent, prompt });
     }
   }
 
-  // Only count tokens for new/changed prompts
+  // 仅统计新增/已更改提示词的 token
   const tokenCounts = new Map();
   if (promptsToCount.length > 0) {
     console.log(`\x1b[34mCounting tokens for ${promptsToCount.length} new/changed prompts...\x1b[0m`);
@@ -379,19 +367,19 @@ async function updateFromJSON(jsonPath) {
     newCounts.forEach((tokens, filename) => tokenCounts.set(filename, tokens));
   }
 
-  // Store prompt info for README updates
+  // 存储用于 README 更新的提示词信息
   for (const { filename, prompt } of promptsToCount) {
     const tokens = tokenCounts.get(filename) || 0;
     promptsByFilename.set(filename, { prompt, tokens });
   }
 
-  // Use existing token counts for unchanged prompts
+  // 对未更改的提示词使用现有的 token 数量
   for (const { filename, prompt } of unchangedPrompts) {
     const tokens = existingTokenCounts.get(filename) || 0;
     promptsByFilename.set(filename, { prompt, tokens });
   }
 
-  // Find deleted prompts
+  // 查找已删除的提示词
   const allMdFiles = readdirSync(SYSTEM_PROMPTS_DIR).filter(f => f.endsWith('.md'));
   const deletedFiles = allMdFiles.filter(f => !promptsByFilename.has(f));
 
@@ -403,11 +391,11 @@ async function updateFromJSON(jsonPath) {
     });
   }
 
-  // Fetch npm release date
+  // 获取 npm 发布日期
   console.log('\x1b[34mFetching npm release date...\x1b[0m');
   const releaseDate = await getNpmReleaseDate(jsonData.version);
 
-  // Update README
+  // 更新 README
   console.log('\x1b[34mUpdating README.md...\x1b[0m');
   updateReadme(promptsByFilename, jsonData.version, releaseDate, versionCount);
 
@@ -418,24 +406,24 @@ async function updateFromJSON(jsonPath) {
 }
 
 /**
- * Update README.md with new prompt information
+ * 使用新的提示词信息更新 README.md
  */
 function updateReadme(promptsByFilename, version, releaseDate, versionCount) {
-  let readme = readFileSync(README_PATH);
+  let readme = readFileSync(README_PATH, 'utf-8');
   const lines = readme.split('\n');
 
-  // Update version in header with npm link and date
+  // 使用 npm 链接和日期更新标题中的版本
   const npmUrl = `https://www.npmjs.com/package/@anthropic-ai/claude-code/v/${version}`;
   const dateStr = releaseDate ? ` (${releaseDate})` : '';
 
-  // Find the intro line dynamically (it starts with "This repository contains")
+  // 动态查找介绍行（以 "This repository contains" 开头）
   const introLineIndex = lines.findIndex(line => line.startsWith('This repository contains'));
   if (introLineIndex !== -1) {
     lines[introLineIndex] = `This repository contains an up-to-date list of all Claude Code's various system prompts and their associated token counts as of **[Claude Code v${version}](${npmUrl})${dateStr}.**  It also contains a [**CHANGELOG.md**](./CHANGELOG.md) for the system prompts across ${versionCount} versions since v2.0.14.  From the team behind [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/)`;
   } else {
     console.warn('Warning: Could not find intro line starting with "This repository contains"');
   }
-  // Organize prompts by category
+  // 按类别组织提示词
   const categories = {
     'Agent Prompts': {
       'Sub-agents': [],
@@ -452,11 +440,11 @@ function updateReadme(promptsByFilename, version, releaseDate, versionCount) {
     'Data': { 'main': [] }
   };
 
-  // Categorize all prompts
+  // 对所有提示词进行分类
   for (const [filename, { prompt, tokens }] of promptsByFilename) {
     const { category, subcategory } = categorizePrompt(prompt.name);
 
-    // Special handling for bold main system prompt
+    // 对主系统提示词进行特殊加粗处理
     const isBold = prompt.name === 'System Prompt: Main system prompt';
     const entry = createReadmeEntry(prompt, filename, tokens, isBold);
 
@@ -474,7 +462,7 @@ function updateReadme(promptsByFilename, version, releaseDate, versionCount) {
     }
   }
 
-  // Sort entries alphabetically within each category
+  // 对每个类别中的条目按字母顺序排序
   for (const category of Object.values(categories)) {
     for (const subcategory of Object.values(category)) {
       if (Array.isArray(subcategory)) {
@@ -483,17 +471,17 @@ function updateReadme(promptsByFilename, version, releaseDate, versionCount) {
     }
   }
 
-  // Rebuild README sections
+  // 重建 README 章节
   const newLines = [];
   let i = 0;
 
-  // Copy everything up to "### Agent Prompts"
+  // 复制 "### Agent Prompts" 之前的所有内容
   while (i < lines.length && !lines[i].startsWith('### Agent Prompts')) {
     newLines.push(lines[i]);
     i++;
   }
 
-  // Agent Prompts section
+  // Agent Prompts 章节
   newLines.push('### Agent Prompts');
   newLines.push('');
   newLines.push('Sub-agents and utilities.');
@@ -515,17 +503,19 @@ function updateReadme(promptsByFilename, version, releaseDate, versionCount) {
   newLines.push(...categories['Agent Prompts']['Utilities']);
   newLines.push('');
 
-  // Data section (commented out if has entries)
+  // Data 章节（如果有条目则注释掉）
   if (categories['Data']['main'].length > 0) {
+    newLines.push('<!--');
     newLines.push('### Data');
     newLines.push('');
-    newLines.push('The content of various template files embedded in Claude Code.');
+    newLines.push('Misc large strings.');
     newLines.push('');
     newLines.push(...categories['Data']['main']);
+    newLines.push('-->');
     newLines.push('');
   }
 
-  // System Prompt section
+  // System Prompt 章节
   newLines.push('### System Prompt');
   newLines.push('');
   newLines.push('Parts of the main system prompt.');
@@ -533,15 +523,18 @@ function updateReadme(promptsByFilename, version, releaseDate, versionCount) {
   newLines.push(...categories['System Prompt']['main']);
   newLines.push('');
 
-  // System Reminders section
+  // System Reminders 章节
   newLines.push('### System Reminders');
   newLines.push('');
   newLines.push('Text for large system reminders.');
   newLines.push('');
+  newLines.push('> [!NOTE]');
+  newLines.push('> Note that we\'re planning to add a **system reminder creator/editor** to [tweakcc](https://github.com/Piebald-AI/tweakcc); :+1: [this issue](https://github.com/Piebald-AI/tweakcc/issues/113) if you\'re interested in that idea.');
+  newLines.push('');
   newLines.push(...categories['System Reminders']['main']);
   newLines.push('');
 
-  // Builtin Tool Descriptions section
+  // Builtin Tool Descriptions 章节
   newLines.push('### Builtin Tool Descriptions');
   newLines.push('');
   newLines.push(...categories['Builtin Tool Descriptions']['main']);
@@ -551,11 +544,11 @@ function updateReadme(promptsByFilename, version, releaseDate, versionCount) {
   newLines.push(...categories['Builtin Tool Descriptions']['Additional notes for some Tool Descriptions']);
   newLines.push('');
 
-  // Write updated README
+  // 写入更新后的 README
   writeFileSync(README_PATH, newLines.join('\n'));
 }
 
-// Main execution
+// 主执行入口
 const args = process.argv.slice(2);
 if (args.length === 0) {
   console.error('Usage: node updatePrompts.js <path-to-prompts.json>');

@@ -3,11 +3,11 @@ name: 'Data: Agent SDK patterns — TypeScript'
 description: TypeScript Agent SDK patterns including basic agents, hooks, subagents, and MCP integration
 ccVersion: 2.1.71
 -->
-# Agent SDK Patterns — TypeScript
+# Agent SDK 模式 — TypeScript
 
-## Basic Agent
+## 基础 Agent
 
-\`\`\`typescript
+```typescript
 import { query } from "@anthropic-ai/claude-agent-sdk";
 
 async function main() {
@@ -25,15 +25,15 @@ async function main() {
 }
 
 main();
-\`\`\`
+```
 
 ---
 
-## Hooks
+## 钩子 (Hooks)
 
-### After Tool Use Hook
+### 工具使用后钩子 (After Tool Use Hook)
 
-\`\`\`typescript
+```typescript
 import { query, HookCallback } from "@anthropic-ai/claude-agent-sdk";
 import { appendFileSync } from "fs";
 
@@ -41,7 +41,7 @@ const logFileChange: HookCallback = async (input) => {
   const filePath = (input as any).tool_input?.file_path ?? "unknown";
   appendFileSync(
     "./audit.log",
-    \`\${new Date().toISOString()}: modified \${filePath}\\n\`,
+    `${new Date().toISOString()}: modified ${filePath}\n`,
   );
   return {};
 };
@@ -58,13 +58,13 @@ for await (const message of query({
 })) {
   if ("result" in message) console.log(message.result);
 }
-\`\`\`
+```
 
 ---
 
-## Subagents
+## 子代理 (Subagents)
 
-\`\`\`typescript
+```typescript
 import { query } from "@anthropic-ai/claude-agent-sdk";
 
 for await (const message of query({
@@ -82,15 +82,15 @@ for await (const message of query({
 })) {
   if ("result" in message) console.log(message.result);
 }
-\`\`\`
+```
 
 ---
 
-## MCP Server Integration
+## MCP 服务器集成
 
-### Browser Automation (Playwright)
+### 浏览器自动化 (Playwright)
 
-\`\`\`typescript
+```typescript
 for await (const message of query({
   prompt: "Open example.com and describe what you see",
   options: {
@@ -101,18 +101,18 @@ for await (const message of query({
 })) {
   if ("result" in message) console.log(message.result);
 }
-\`\`\`
+```
 
 ---
 
-## Session Resumption
+## 会话恢复
 
-\`\`\`typescript
+```typescript
 import { query } from "@anthropic-ai/claude-agent-sdk";
 
 let sessionId: string | undefined;
 
-// First query: capture the session ID
+// 第一次查询：捕获会话 ID
 for await (const message of query({
   prompt: "Read the authentication module",
   options: { allowedTools: ["Read", "Glob"] },
@@ -122,30 +122,30 @@ for await (const message of query({
   }
 }
 
-// Resume with full context from the first query
+// 使用第一次查询的完整上下文恢复会话
 for await (const message of query({
   prompt: "Now find all places that call it",
   options: { resume: sessionId },
 })) {
   if ("result" in message) console.log(message.result);
 }
-\`\`\`
+```
 
 ---
 
-## Session History
+## 会话历史
 
-\`\`\`typescript
+```typescript
 import { listSessions, getSessionMessages } from "@anthropic-ai/claude-agent-sdk";
 
 async function main() {
-  // List past sessions
+  // 列出过去的会话
   const sessions = await listSessions();
   for (const session of sessions) {
-    console.log(\`Session \${session.sessionId} in \${session.cwd}\`);
+    console.log(`Session ${session.sessionId} in ${session.cwd}`);
   }
 
-  // Retrieve messages from the most recent session
+  // 从最近的会话中检索消息
   if (sessions.length > 0) {
     const messages = await getSessionMessages(sessions[0].sessionId, { limit: 50 });
     for (const msg of messages) {
@@ -155,27 +155,27 @@ async function main() {
 }
 
 main();
-\`\`\`
+```
 
 ---
 
-## Custom System Prompt
+## 自定义系统提示词
 
-\`\`\`typescript
+```typescript
 import { query } from "@anthropic-ai/claude-agent-sdk";
 
 for await (const message of query({
   prompt: "Review this code",
   options: {
     allowedTools: ["Read", "Glob", "Grep"],
-    systemPrompt: \`You are a senior code reviewer focused on:
+    systemPrompt: `You are a senior code reviewer focused on:
 1. Security vulnerabilities
 2. Performance issues
 3. Code maintainability
 
-Always provide specific line numbers and suggestions for improvement.\`,
+Always provide specific line numbers and suggestions for improvement.`,
   },
 })) {
   if ("result" in message) console.log(message.result);
 }
-\`\`\`
+```

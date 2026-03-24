@@ -5,81 +5,81 @@ ccVersion: 2.1.73
 -->
 # Agent SDK — Python
 
-The Claude Agent SDK provides a higher-level interface for building AI agents with built-in tools, safety features, and agentic capabilities.
+Claude Agent SDK 提供了一个更高级的接口，用于构建具有内置工具、安全功能和智能体能力的 AI 智能体。
 
-## Installation
+## 安装
 
-\`\`\`bash
+```bash
 pip install claude-agent-sdk
-\`\`\`
+```
 
 ---
 
-## Quick Start
+## 快速开始
 
-\`\`\`python
+```python
 import anyio
 from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage
 
 async def main():
     async for message in query(
-        prompt="Explain this codebase",
+        prompt="解释这个代码库",
         options=ClaudeAgentOptions(allowed_tools=["Read", "Glob", "Grep"])
     ):
         if isinstance(message, ResultMessage):
             print(message.result)
 
 anyio.run(main)
-\`\`\`
+```
 
 ---
 
-## Built-in Tools
+## 内置工具
 
-| Tool      | Description                          |
+| 工具      | 描述                          |
 | --------- | ------------------------------------ |
-| Read      | Read files in the workspace          |
-| Write     | Create new files                     |
-| Edit      | Make precise edits to existing files |
-| Bash      | Execute shell commands               |
-| Glob      | Find files by pattern                |
-| Grep      | Search files by content              |
-| WebSearch | Search the web for information       |
-| WebFetch        | Fetch and analyze web pages          |
-| AskUserQuestion | Ask user clarifying questions         |
-| Agent           | Spawn subagents                      |
+| Read      | 读取工作区中的文件          |
+| Write     | 创建新文件                     |
+| Edit      | 对现有文件进行精确编辑 |
+| Bash      | 执行 shell 命令               |
+| Glob      | 按模式查找文件                |
+| Grep      | 按内容搜索文件              |
+| WebSearch | 搜索网络信息       |
+| WebFetch        | 获取并分析网页          |
+| AskUserQuestion | 向用户询问澄清问题         |
+| Agent           | 生成子智能体                      |
 
 ---
 
-## Primary Interfaces
+## 主要接口
 
-### \`query()\` — Simple One-Shot Usage
+### `query()` — 简单的一次性使用
 
-The \`query()\` function is the simplest way to run an agent. It returns an async iterator of messages.
+`query()` 函数是运行智能体的最简单方式。它返回消息的异步迭代器。
 
-\`\`\`python
+```python
 from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage
 
 async for message in query(
-    prompt="Explain this codebase",
+    prompt="解释这个代码库",
     options=ClaudeAgentOptions(allowed_tools=["Read", "Glob", "Grep"])
 ):
     if isinstance(message, ResultMessage):
         print(message.result)
-\`\`\`
+```
 
-### \`ClaudeSDKClient\` — Full Control
+### `ClaudeSDKClient` — 完全控制
 
-\`ClaudeSDKClient\` provides full control over the agent lifecycle. Use it when you need custom tools, hooks, streaming, or the ability to interrupt execution.
+`ClaudeSDKClient` 提供对智能体生命周期的完全控制。当您需要自定义工具、钩子、流式传输或中断执行的能力时，请使用它。
 
-\`\`\`python
+```python
 import anyio
 from claude_agent_sdk import ClaudeSDKClient, ClaudeAgentOptions, AssistantMessage, TextBlock
 
 async def main():
     options = ClaudeAgentOptions(allowed_tools=["Read", "Glob", "Grep"])
     async with ClaudeSDKClient(options=options) as client:
-        await client.query("Explain this codebase")
+        await client.query("解释这个代码库")
         async for message in client.receive_response():
             if isinstance(message, AssistantMessage):
                 for block in message.content:
@@ -87,50 +87,50 @@ async def main():
                         print(block.text)
 
 anyio.run(main)
-\`\`\`
+```
 
-\`ClaudeSDKClient\` supports:
+`ClaudeSDKClient` 支持：
 
-- **Context manager** (\`async with\`) for automatic resource cleanup
-- **\`client.query(prompt)\`** to send a prompt to the agent
-- **\`receive_response()\`** for streaming messages until completion
-- **\`interrupt()\`** to stop agent execution mid-task
-- **Required for custom tools** (via SDK MCP servers)
+- **上下文管理器** (`async with`) 用于自动资源清理
+- **`client.query(prompt)`** 向智能体发送提示
+- **`receive_response()`** 用于流式传输消息直到完成
+- **`interrupt()`** 在任务中途停止智能体执行
+- **自定义工具必需**（通过 SDK MCP 服务器）
 
 ---
 
-## Permission System
+## 权限系统
 
-\`\`\`python
+```python
 from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage
 
 async for message in query(
-    prompt="Refactor the authentication module",
+    prompt="重构认证模块",
     options=ClaudeAgentOptions(
         allowed_tools=["Read", "Edit", "Write"],
-        permission_mode="acceptEdits"  # Auto-accept file edits
+        permission_mode="acceptEdits"  # 自动接受文件编辑
     )
 ):
     if isinstance(message, ResultMessage):
         print(message.result)
-\`\`\`
+```
 
-Permission modes:
+权限模式：
 
-- \`"default"\`: Prompt for dangerous operations
-- \`"plan"\`: Planning only, no execution
-- \`"acceptEdits"\`: Auto-accept file edits
-- \`"bypassPermissions"\`: Skip all prompts (use with caution)
+- `"default"`：危险操作前提示
+- `"plan"`：仅规划，不执行
+- `"acceptEdits"`：自动接受文件编辑
+- `"bypassPermissions"`：跳过所有提示（谨慎使用）
 
 ---
 
-## MCP (Model Context Protocol) Support
+## MCP（模型上下文协议）支持
 
-\`\`\`python
+```python
 from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage
 
 async for message in query(
-    prompt="Open example.com and describe what you see",
+    prompt="打开 example.com 并描述你看到的内容",
     options=ClaudeAgentOptions(
         mcp_servers={
             "playwright": {"command": "npx", "args": ["@playwright/mcp@latest"]}
@@ -139,24 +139,24 @@ async for message in query(
 ):
     if isinstance(message, ResultMessage):
         print(message.result)
-\`\`\`
+```
 
 ---
 
-## Hooks
+## 钩子
 
-Customize agent behavior with hooks using callback functions:
+使用回调函数自定义智能体行为：
 
-\`\`\`python
+```python
 from claude_agent_sdk import query, ClaudeAgentOptions, HookMatcher, ResultMessage
 
 async def log_file_change(input_data, tool_use_id, context):
     file_path = input_data.get('tool_input', {}).get('file_path', 'unknown')
-    print(f"Modified: {file_path}")
+    print(f"已修改: {file_path}")
     return {}
 
 async for message in query(
-    prompt="Refactor utils.py",
+    prompt="重构 utils.py",
     options=ClaudeAgentOptions(
         permission_mode="acceptEdits",
         hooks={
@@ -166,80 +166,80 @@ async for message in query(
 ):
     if isinstance(message, ResultMessage):
         print(message.result)
-\`\`\`
+```
 
-Hook callback inputs for tool-lifecycle events (\`PreToolUse\`, \`PostToolUse\`, \`PostToolUseFailure\`) include \`agent_id\` and \`agent_type\` fields, allowing hooks to identify which agent (main or subagent) triggered the tool call.
+工具生命周期事件（`PreToolUse`、`PostToolUse`、`PostToolUseFailure`）的钩子回调输入包含 `agent_id` 和 `agent_type` 字段，允许钩子识别哪个智能体（主智能体或子智能体）触发了工具调用。
 
-Available hook events: \`PreToolUse\`, \`PostToolUse\`, \`PostToolUseFailure\`, \`UserPromptSubmit\`, \`Stop\`, \`SubagentStop\`, \`PreCompact\`, \`Notification\`, \`SubagentStart\`, \`PermissionRequest\`
+可用的钩子事件：`PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`UserPromptSubmit`、`Stop`、`SubagentStop`、`PreCompact`、`Notification`、`SubagentStart`、`PermissionRequest`
 
 ---
 
-## Common Options
+## 常用选项
 
-\`query()\` takes a top-level \`prompt\` (string) and an \`options\` object (\`ClaudeAgentOptions\`):
+`query()` 接受顶级 `prompt`（字符串）和 `options` 对象（`ClaudeAgentOptions`）：
 
-\`\`\`python
+```python
 async for message in query(prompt="...", options=ClaudeAgentOptions(...)):
-\`\`\`
+```
 
-| Option                              | Type   | Description                                                                |
+| 选项                              | 类型   | 描述                                                                |
 | ----------------------------------- | ------ | -------------------------------------------------------------------------- |
-| \`cwd\`                               | string | Working directory for file operations                                      |
-| \`allowed_tools\`                     | list   | Tools the agent can use (e.g., \`["Read", "Edit", "Bash"]\`)                |
-| \`tools\`                             | list   | Built-in tools to make available (restricts the default set)               |
-| \`disallowed_tools\`                  | list   | Tools to explicitly disallow                                               |
-| \`permission_mode\`                   | string | How to handle permission prompts                                           |
-| \`mcp_servers\`                       | dict   | MCP servers to connect to                                                  |
-| \`hooks\`                             | dict   | Hooks for customizing behavior                                             |
-| \`system_prompt\`                     | string | Custom system prompt                                                       |
-| \`max_turns\`                         | int    | Maximum agent turns before stopping                                        |
-| \`max_budget_usd\`                    | float  | Maximum budget in USD for the query                                        |
-| \`model\`                             | string | Model ID (default: determined by CLI)                                      |
-| \`agents\`                            | dict   | Subagent definitions (\`dict[str, AgentDefinition]\`)                        |
-| \`output_format\`                     | dict   | Structured output schema                                                   |
-| \`thinking\`                          | dict   | Thinking/reasoning control                                                 |
-| \`betas\`                             | list   | Beta features to enable (e.g., \`["context-1m-2025-08-07"]\`)               |
-| \`setting_sources\`                   | list   | Settings to load (e.g., \`["project"]\`). Default: none (no CLAUDE.md files) |
-| \`env\`                               | dict   | Environment variables to set for the session                               |
+| `cwd`                               | string | 文件操作的工作目录                                      |
+| `allowed_tools`                     | list   | 智能体可以使用的工具（例如 `["Read", "Edit", "Bash"]`）                |
+| `tools`                             | list   | 可用的内置工具（限制默认集合）               |
+| `disallowed_tools`                  | list   | 明确禁止使用的工具                                               |
+| `permission_mode`                   | string | 如何处理权限提示                                           |
+| `mcp_servers`                       | dict   | 要连接的 MCP 服务器                                                  |
+| `hooks`                             | dict   | 用于自定义行为的钩子                                             |
+| `system_prompt`                     | string | 自定义系统提示                                                       |
+| `max_turns`                         | int    | 停止前的最大智能体轮次                                        |
+| `max_budget_usd`                    | float  | 查询的最大预算（美元）                                        |
+| `model`                             | string | 模型 ID（默认：由 CLI 确定）                                      |
+| `agents`                            | dict   | 子智能体定义（`dict[str, AgentDefinition]`）                        |
+| `output_format`                     | dict   | 结构化输出模式                                                   |
+| `thinking`                          | dict   | 思考/推理控制                                                 |
+| `betas`                             | list   | 要启用的 Beta 功能（例如 `["context-1m-2025-08-07"]`）               |
+| `setting_sources`                   | list   | 要加载的设置（例如 `["project"]`）。默认：无（无 CLAUDE.md 文件） |
+| `env`                               | dict   | 为会话设置的环境变量                               |
 
 ---
 
-## Message Types
+## 消息类型
 
-\`\`\`python
+```python
 from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage, SystemMessage
 
 async for message in query(
-    prompt="Find TODO comments",
+    prompt="查找 TODO 注释",
     options=ClaudeAgentOptions(allowed_tools=["Read", "Glob", "Grep"])
 ):
     if isinstance(message, ResultMessage):
         print(message.result)
-        print(f"Stop reason: {message.stop_reason}")  # e.g., "end_turn", "max_turns"
+        print(f"停止原因: {message.stop_reason}")  # 例如 "end_turn", "max_turns"
     elif isinstance(message, SystemMessage) and message.subtype == "init":
-        session_id = message.data.get("session_id")  # Capture for resuming later
-\`\`\`
+        session_id = message.data.get("session_id")  # 捕获以供稍后恢复
+```
 
-Typed task message subclasses are available for better type safety when handling subagent task events:
-- \`TaskStartedMessage\` — emitted when a subagent task is registered
-- \`TaskProgressMessage\` — real-time progress updates with cumulative usage metrics
-- \`TaskNotificationMessage\` — task completion notifications
+处理子智能体任务事件时，可使用类型化的任务消息子类以获得更好的类型安全性：
+- `TaskStartedMessage` — 子智能体任务注册时发出
+- `TaskProgressMessage` — 实时进度更新，包含累积使用指标
+- `TaskNotificationMessage` — 任务完成通知
 
 ---
 
-## Subagents
+## 子智能体
 
-\`\`\`python
+```python
 from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition, ResultMessage
 
 async for message in query(
-    prompt="Use the code-reviewer agent to review this codebase",
+    prompt="使用代码审查智能体审查此代码库",
     options=ClaudeAgentOptions(
         allowed_tools=["Read", "Glob", "Grep", "Agent"],
         agents={
             "code-reviewer": AgentDefinition(
-                description="Expert code reviewer for quality and security reviews.",
-                prompt="Analyze code quality and suggest improvements.",
+                description="质量和安全审查的专家代码审查员。",
+                prompt="分析代码质量并提出改进建议。",
                 tools=["Read", "Glob", "Grep"]
             )
         }
@@ -247,13 +247,13 @@ async for message in query(
 ):
     if isinstance(message, ResultMessage):
         print(message.result)
-\`\`\`
+```
 
 ---
 
-## Error Handling
+## 错误处理
 
-\`\`\`python
+```python
 from claude_agent_sdk import query, ClaudeAgentOptions, CLINotFoundError, CLIConnectionError, ResultMessage
 
 try:
@@ -264,55 +264,55 @@ try:
         if isinstance(message, ResultMessage):
             print(message.result)
 except CLINotFoundError:
-    print("Claude Code CLI not found. Install with: pip install claude-agent-sdk")
+    print("未找到 Claude Code CLI。使用以下命令安装：pip install claude-agent-sdk")
 except CLIConnectionError as e:
-    print(f"Connection error: {e}")
-\`\`\`
+    print(f"连接错误: {e}")
+```
 
 ---
 
-## Session History
+## 会话历史
 
-Retrieve past session data with top-level functions:
+使用顶级函数检索过去的会话数据：
 
-\`\`\`python
+```python
 from claude_agent_sdk import list_sessions, get_session_messages
 
-# List all past sessions (sync function — no await)
+# 列出所有过去的会话（同步函数 — 无需 await）
 sessions = list_sessions()
 for session in sessions:
     print(f"{session.session_id}: {session.cwd}")
 
-# Get messages from a specific session (sync function — no await)
+# 获取特定会话的消息（同步函数 — 无需 await）
 messages = get_session_messages(session_id="...")
 for msg in messages:
     print(msg)
-\`\`\`
+```
 
 ---
 
-## MCP Server Management
+## MCP 服务器管理
 
-Manage MCP servers at runtime using \`ClaudeSDKClient\`:
+使用 `ClaudeSDKClient` 在运行时管理 MCP 服务器：
 
-\`\`\`python
+```python
 async with ClaudeSDKClient(options=options) as client:
-    # Reconnect a disconnected MCP server
+    # 重新连接已断开的 MCP 服务器
     await client.reconnect_mcp_server("my-server")
 
-    # Toggle an MCP server on/off
+    # 切换 MCP 服务器的开/关状态
     await client.toggle_mcp_server("my-server", enabled=False)
 
-    # Get status of all MCP servers
-    status = await client.get_mcp_status()  # returns McpStatusResponse
-\`\`\`
+    # 获取所有 MCP 服务器的状态
+    status = await client.get_mcp_status()  # 返回 McpStatusResponse
+```
 
 ---
 
-## Best Practices
+## 最佳实践
 
-1. **Always specify allowed_tools** — Explicitly list which tools the agent can use
-2. **Set working directory** — Always specify \`cwd\` for file operations
-3. **Use appropriate permission modes** — Start with \`"default"\` and only escalate when needed
-4. **Handle all message types** — Check for \`ResultMessage\` to get agent output
-5. **Limit max_turns** — Prevent runaway agents with reasonable limits
+1. **始终指定 allowed_tools** — 明确列出智能体可以使用的工具
+2. **设置工作目录** — 始终为文件操作指定 `cwd`
+3. **使用适当的权限模式** — 从 `"default"` 开始，仅在需要时升级
+4. **处理所有消息类型** — 检查 `ResultMessage` 以获取智能体输出
+5. **限制 max_turns** — 使用合理的限制防止智能体失控

@@ -6,4 +6,4 @@ variables:
   - ATTACHMENT_OBJECT
   - READ_TOOL_OBJECT
 -->
-Note: ${ATTACHMENT_OBJECT.filename} was read before the last conversation was summarized, but the contents are too large to include. Use ${READ_TOOL_OBJECT.name} tool if you need to access it.
+注意：${ATTACHMENT_OBJECT.filename} 在最后一次对话摘要之前已读取，但内容太大无法包含。如果需要访问它，请使用 ${READ_TOOL_OBJECT.name} 工具。

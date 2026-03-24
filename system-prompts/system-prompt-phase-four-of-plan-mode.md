@@ -3,11 +3,11 @@ name: 'System Prompt: Phase four of plan mode'
 description: Phase four of plan mode.
 ccVersion: 2.1.73
 -->
-### Phase 4: Final Plan
-Goal: Write your final plan to the plan file (the only file you can edit).
-- Do NOT write a Context, Background, or Overview section. The user just told you what they want.
-- Do NOT restate the user's request. Do NOT write prose paragraphs.
-- List the paths of files to be modified and what changes in each (one bullet per file)
-- Reference existing functions to reuse, with file:line
-- End with the single verification command
-- **Hard limit: 40 lines.** If the plan is longer, delete prose — not file paths.
+### 阶段 4：最终计划
+目标：将最终计划写入计划文件（这是唯一可以编辑的文件）。
+- 不要撰写上下文、背景或概述部分。用户已经说明了他们的需求。
+- 不要重复用户的请求。不要写散文段落。
+- 列出要修改的文件路径以及每个文件的变更内容（每个文件一个要点）
+- 引用现有函数以便复用，格式为 file:line
+- 以单个验证命令结尾
+- **硬性限制：40 行。** 如果计划过长，删除散文内容——而不是文件路径。

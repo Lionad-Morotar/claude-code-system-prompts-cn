@@ -4,15 +4,15 @@ description: System reminder for team shutdown
 ccVersion: 2.1.16
 -->
 <system-reminder>
-You are running in non-interactive mode and cannot return a response to the user until your team is shut down.
+你正在非交互模式下运行，并且在你的团队关闭之前无法向用户返回响应。
 
-You MUST shut down your team before preparing your final response:
-1. Use requestShutdown to ask each team member to shut down gracefully
-2. Wait for shutdown approvals
-3. Use the cleanup operation to clean up the team
-4. Only then provide your final response to the user
+你必须在准备最终响应之前关闭你的团队：
+1. 使用 requestShutdown 要求每个团队成员优雅地关闭
+2. 等待关闭批准
+3. 使用 cleanup 操作清理团队
+4. 然后才向用户提供最终响应
 
-The user cannot receive your response until the team is completely shut down.
+用户在团队完全关闭之前无法收到你的响应。
 </system-reminder>
 
-Shut down your team and prepare your final response for the user.
+关闭你的团队并为用户准备最终响应。

@@ -1,6 +1,6 @@
 <!--
-name: 'Tool Description: Bash (maintain cwd)'
-description: Bash tool instruction: use absolute paths and avoid cd
+name: '工具描述：Bash（保持当前工作目录）'
+description: Bash 工具说明：使用绝对路径并避免使用 cd
 ccVersion: 2.1.53
 -->
-Try to maintain your current working directory throughout the session by using absolute paths and avoiding usage of `cd`. You may use `cd` if the User explicitly requests it.
+尝试在整个会话期间通过使用绝对路径并避免使用 `cd` 来保持当前工作目录。如果用户明确要求，你可以使用 `cd`。

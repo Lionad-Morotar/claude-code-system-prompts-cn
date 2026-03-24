@@ -3,26 +3,26 @@ name: 'Tool Description: ExitPlanMode'
 description: Description for the ExitPlanMode tool, which presents a plan dialog for the user to approve
 ccVersion: 2.1.14
 -->
-Use this tool when you are in plan mode and have finished writing your plan to the plan file and are ready for user approval.
+当你处于计划模式并且已完成将计划写入计划文件并准备好用户批准时，请使用此工具。
 
-## How This Tool Works
-- You should have already written your plan to the plan file specified in the plan mode system message
-- This tool does NOT take the plan content as a parameter - it will read the plan from the file you wrote
-- This tool simply signals that you're done planning and ready for the user to review and approve
-- The user will see the contents of your plan file when they review it
+## 此工具的工作方式
+- 你应该已经将计划写入到计划模式系统消息中指定的计划文件中
+- 此工具不将计划内容作为参数 - 它将从你编写的文件中读取计划
+- 此工具只是表示你已完成计划并准备好让用户审查和批准
+- 用户在审查时将看到你的计划文件的内容
 
-## When to Use This Tool
-IMPORTANT: Only use this tool when the task requires planning the implementation steps of a task that requires writing code. For research tasks where you're gathering information, searching files, reading files or in general trying to understand the codebase - do NOT use this tool.
+## 何时使用此工具
+重要：仅当任务需要计划需要编写代码的任务的实现步骤时，才使用此工具。对于你正在收集信息、搜索文件、读取文件或通常试图理解代码库的研究任务 - 不要使用此工具。
 
-## Before Using This Tool
-Ensure your plan is complete and unambiguous:
-- If you have unresolved questions about requirements or approach, use AskUserQuestion first (in earlier phases)
-- Once your plan is finalized, use THIS tool to request approval
+## 使用此工具之前
+确保你的计划完整且无歧义：
+- 如果你对要求或方法有未解决的问题，请先使用 AskUserQuestion（在早期阶段）
+- 一旦你的计划最终确定，使用此工具请求批准
 
-**Important:** Do NOT use AskUserQuestion to ask "Is this plan okay?" or "Should I proceed?" - that's exactly what THIS tool does. ExitPlanMode inherently requests user approval of your plan.
+**重要：**不要使用 AskUserQuestion 来问 "这个计划可以吗？" 或 "我应该继续吗？" - 这正是此工具所做的。ExitPlanMode 本质上请求用户批准你的计划。
 
-## Examples
+## 示例
 
-1. Initial task: "Search for and understand the implementation of vim mode in the codebase" - Do not use the exit plan mode tool because you are not planning the implementation steps of a task.
-2. Initial task: "Help me implement yank mode for vim" - Use the exit plan mode tool after you have finished planning the implementation steps of the task.
-3. Initial task: "Add a new feature to handle user authentication" - If unsure about auth method (OAuth, JWT, etc.), use AskUserQuestion first, then use exit plan mode tool after clarifying the approach.
+1. 初始任务："搜索并理解代码库中 vim 模式的实现" - 不要使用退出计划模式工具，因为你不是在计划任务的实施步骤。
+2. 初始任务："帮助我为 vim 实现复制模式" - 在你完成计划任务的实施步骤后，使用退出计划模式工具。
+3. 初始任务："添加一个处理用户身份验证的新功能" - 如果不确定身份验证方法（OAuth、JWT 等），请先使用 AskUserQuestion，然后在阐明方法后使用退出计划模式工具。

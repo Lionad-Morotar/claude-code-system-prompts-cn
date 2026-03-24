@@ -3,11 +3,11 @@ name: 'Data: Agent SDK patterns — Python'
 description: Python Agent SDK patterns including custom tools, hooks, subagents, MCP integration, and session resumption
 ccVersion: 2.1.73
 -->
-# Agent SDK Patterns — Python
+# Agent SDK 模式 — Python
 
-## Basic Agent
+## 基础 Agent
 
-\`\`\`python
+```python
 import anyio
 from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage
 
@@ -23,15 +23,15 @@ async def main():
             print(message.result)
 
 anyio.run(main)
-\`\`\`
+```
 
 ---
 
-## Custom Tools
+## 自定义工具
 
-Custom tools require an MCP server. Use \`ClaudeSDKClient\` for full control (custom SDK MCP tools require \`ClaudeSDKClient\` — \`query()\` only supports external stdio/http MCP servers).
+自定义工具需要 MCP 服务器。使用 `ClaudeSDKClient` 以获得完全控制（自定义 SDK MCP 工具需要 `ClaudeSDKClient` — `query()` 仅支持外部 stdio/http MCP 服务器）。
 
-\`\`\`python
+```python
 import anyio
 from claude_agent_sdk import (
     tool,
@@ -60,17 +60,17 @@ async def main():
                         print(block.text)
 
 anyio.run(main)
-\`\`\`
+```
 
 ---
 
-## Hooks
+## 钩子 (Hooks)
 
-### After Tool Use Hook
+### 工具使用后钩子
 
-Log file changes after any edit:
+在任何编辑后记录文件变更：
 
-\`\`\`python
+```python
 import anyio
 from datetime import datetime
 from claude_agent_sdk import query, ClaudeAgentOptions, HookMatcher, ResultMessage
@@ -78,7 +78,7 @@ from claude_agent_sdk import query, ClaudeAgentOptions, HookMatcher, ResultMessa
 async def log_file_change(input_data, tool_use_id, context):
     file_path = input_data.get('tool_input', {}).get('file_path', 'unknown')
     with open('./audit.log', 'a') as f:
-        f.write(f"{datetime.now()}: modified {file_path}\\n")
+        f.write(f"{datetime.now()}: modified {file_path}\n")
     return {}
 
 async def main():
@@ -96,13 +96,13 @@ async def main():
             print(message.result)
 
 anyio.run(main)
-\`\`\`
+```
 
 ---
 
-## Subagents
+## 子代理 (Subagents)
 
-\`\`\`python
+```python
 import anyio
 from claude_agent_sdk import query, ClaudeAgentOptions, AgentDefinition, ResultMessage
 
@@ -124,15 +124,15 @@ async def main():
             print(message.result)
 
 anyio.run(main)
-\`\`\`
+```
 
 ---
 
-## MCP Server Integration
+## MCP 服务器集成
 
-### Browser Automation (Playwright)
+### 浏览器自动化 (Playwright)
 
-\`\`\`python
+```python
 import anyio
 from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage
 
@@ -149,11 +149,11 @@ async def main():
             print(message.result)
 
 anyio.run(main)
-\`\`\`
+```
 
-### Database Access (PostgreSQL)
+### 数据库访问 (PostgreSQL)
 
-\`\`\`python
+```python
 import os
 import anyio
 from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage
@@ -175,28 +175,28 @@ async def main():
             print(message.result)
 
 anyio.run(main)
-\`\`\`
+```
 
 ---
 
-## Permission Modes
+## 权限模式
 
-\`\`\`python
+```python
 import anyio
 from claude_agent_sdk import query, ClaudeAgentOptions
 
 async def main():
-    # Default: prompt for dangerous operations
+    # 默认：对危险操作进行提示
     async for message in query(
         prompt="Delete all test files",
         options=ClaudeAgentOptions(
             allowed_tools=["Bash"],
-            permission_mode="default"  # Will prompt before deleting
+            permission_mode="default"  # 删除前会进行提示
         )
     ):
         pass
 
-    # Plan: agent creates a plan before making changes
+    # 计划模式：Agent 在进行更改前创建计划
     async for message in query(
         prompt="Refactor the auth system",
         options=ClaudeAgentOptions(
@@ -206,7 +206,7 @@ async def main():
     ):
         pass
 
-    # Accept edits: auto-accept file edits
+    # 接受编辑：自动接受文件编辑
     async for message in query(
         prompt="Refactor this module",
         options=ClaudeAgentOptions(
@@ -216,7 +216,7 @@ async def main():
     ):
         pass
 
-    # Bypass: skip all prompts (use with caution)
+    # 绕过：跳过所有提示（谨慎使用）
     async for message in query(
         prompt="Set up the development environment",
         options=ClaudeAgentOptions(
@@ -227,13 +227,13 @@ async def main():
         pass
 
 anyio.run(main)
-\`\`\`
+```
 
 ---
 
-## Error Recovery
+## 错误恢复
 
-\`\`\`python
+```python
 import anyio
 from claude_agent_sdk import (
     query,
@@ -263,20 +263,20 @@ async def run_with_recovery():
         print(f"Process error: {e}")
 
 anyio.run(run_with_recovery)
-\`\`\`
+```
 
 ---
 
-## Session Resumption
+## 会话恢复
 
-\`\`\`python
+```python
 import anyio
 from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage, SystemMessage
 
 async def main():
     session_id = None
 
-    # First query: capture the session ID
+    # 第一次查询：捕获会话 ID
     async for message in query(
         prompt="Read the authentication module",
         options=ClaudeAgentOptions(allowed_tools=["Read", "Glob"])
@@ -284,41 +284,41 @@ async def main():
         if isinstance(message, SystemMessage) and message.subtype == "init":
             session_id = message.data.get("session_id")
 
-    # Resume with full context from the first query
+    # 使用第一次查询的完整上下文恢复
     async for message in query(
-        prompt="Now find all places that call it",  # "it" = auth module
+        prompt="Now find all places that call it",  # "it" = 认证模块
         options=ClaudeAgentOptions(resume=session_id)
     ):
         if isinstance(message, ResultMessage):
             print(message.result)
 
 anyio.run(main)
-\`\`\`
+```
 
 ---
 
-## Session History
+## 会话历史
 
-\`\`\`python
+```python
 from claude_agent_sdk import list_sessions, get_session_messages
 
-# List past sessions (sync function — no await)
+# 列出过去的会话（同步函数 — 无需 await）
 sessions = list_sessions()
 for session in sessions:
     print(f"Session {session.session_id} in {session.cwd}")
 
-# Retrieve messages from the most recent session (sync function — no await)
+# 从最近的会话中检索消息（同步函数 — 无需 await）
 if sessions:
     messages = get_session_messages(session_id=sessions[0].session_id)
     for msg in messages:
         print(msg)
-\`\`\`
+```
 
 ---
 
-## Custom System Prompt
+## 自定义系统提示词
 
-\`\`\`python
+```python
 import anyio
 from claude_agent_sdk import query, ClaudeAgentOptions, ResultMessage
 
@@ -339,4 +339,4 @@ Always provide specific line numbers and suggestions for improvement."""
             print(message.result)
 
 anyio.run(main)
-\`\`\`
+```

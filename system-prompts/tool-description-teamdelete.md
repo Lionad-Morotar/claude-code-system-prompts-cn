@@ -1,18 +1,18 @@
 <!--
 name: 'Tool Description: TeamDelete'
-description: Tool description for the TeamDelete tool
+description: TeamDelete 工具的描述
 ccVersion: 2.1.33
 -->
 
 # TeamDelete
 
-Remove team and task directories when the swarm work is complete.
+在群体工作完成后移除团队和任务目录。
 
-This operation:
-- Removes the team directory (\`~/.claude/teams/{team-name}/\`)
-- Removes the task directory (\`~/.claude/tasks/{team-name}/\`)
-- Clears team context from the current session
+此操作将：
+- 移除团队目录（`~/.claude/teams/{team-name}/`）
+- 移除任务目录（`~/.claude/tasks/{team-name}/`）
+- 清除当前会话中的团队上下文
 
-**IMPORTANT**: TeamDelete will fail if the team still has active members. Gracefully terminate teammates first, then call TeamDelete after all teammates have shut down.
+**重要提示**：如果团队仍有活跃成员，TeamDelete 将会失败。请先优雅地终止队友，然后在所有队友关闭后调用 TeamDelete。
 
-Use this when all teammates have finished their work and you want to clean up the team resources. The team name is automatically determined from the current session's team context.
+当所有队友完成工作且你希望清理团队资源时使用此工具。团队名称会自动从当前会话的团队上下文中确定。

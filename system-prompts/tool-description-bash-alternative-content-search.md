@@ -5,4 +5,4 @@ ccVersion: 2.1.53
 variables:
   - GREP_TOOL_NAME
 -->
-Content search: Use ${GREP_TOOL_NAME} (NOT grep or rg)
+内容搜索：使用 ${GREP_TOOL_NAME}（而非 grep 或 rg）

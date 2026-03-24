@@ -6,85 +6,85 @@ ccVersion: 2.1.75
 
 # SendMessageTool
 
-Send messages to agent teammates and handle protocol requests/responses in a team.
+向智能体队友发送消息，并在团队中处理协议请求/响应。
 
 ## Schema
 
-Every call has three fields:
+每次调用包含三个字段：
 
-- **to**: The recipient address (string, required)
-- **message**: The message content — either a plain string or a structured protocol object (required)
-- **summary**: A 5-10 word preview shown in the UI
+- **to**：接收者地址（字符串，必填）
+- **message**：消息内容——可以是纯文本字符串或结构化协议对象（必填）
+- **summary**：在 UI 中显示的 5-10 字预览
 
-## Addressing (\`to\`)
+## 地址（`to`）
 
-There is one team per session. Addressing is by member name:
+每个会话有一个团队。通过成员名称进行寻址：
 
-| Address | Meaning |
+| 地址 | 含义 |
 |---------|---------|
-| \`"researcher"\` | Direct message to the teammate named "researcher" |
-| \`"*"\` | Broadcast to all teammates (except yourself) |
+| `"researcher"` | 向名为 "researcher" 的队友发送私信 |
+| `"*"` | 向所有队友广播（除自己外） |
 
-Structured protocol messages (shutdown, plan approval) cannot be broadcast — they require a specific recipient name.
+结构化协议消息（关闭、计划审批）不能广播——它们需要特定的接收者名称。
 
-## Plain Text Messages
+## 纯文本消息
 
-Send a message to a **single specific teammate**:
+向**单个特定队友**发送消息：
 
-\`\`\`json
+```json
 {
   "to": "researcher",
-  "message": "Start working on task #1",
-  "summary": "Assign task #1 to researcher"
+  "message": "开始处理任务 #1",
+  "summary": "分配任务 #1 给研究员"
 }
-\`\`\`
+```
 
-**IMPORTANT for teammates**: Your plain text output is NOT visible to the team lead or other teammates. To communicate with anyone on your team, you **MUST** use this tool. Just typing a response or acknowledgment in text is not enough.
+**队友须知**：你的纯文本输出对团队领导或其他队友不可见。要与团队中的任何人沟通，你**必须**使用此工具。仅在文本中输入响应或确认是不够的。
 
-## Broadcast to All Teammates (USE SPARINGLY)
+## 向所有队友广播（谨慎使用）
 
-Send the **same message to everyone** on the team at once:
+一次性向团队中的**所有人**发送相同消息：
 
-\`\`\`json
+```json
 {
   "to": "*",
-  "message": "Critical blocking issue found — stop all work",
-  "summary": "Critical blocking issue found"
+  "message": "发现严重阻塞问题——停止所有工作",
+  "summary": "发现严重阻塞问题"
 }
-\`\`\`
+```
 
-**WARNING: Broadcasting is expensive.** Each broadcast sends a separate message to every teammate. Costs scale linearly with team size.
+**警告：广播代价高昂。** 每次广播都会向每位队友发送单独消息。成本随团队规模线性增长。
 
-**CRITICAL: Use broadcast only when absolutely necessary.** Valid use cases:
-- Critical issues requiring immediate team-wide attention
-- Major announcements that genuinely affect every teammate equally
+**重要：仅在绝对必要时使用广播。** 有效用例：
+- 需要立即引起团队全员注意的关键问题
+- 真正平等影响每位队友的重大公告
 
-**Default to direct messages.** Use a specific \`to\` name for responding to one teammate, normal back-and-forth, or anything that doesn't require everyone's attention.
+**默认使用私信。** 使用特定的 `to` 名称来回复某位队友、进行正常来回沟通，或任何不需要所有人关注的事项。
 
-## Structured Protocol Messages
+## 结构化协议消息
 
-### Shutdown Request
+### 关闭请求
 
-Ask a teammate to gracefully shut down:
+请求队友优雅地关闭：
 
-\`\`\`json
+```json
 {
   "to": "researcher",
   "message": {
     "type": "shutdown_request",
-    "reason": "Task complete, wrapping up the session"
+    "reason": "任务完成，正在结束会话"
   }
 }
-\`\`\`
+```
 
-The teammate will receive a shutdown request and can either approve (exit) or reject (continue working).
+队友将收到关闭请求，可以选择批准（退出）或拒绝（继续工作）。
 
-### Shutdown Response
+### 关闭响应
 
-When you receive a shutdown request as a JSON message with \`type: "shutdown_request"\`, you **MUST** respond to approve or reject it. Do NOT just acknowledge in text — call this tool.
+当你收到带有 `type: "shutdown_request"` 的 JSON 消息时，你**必须**响应以批准或拒绝。不要仅在文本中确认——调用此工具。
 
-**Approve:**
-\`\`\`json
+**批准：**
+```json
 {
   "to": "team-lead",
   "message": {
@@ -93,29 +93,29 @@ When you receive a shutdown request as a JSON message with \`type: "shutdown_req
     "approve": true
   }
 }
-\`\`\`
+```
 
-Extract \`requestId\` from the incoming JSON and pass it as \`request_id\`. This sends confirmation to the leader and terminates your process.
+从传入的 JSON 中提取 `requestId` 并将其作为 `request_id` 传递。这将向领导发送确认并终止你的进程。
 
-**Reject:**
-\`\`\`json
+**拒绝：**
+```json
 {
   "to": "team-lead",
   "message": {
     "type": "shutdown_response",
     "request_id": "abc-123",
     "approve": false,
-    "reason": "Still working on task #3, need 5 more minutes"
+    "reason": "仍在处理任务 #3，还需要 5 分钟"
   }
 }
-\`\`\`
+```
 
-### Plan Approval Response
+### 计划审批响应
 
-When a teammate with \`plan_mode_required\` calls ExitPlanMode, they send you a plan approval request as a JSON message with \`type: "plan_approval_request"\`.
+当带有 `plan_mode_required` 的队友调用 ExitPlanMode 时，他们会向你发送带有 `type: "plan_approval_request"` 的计划审批请求 JSON 消息。
 
-**Approve:**
-\`\`\`json
+**批准：**
+```json
 {
   "to": "researcher",
   "message": {
@@ -124,28 +124,28 @@ When a teammate with \`plan_mode_required\` calls ExitPlanMode, they send you a 
     "approve": true
   }
 }
-\`\`\`
+```
 
-After approval, the teammate will automatically exit plan mode and can proceed with implementation.
+批准后，队友将自动退出计划模式并可以继续实施。
 
-**Reject:**
-\`\`\`json
+**拒绝：**
+```json
 {
   "to": "researcher",
   "message": {
     "type": "plan_approval_response",
     "request_id": "abc-123",
     "approve": false,
-    "feedback": "Please add error handling for the API calls"
+    "feedback": "请为 API 调用添加错误处理"
   }
 }
-\`\`\`
+```
 
-The teammate will receive the rejection with your feedback and can revise their plan.
+队友将收到带有你反馈的拒绝信息，并可以修改他们的计划。
 
-## Important Notes
+## 重要说明
 
-- Messages from teammates are automatically delivered to you. You do NOT need to manually check your inbox.
-- When reporting on teammate messages, you do NOT need to quote the original message — it's already rendered to the user.
-- **IMPORTANT**: Always refer to teammates by their NAME (e.g., "team-lead", "researcher"), never by UUID.
-- Do NOT send structured JSON status messages. Use TaskUpdate to mark tasks completed and the system will automatically send idle notifications when you stop.
+- 来自队友的消息会自动发送给你。你不需要手动检查收件箱。
+- 报告队友消息时，你不需要引用原始消息——它已经呈现给用户。
+- **重要**：始终通过 NAME（例如 "team-lead"、"researcher"）引用队友，而不是通过 UUID。
+- 不要发送结构化 JSON 状态消息。使用 TaskUpdate 标记任务完成，系统会在你停止时自动发送空闲通知。

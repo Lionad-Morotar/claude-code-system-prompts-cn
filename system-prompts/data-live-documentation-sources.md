@@ -3,124 +3,124 @@ name: 'Data: Live documentation sources'
 description: WebFetch URLs for fetching current Claude API and Agent SDK documentation from official sources
 ccVersion: 2.1.63
 -->
-# Live Documentation Sources
+# 实时文档源
 
-This file contains WebFetch URLs for fetching current information from platform.claude.com and Agent SDK repositories. Use these when users need the latest data that may have changed since the cached content was last updated.
+本文件包含用于从 platform.claude.com 和 Agent SDK 仓库获取最新信息的 WebFetch URL。当用户需要获取自缓存内容上次更新以来可能已更改的最新数据时，请使用这些 URL。
 
-## When to Use WebFetch
+## 何时使用 WebFetch
 
-- User explicitly asks for "latest" or "current" information
-- Cached data seems incorrect
-- User asks about features not covered in cached content
-- User needs specific API details or examples
+- 用户明确要求获取"最新"或"当前"信息
+- 缓存数据似乎不正确
+- 用户询问缓存内容未涵盖的功能
+- 用户需要特定的 API 详情或示例
 
-## Claude API Documentation URLs
+## Claude API 文档 URL
 
-### Models & Pricing
+### 模型与定价
 
-| Topic           | URL                                                                   | Extraction Prompt                                                               |
+| 主题           | URL                                                                   | 提取提示                                                               |
 | --------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| Models Overview | \`https://platform.claude.com/docs/en/about-claude/models/overview.md\` | "Extract current model IDs, context windows, and pricing for all Claude models" |
-| Pricing         | \`https://platform.claude.com/docs/en/pricing.md\`                      | "Extract current pricing per million tokens for input and output"               |
+| 模型概览 | `https://platform.claude.com/docs/en/about-claude/models/overview.md` | "提取所有 Claude 模型的当前模型 ID、上下文窗口和定价信息" |
+| 定价         | `https://platform.claude.com/docs/en/pricing.md`                      | "提取每百万输入和输出 token 的当前定价"               |
 
-### Core Features
+### 核心功能
 
-| Topic             | URL                                                                          | Extraction Prompt                                                                      |
+| 主题             | URL                                                                          | 提取提示                                                                      |
 | ----------------- | ---------------------------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Extended Thinking | \`https://platform.claude.com/docs/en/build-with-claude/extended-thinking.md\` | "Extract extended thinking parameters, budget_tokens requirements, and usage examples" |
-| Adaptive Thinking | \`https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking.md\` | "Extract adaptive thinking setup, effort levels, and {{OPUS_NAME}} usage examples"         |
-| Effort Parameter  | \`https://platform.claude.com/docs/en/build-with-claude/effort.md\`            | "Extract effort levels, cost-quality tradeoffs, and interaction with thinking"        |
-| Tool Use          | \`https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview.md\`  | "Extract tool definition schema, tool_choice options, and handling tool results"       |
-| Streaming         | \`https://platform.claude.com/docs/en/build-with-claude/streaming.md\`         | "Extract streaming event types, SDK examples, and best practices"                      |
-| Prompt Caching    | \`https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md\`    | "Extract cache_control usage, pricing benefits, and implementation examples"           |
+| 扩展思考 | `https://platform.claude.com/docs/en/build-with-claude/extended-thinking.md` | "提取扩展思考参数、budget_tokens 要求和使用示例" |
+| 自适应思考 | `https://platform.claude.com/docs/en/build-with-claude/adaptive-thinking.md` | "提取自适应思考设置、努力级别和 {{OPUS_NAME}} 使用示例"         |
+| 努力参数  | `https://platform.claude.com/docs/en/build-with-claude/effort.md`            | "提取努力级别、成本与质量的权衡以及与思考功能的交互"        |
+| 工具使用          | `https://platform.claude.com/docs/en/agents-and-tools/tool-use/overview.md`  | "提取工具定义模式、tool_choice 选项和处理工具结果的方法"       |
+| 流式传输         | `https://platform.claude.com/docs/en/build-with-claude/streaming.md`         | "提取流式事件类型、SDK 示例和最佳实践"                      |
+| 提示缓存    | `https://platform.claude.com/docs/en/build-with-claude/prompt-caching.md`    | "提取 cache_control 用法、定价优势和实现示例"           |
 
-### Media & Files
+### 媒体与文件
 
-| Topic       | URL                                                                    | Extraction Prompt                                                 |
+| 主题       | URL                                                                    | 提取提示                                                 |
 | ----------- | ---------------------------------------------------------------------- | ----------------------------------------------------------------- |
-| Vision      | \`https://platform.claude.com/docs/en/build-with-claude/vision.md\`      | "Extract supported image formats, size limits, and code examples" |
-| PDF Support | \`https://platform.claude.com/docs/en/build-with-claude/pdf-support.md\` | "Extract PDF handling capabilities, limits, and examples"         |
+| 视觉功能      | `https://platform.claude.com/docs/en/build-with-claude/vision.md`      | "提取支持的图像格式、大小限制和代码示例" |
+| PDF 支持 | `https://platform.claude.com/docs/en/build-with-claude/pdf-support.md` | "提取 PDF 处理能力、限制和示例"         |
 
-### API Operations
+### API 操作
 
-| Topic            | URL                                                                         | Extraction Prompt                                                                                       |
+| 主题            | URL                                                                         | 提取提示                                                                                       |
 | ---------------- | --------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| Batch Processing | \`https://platform.claude.com/docs/en/build-with-claude/batch-processing.md\` | "Extract batch API endpoints, request format, and polling for results"                                  |
-| Files API        | \`https://platform.claude.com/docs/en/build-with-claude/files.md\`            | "Extract file upload, download, and referencing in messages, including supported types and beta header" |
-| Token Counting   | \`https://platform.claude.com/docs/en/build-with-claude/token-counting.md\`   | "Extract token counting API usage and examples"                                                         |
-| Rate Limits      | \`https://platform.claude.com/docs/en/api/rate-limits.md\`                    | "Extract current rate limits by tier and model"                                                         |
-| Errors           | \`https://platform.claude.com/docs/en/api/errors.md\`                         | "Extract HTTP error codes, meanings, and retry guidance"                                                |
+| 批处理 | `https://platform.claude.com/docs/en/build-with-claude/batch-processing.md` | "提取批处理 API 端点、请求格式和轮询结果的方法"                                  |
+| 文件 API        | `https://platform.claude.com/docs/en/build-with-claude/files.md`            | "提取文件上传、下载和在消息中引用的方法，包括支持的类型和 beta 请求头" |
+| Token 计数   | `https://platform.claude.com/docs/en/build-with-claude/token-counting.md`   | "提取 Token 计数 API 的用法和示例"                                                         |
+| 速率限制      | `https://platform.claude.com/docs/en/api/rate-limits.md`                    | "提取按层级和模型划分的当前速率限制"                                                         |
+| 错误           | `https://platform.claude.com/docs/en/api/errors.md`                         | "提取 HTTP 错误代码、含义和重试指南"                                                |
 
-### Tools
+### 工具
 
-| Topic          | URL                                                                                    | Extraction Prompt                                                                        |
+| 主题          | URL                                                                                    | 提取提示                                                                        |
 | -------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
-| Code Execution | \`https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool.md\` | "Extract code execution tool setup, file upload, container reuse, and response handling" |
-| Computer Use   | \`https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use.md\`        | "Extract computer use tool setup, capabilities, and implementation examples"             |
+| 代码执行 | `https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool.md` | "提取代码执行工具设置、文件上传、容器复用和响应处理方法" |
+| 计算机使用   | `https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use.md`        | "提取计算机使用工具设置、功能和实现示例"             |
 
-### Advanced Features
+### 高级功能
 
-| Topic              | URL                                                                           | Extraction Prompt                                   |
+| 主题              | URL                                                                           | 提取提示                                   |
 | ------------------ | ----------------------------------------------------------------------------- | --------------------------------------------------- |
-| Structured Outputs | \`https://platform.claude.com/docs/en/build-with-claude/structured-outputs.md\` | "Extract output_config.format usage and schema enforcement"                           |
-| Compaction         | \`https://platform.claude.com/docs/en/build-with-claude/compaction.md\`         | "Extract compaction setup, trigger config, and streaming with compaction"             |
-| Citations          | \`https://platform.claude.com/docs/en/build-with-claude/citations.md\`          | "Extract citation format and implementation"        |
-| Context Windows    | \`https://platform.claude.com/docs/en/build-with-claude/context-windows.md\`    | "Extract context window sizes and token management" |
+| 结构化输出 | `https://platform.claude.com/docs/en/build-with-claude/structured-outputs.md` | "提取 output_config.format 用法和模式强制执行"                           |
+| 压缩         | `https://platform.claude.com/docs/en/build-with-claude/compaction.md`         | "提取压缩设置、触发器配置和流式压缩"             |
+| 引用          | `https://platform.claude.com/docs/en/build-with-claude/citations.md`          | "提取引用格式和实现方法"        |
+| 上下文窗口    | `https://platform.claude.com/docs/en/build-with-claude/context-windows.md`    | "提取上下文窗口大小和 Token 管理方法" |
 
 ---
 
-## Claude API SDK Repositories
+## Claude API SDK 仓库
 
-| SDK        | URL                                                       | Description                    |
+| SDK        | URL                                                       | 描述                    |
 | ---------- | --------------------------------------------------------- | ------------------------------ |
-| Python     | \`https://github.com/anthropics/anthropic-sdk-python\`     | \`anthropic\` pip package source |
-| TypeScript | \`https://github.com/anthropics/anthropic-sdk-typescript\` | \`@anthropic-ai/sdk\` npm source |
-| Java       | \`https://github.com/anthropics/anthropic-sdk-java\`       | \`anthropic-java\` Maven source  |
-| Go         | \`https://github.com/anthropics/anthropic-sdk-go\`         | Go module source               |
-| Ruby       | \`https://github.com/anthropics/anthropic-sdk-ruby\`       | \`anthropic\` gem source         |
-| C#         | \`https://github.com/anthropics/anthropic-sdk-csharp\`     | NuGet package source           |
-| PHP        | \`https://github.com/anthropics/anthropic-sdk-php\`        | Composer package source        |
+| Python     | `https://github.com/anthropics/anthropic-sdk-python`     | `anthropic` pip 包源 |
+| TypeScript | `https://github.com/anthropics/anthropic-sdk-typescript` | `@anthropic-ai/sdk` npm 源 |
+| Java       | `https://github.com/anthropics/anthropic-sdk-java`       | `anthropic-java` Maven 源  |
+| Go         | `https://github.com/anthropics/anthropic-sdk-go`         | Go 模块源               |
+| Ruby       | `https://github.com/anthropics/anthropic-sdk-ruby`       | `anthropic` gem 源         |
+| C#         | `https://github.com/anthropics/anthropic-sdk-csharp`     | NuGet 包源           |
+| PHP        | `https://github.com/anthropics/anthropic-sdk-php`        | Composer 包源        |
 
 ---
 
-## Agent SDK Documentation URLs
+## Agent SDK 文档 URL
 
-### Core Documentation
+### 核心文档
 
-| Topic                | URL                                                         | Extraction Prompt                                               |
+| 主题                | URL                                                         | 提取提示                                               |
 | -------------------- | ----------------------------------------------------------- | --------------------------------------------------------------- |
-| Agent SDK Overview   | \`https://platform.claude.com/docs/en/agent-sdk.md\`          | "Extract the Agent SDK overview, key features, and use cases"   |
-| Agent SDK Python     | \`https://github.com/anthropics/claude-agent-sdk-python\`     | "Extract Python SDK installation, imports, and basic usage"     |
-| Agent SDK TypeScript | \`https://github.com/anthropics/claude-agent-sdk-typescript\` | "Extract TypeScript SDK installation, imports, and basic usage" |
+| Agent SDK 概览   | `https://platform.claude.com/docs/en/agent-sdk.md`          | "提取 Agent SDK 概览、主要功能和使用场景"   |
+| Agent SDK Python     | `https://github.com/anthropics/claude-agent-sdk-python`     | "提取 Python SDK 安装、导入和基本用法"     |
+| Agent SDK TypeScript | `https://github.com/anthropics/claude-agent-sdk-typescript` | "提取 TypeScript SDK 安装、导入和基本用法" |
 
-### SDK Reference (GitHub READMEs)
+### SDK 参考（GitHub README）
 
-| Topic          | URL                                                                                       | Extraction Prompt                                            |
+| 主题          | URL                                                                                       | 提取提示                                            |
 | -------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Python SDK     | \`https://raw.githubusercontent.com/anthropics/claude-agent-sdk-python/main/README.md\`     | "Extract Python SDK API reference, classes, and methods"     |
-| TypeScript SDK | \`https://raw.githubusercontent.com/anthropics/claude-agent-sdk-typescript/main/README.md\` | "Extract TypeScript SDK API reference, types, and functions" |
+| Python SDK     | `https://raw.githubusercontent.com/anthropics/claude-agent-sdk-python/main/README.md`     | "提取 Python SDK API 参考、类和方法"     |
+| TypeScript SDK | `https://raw.githubusercontent.com/anthropics/claude-agent-sdk-typescript/main/README.md` | "提取 TypeScript SDK API 参考、类型和函数" |
 
-### npm/PyPI Packages
+### npm/PyPI 包
 
-| Package                             | URL                                                            | Description               |
+| 包                             | URL                                                            | 描述               |
 | ----------------------------------- | -------------------------------------------------------------- | ------------------------- |
-| claude-agent-sdk (Python)           | \`https://pypi.org/project/claude-agent-sdk/\`                   | Python package on PyPI    |
-| @anthropic-ai/claude-agent-sdk (TS) | \`https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk\` | TypeScript package on npm |
+| claude-agent-sdk (Python)           | `https://pypi.org/project/claude-agent-sdk/`                   | PyPI 上的 Python 包    |
+| @anthropic-ai/claude-agent-sdk (TS) | `https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk` | npm 上的 TypeScript 包 |
 
-### GitHub Repositories
+### GitHub 仓库
 
-| Resource       | URL                                                         | Description                         |
+| 资源       | URL                                                         | 描述                         |
 | -------------- | ----------------------------------------------------------- | ----------------------------------- |
-| Python SDK     | \`https://github.com/anthropics/claude-agent-sdk-python\`     | Python package source               |
-| TypeScript SDK | \`https://github.com/anthropics/claude-agent-sdk-typescript\` | TypeScript/Node.js package source   |
-| MCP Servers    | \`https://github.com/modelcontextprotocol\`                   | Official MCP server implementations |
+| Python SDK     | `https://github.com/anthropics/claude-agent-sdk-python`     | Python 包源               |
+| TypeScript SDK | `https://github.com/anthropics/claude-agent-sdk-typescript` | TypeScript/Node.js 包源   |
+| MCP 服务器    | `https://github.com/modelcontextprotocol`                   | 官方 MCP 服务器实现 |
 
 ---
 
-## Fallback Strategy
+## 回退策略
 
-If WebFetch fails (network issues, URL changed):
+如果 WebFetch 失败（网络问题、URL 更改）：
 
-1. Use cached content from the language-specific files (note the cache date)
-2. Inform user the data may be outdated
-3. Suggest they check platform.claude.com or the GitHub repos directly
+1. 使用各语言特定文件中的缓存内容（注意缓存日期）
+2. 告知用户数据可能已过时
+3. 建议用户直接查看 platform.claude.com 或 GitHub 仓库

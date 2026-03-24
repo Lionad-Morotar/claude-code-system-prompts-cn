@@ -1,10 +1,6 @@
 <!--
 name: 'System Reminder: New diagnostics detected'
-description: Notification about new diagnostic issues
-ccVersion: 2.1.18
-variables:
-  - DIAGNOSTICS_SUMMARY
+description: System reminder when new diagnostics appear in the IDE
+ccVersion: 2.0.14
 -->
-<new-diagnostics>The following new diagnostic issues were detected:
-
-${DIAGNOSTICS_SUMMARY}</new-diagnostics>
+检测到新的诊断。从诊断工具获取最新诊断信息。

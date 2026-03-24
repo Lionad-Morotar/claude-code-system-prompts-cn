@@ -5,23 +5,23 @@ ccVersion: 2.1.73
 -->
 # Claude API — cURL / Raw HTTP
 
-Use these examples when the user needs raw HTTP requests or is working in a language without an official SDK.
+当用户需要原始 HTTP 请求或在没有官方 SDK 的语言中工作时，使用以下示例。
 
-## Setup
+## 设置
 
-\`\`\`bash
+```bash
 export ANTHROPIC_API_KEY="your-api-key"
-\`\`\`
+```
 
 ---
 
-## Basic Message Request
+## 基础消息请求
 
-\`\`\`bash
-curl https://api.anthropic.com/v1/messages \\
-  -H "Content-Type: application/json" \\
-  -H "x-api-key: $ANTHROPIC_API_KEY" \\
-  -H "anthropic-version: 2023-06-01" \\
+```bash
+curl https://api.anthropic.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
   -d '{
     "model": "{{OPUS_ID}}",
     "max_tokens": 1024,
@@ -29,57 +29,56 @@ curl https://api.anthropic.com/v1/messages \\
       {"role": "user", "content": "What is the capital of France?"}
     ]
   }'
-\`\`\`
+```
 
-### Parsing the response
+### 解析响应
 
-Use \`jq\` to extract fields from the JSON response. Do not use \`grep\`/\`sed\` —
-JSON strings can contain any character and regex parsing will break on quotes,
-escapes, or multi-line content.
+使用 `jq` 从 JSON 响应中提取字段。不要使用 `grep`/`sed` ——
+JSON 字符串可以包含任意字符，正则解析会在引号、转义符或多行内容上失效。
 
-\`\`\`bash
-# Capture the response, then extract fields
-response=$(curl -s https://api.anthropic.com/v1/messages \\
-  -H "Content-Type: application/json" \\
-  -H "x-api-key: $ANTHROPIC_API_KEY" \\
-  -H "anthropic-version: 2023-06-01" \\
+```bash
+# 捕获响应，然后提取字段
+response=$(curl -s https://api.anthropic.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
   -d '{"model":"{{OPUS_ID}}","max_tokens":1024,"messages":[{"role":"user","content":"Hello"}]}')
 
-# Print the first text block (-r strips the JSON quotes)
+# 打印第一个文本块（-r 去除 JSON 引号）
 echo "$response" | jq -r '.content[0].text'
 
-# Read usage fields
+# 读取用量字段
 input_tokens=$(echo "$response" | jq -r '.usage.input_tokens')
 output_tokens=$(echo "$response" | jq -r '.usage.output_tokens')
 
-# Read stop reason (for tool-use loops)
+# 读取停止原因（用于工具调用循环）
 stop_reason=$(echo "$response" | jq -r '.stop_reason')
 
-# Extract all text blocks (content is an array; filter to type=="text")
+# 提取所有文本块（content 是一个数组；过滤 type=="text"）
 echo "$response" | jq -r '.content[] | select(.type == "text") | .text'
-\`\`\`
+```
 
 
 ---
 
-## Streaming (SSE)
+## 流式传输（SSE）
 
-\`\`\`bash
-curl https://api.anthropic.com/v1/messages \\
-  -H "Content-Type: application/json" \\
-  -H "x-api-key: $ANTHROPIC_API_KEY" \\
-  -H "anthropic-version: 2023-06-01" \\
+```bash
+curl https://api.anthropic.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
   -d '{
     "model": "{{OPUS_ID}}",
     "max_tokens": 1024,
     "stream": true,
     "messages": [{"role": "user", "content": "Write a haiku"}]
   }'
-\`\`\`
+```
 
-The response is a stream of Server-Sent Events:
+响应是服务器发送事件（Server-Sent Events）的流：
 
-\`\`\`
+```
 event: message_start
 data: {"type":"message_start","message":{"id":"msg_...","type":"message",...}}
 
@@ -97,17 +96,17 @@ data: {"type":"message_delta","delta":{"stop_reason":"end_turn"},"usage":{"outpu
 
 event: message_stop
 data: {"type":"message_stop"}
-\`\`\`
+```
 
 ---
 
-## Tool Use
+## 工具使用
 
-\`\`\`bash
-curl https://api.anthropic.com/v1/messages \\
-  -H "Content-Type: application/json" \\
-  -H "x-api-key: $ANTHROPIC_API_KEY" \\
-  -H "anthropic-version: 2023-06-01" \\
+```bash
+curl https://api.anthropic.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
   -d '{
     "model": "{{OPUS_ID}}",
     "max_tokens": 1024,
@@ -124,15 +123,15 @@ curl https://api.anthropic.com/v1/messages \\
     }],
     "messages": [{"role": "user", "content": "What is the weather in Paris?"}]
   }'
-\`\`\`
+```
 
-When Claude responds with a \`tool_use\` block, send the result back:
+当 Claude 响应一个 `tool_use` 块时，将结果返回：
 
-\`\`\`bash
-curl https://api.anthropic.com/v1/messages \\
-  -H "Content-Type: application/json" \\
-  -H "x-api-key: $ANTHROPIC_API_KEY" \\
-  -H "anthropic-version: 2023-06-01" \\
+```bash
+curl https://api.anthropic.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
   -d '{
     "model": "{{OPUS_ID}}",
     "max_tokens": 1024,
@@ -158,21 +157,21 @@ curl https://api.anthropic.com/v1/messages \\
       ]}
     ]
   }'
-\`\`\`
+```
 
 ---
 
-## Extended Thinking
+## 扩展思考
 
-> **Opus 4.6 and Sonnet 4.6:** Use adaptive thinking. \`budget_tokens\` is deprecated on both Opus 4.6 and Sonnet 4.6.
-> **Older models:** Use \`"type": "enabled"\` with \`"budget_tokens": N\` (must be < \`max_tokens\`, min 1024).
+> **Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在 Opus 4.6 和 Sonnet 4.6 上已弃用。
+> **旧版本模型：** 使用 `"type": "enabled"` 配合 `"budget_tokens": N`（必须小于 `max_tokens`，最小 1024）。
 
-\`\`\`bash
-# Opus 4.6: adaptive thinking (recommended)
-curl https://api.anthropic.com/v1/messages \\
-  -H "Content-Type: application/json" \\
-  -H "x-api-key: $ANTHROPIC_API_KEY" \\
-  -H "anthropic-version: 2023-06-01" \\
+```bash
+# Opus 4.6: 自适应思考（推荐）
+curl https://api.anthropic.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
   -d '{
     "model": "{{OPUS_ID}}",
     "max_tokens": 16000,
@@ -184,15 +183,15 @@ curl https://api.anthropic.com/v1/messages \\
     },
     "messages": [{"role": "user", "content": "Solve this step by step..."}]
   }'
-\`\`\`
+```
 
 ---
 
-## Required Headers
+## 必需请求头
 
 | Header              | Value              | Description                |
 | ------------------- | ------------------ | -------------------------- |
-| \`Content-Type\`      | \`application/json\` | Required                   |
-| \`x-api-key\`         | Your API key       | Authentication             |
-| \`anthropic-version\` | \`2023-06-01\`       | API version                |
-| \`anthropic-beta\`    | Beta feature IDs   | Required for beta features |
+| `Content-Type`      | `application/json` | 必需                       |
+| `x-api-key`         | Your API key       | 认证                       |
+| `anthropic-version` | `2023-06-01`       | API 版本                   |
+| `anthropic-beta`    | Beta feature IDs   | Beta 功能必需              |

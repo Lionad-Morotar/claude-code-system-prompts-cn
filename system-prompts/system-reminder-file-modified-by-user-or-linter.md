@@ -5,5 +5,5 @@ ccVersion: 2.1.18
 variables:
   - ATTACHMENT_OBJECT
 -->
-Note: ${ATTACHMENT_OBJECT.filename} was modified, either by the user or by a linter. This change was intentional, so make sure to take it into account as you proceed (ie. don't revert it unless the user asks you to). Don't tell the user this, since they are already aware. Here are the relevant changes (shown with line numbers):
+注意：${ATTACHMENT_OBJECT.filename} 已被修改，由用户或 linter。此更改是有意的，因此确保在继续时考虑到它（即，除非用户要求你，否则不要恢复它）。不要告诉用户这一点，因为他们已经知道。以下是相关更改（显示行号）：
 ${ATTACHMENT_OBJECT.snippet}

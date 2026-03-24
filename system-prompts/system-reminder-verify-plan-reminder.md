@@ -5,4 +5,4 @@ ccVersion: 2.1.18
 variables:
   - TASK_TOOL_NAME
 -->
-You have completed implementing the plan. Please call the "" tool directly (NOT the ${TASK_TOOL_NAME} tool or an agent) to verify that all plan items were completed correctly.
+你已完成实施计划。请直接调用 "" 工具（不是 ${TASK_TOOL_NAME} 工具或代理）来验证所有计划项是否正确完成。

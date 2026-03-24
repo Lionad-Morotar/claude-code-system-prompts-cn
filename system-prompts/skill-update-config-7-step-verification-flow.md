@@ -1,41 +1,41 @@
 <!--
 name: 'Skill: update-config (7-step verification flow)'
-description: A skill that guides Claude through a 7-step process to construct and verify hooks for Claude Code, ensuring they work correctly in the user's specific project environment.
+description: 一个引导 Claude 完成构建和验证 Claude Code 钩子（hooks）的 7 步流程 skill，确保它们在用户特定的项目环境中正常工作。
 ccVersion: 2.1.77
 -->
-## Constructing a Hook (with verification)
+## 构建钩子（带验证）
 
-Given an event, matcher, target file, and desired behavior, follow this flow. Each step catches a different failure class — a hook that silently does nothing is worse than no hook.
+给定事件、匹配器、目标文件和期望行为，遵循此流程。每一步捕获不同的失败类别——一个静默失效的钩子比没有钩子更糟糕。
 
-1. **Dedup check.** Read the target file. If a hook already exists on the same event+matcher, show the existing command and ask: keep it, replace it, or add alongside.
+1. **去重检查。** 读取目标文件。如果同一事件+匹配器上已存在钩子，显示现有命令并询问：保留、替换或并行添加。
 
-2. **Construct the command for THIS project — don't assume.** The hook receives JSON on stdin. Build a command that:
-   - Extracts any needed payload safely — use \`jq -r\` into a quoted variable or \`{ read -r f; ... "$f"; }\`, NOT unquoted \`| xargs\` (splits on spaces)
-   - Invokes the underlying tool the way this project runs it (npx/bunx/yarn/pnpm? Makefile target? globally-installed?)
-   - Skips inputs the tool doesn't handle (formatters often have \`--ignore-unknown\`; if not, guard by extension)
-   - Stays RAW for now — no \`|| true\`, no stderr suppression. You'll wrap it after the pipe-test passes.
+2. **为当前项目构建命令——不要假设。** 钩子通过 stdin 接收 JSON。构建一个满足以下要求的命令：
+   - 安全提取所需负载——使用 \`jq -r\` 导入带引号的变量或 \`{ read -r f; ... "$f"; }\`，不要使用无引号的 \`| xargs\`（会在空格处分割）
+   - 以本项目运行底层工具的方式调用（npx/bunx/yarn/pnpm？Makefile 目标？全局安装？）
+   - 跳过工具无法处理的输入（格式化工具通常有 \`--ignore-unknown\`；如果没有，按扩展名过滤）
+   - 暂时保持原始状态——不加 \`|| true\`，不抑制 stderr。管道测试通过后再包装。
 
-3. **Pipe-test the raw command.** Synthesize the stdin payload the hook will receive and pipe it directly:
-   - \`Pre|PostToolUse\` on \`Write|Edit\`: \`echo '{"tool_name":"Edit","tool_input":{"file_path":"<a real file from this repo>"}}' | <cmd>\`
-   - \`Pre|PostToolUse\` on \`Bash\`: \`echo '{"tool_name":"Bash","tool_input":{"command":"ls"}}' | <cmd>\`
-   - \`Stop\`/\`UserPromptSubmit\`/\`SessionStart\`: most commands don't read stdin, so \`echo '{}' | <cmd>\` suffices
+3. **管道测试原始命令。** 合成钩子将接收的 stdin 负载并直接管道传递：
+   - \`Pre|PostToolUse\` 在 \`Write|Edit\` 上：\`echo '{"tool_name":"Edit","tool_input":{"file_path":"<此仓库中的真实文件>"}}' | <cmd>\`
+   - \`Pre|PostToolUse\` 在 \`Bash\` 上：\`echo '{"tool_name":"Bash","tool_input":{"command":"ls"}}' | <cmd>\`
+   - \`Stop\`/\`UserPromptSubmit\`/\`SessionStart\`：大多数命令不读取 stdin，所以 \`echo '{}' | <cmd>\` 足够
 
-   Check exit code AND side effect (file actually formatted, test actually ran). If it fails you get a real error — fix (wrong package manager? tool not installed? jq path wrong?) and retest. Once it works, wrap with \`2>/dev/null || true\` (unless the user wants a blocking check).
+   检查退出代码和副作用（文件是否实际格式化，测试是否实际运行）。如果失败，你会得到真实的错误——修复（包管理器错误？工具未安装？jq 路径错误？）并重新测试。一旦成功，用 \`2>/dev/null || true\` 包装（除非用户需要阻塞检查）。
 
-4. **Write the JSON.** Merge into the target file (schema shape in the "Hook Structure" section above). If this creates \`.claude/settings.local.json\` for the first time, add it to .gitignore — the Write tool doesn't auto-gitignore it.
+4. **写入 JSON。** 合并到目标文件（模式结构见上文"钩子结构"部分）。如果首次创建 \`.claude/settings.local.json\`，将其添加到 .gitignore——Write 工具不会自动将其加入 gitignore。
 
-5. **Validate syntax + schema in one shot:**
+5. **一次性验证语法 + 模式：**
 
    \`jq -e '.hooks.<event>[] | select(.matcher == "<matcher>") | .hooks[] | select(.type == "command") | .command' <target-file>\`
 
-   Exit 0 + prints your command = correct. Exit 4 = matcher doesn't match. Exit 5 = malformed JSON or wrong nesting. A broken settings.json silently disables ALL settings from that file — fix any pre-existing malformation too.
+   退出码 0 + 打印你的命令 = 正确。退出码 4 = 匹配器不匹配。退出码 5 = JSON 格式错误或嵌套错误。损坏的 settings.json 会静默禁用该文件的所有设置——同时修复任何预先存在的格式错误。
 
-6. **Prove the hook fires** — only for \`Pre|PostToolUse\` on a matcher you can trigger in-turn (\`Write|Edit\` via Edit, \`Bash\` via Bash). \`Stop\`/\`UserPromptSubmit\`/\`SessionStart\` fire outside this turn — skip to step 7.
+6. **证明钩子触发**——仅适用于可在当前回合触发的匹配器上的 \`Pre|PostToolUse\`（通过 Edit 触发 \`Write|Edit\`，通过 Bash 触发 \`Bash\`）。\`Stop\`/\`UserPromptSubmit\`/\`SessionStart\` 在当前回合外触发——跳到第 7 步。
 
-   For a **formatter** on \`PostToolUse\`/\`Write|Edit\`: introduce a detectable violation via Edit (two consecutive blank lines, bad indentation, missing semicolon — something this formatter corrects; NOT trailing whitespace, Edit strips that before writing), re-read, confirm the hook **fixed** it. For **anything else**: temporarily prefix the command in settings.json with \`echo "$(date) hook fired" >> /tmp/claude-hook-check.txt; \`, trigger the matching tool (Edit for \`Write|Edit\`, a harmless \`true\` for \`Bash\`), read the sentinel file.
+   对于 \`PostToolUse\`/\`Write|Edit\` 上的**格式化工具**：通过 Edit 引入可检测的违规（两个连续空行、错误缩进、缺少分号——此格式化工具能修正的内容；不是尾随空格，Edit 在写入前会去除它），重新读取，确认钩子**修复**了它。对于**其他任何东西**：在 settings.json 中的命令前临时添加前缀 \`echo "$(date) hook fired" >> /tmp/claude-hook-check.txt; \`，触发匹配工具（Edit 对应 \`Write|Edit\`，无害的 \`true\` 对应 \`Bash\`），读取哨兵文件。
 
-   **Always clean up** — revert the violation, strip the sentinel prefix — whether the proof passed or failed.
+   **始终清理**——还原违规内容，移除哨兵前缀——无论验证通过还是失败。
 
-   **If proof fails but pipe-test passed and \`jq -e\` passed**: the settings watcher isn't watching \`.claude/\` — it only watches directories that had a settings file when this session started. The hook is written correctly. Tell the user to open \`/hooks\` once (reloads config) or restart — you can't do this yourself; \`/hooks\` is a user UI menu and opening it ends this turn.
+   **如果验证失败但管道测试通过且 \`jq -e\` 通过**：设置监视器未监视 \`.claude/\`——它只监视此会话启动时有设置文件的目录。钩子写入正确。告诉用户打开一次 \`/hooks\`（重新加载配置）或重启——你无法自己执行此操作；\`/hooks\` 是用户 UI 菜单，打开它会结束当前回合。
 
-7. **Handoff.** Tell the user the hook is live (or needs \`/hooks\`/restart per the watcher caveat). Point them at \`/hooks\` to review, edit, or disable it later. The UI only shows "Ran N hooks" if a hook errors or is slow — silent success is invisible by design.
+7. **交接。** 告诉用户钩子已激活（或根据监视器限制需要 \`/hooks\`/重启）。指引他们使用 \`/hooks\` 稍后查看、编辑或禁用它。UI 仅在钩子出错或运行缓慢时显示"运行了 N 个钩子"——静默成功按设计是不可见的。

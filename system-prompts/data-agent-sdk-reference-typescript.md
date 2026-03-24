@@ -5,55 +5,55 @@ ccVersion: 2.1.73
 -->
 # Agent SDK — TypeScript
 
-The Claude Agent SDK provides a higher-level interface for building AI agents with built-in tools, safety features, and agentic capabilities.
+Claude Agent SDK 提供了一个更高级的接口，用于构建具有内置工具、安全功能和代理能力的 AI 代理。
 
-## Installation
+## 安装
 
-\`\`\`bash
+```bash
 npm install @anthropic-ai/claude-agent-sdk
-\`\`\`
+```
 
 ---
 
-## Quick Start
+## 快速开始
 
-\`\`\`typescript
+```typescript
 import { query } from "@anthropic-ai/claude-agent-sdk";
 
 for await (const message of query({
-  prompt: "Explain this codebase",
+  prompt: "解释这个代码库",
   options: { allowedTools: ["Read", "Glob", "Grep"] },
 })) {
   if ("result" in message) {
     console.log(message.result);
   }
 }
-\`\`\`
+```
 
 ---
 
-## Built-in Tools
+## 内置工具
 
-| Tool      | Description                          |
+| 工具      | 描述                          |
 | --------- | ------------------------------------ |
-| Read      | Read files in the workspace          |
-| Write     | Create new files                     |
-| Edit      | Make precise edits to existing files |
-| Bash      | Execute shell commands               |
-| Glob      | Find files by pattern                |
-| Grep      | Search files by content              |
-| WebSearch | Search the web for information       |
-| WebFetch        | Fetch and analyze web pages          |
-| AskUserQuestion | Ask user clarifying questions         |
-| Agent           | Spawn subagents                      |
+| Read      | 读取工作区中的文件          |
+| Write     | 创建新文件                     |
+| Edit      | 对现有文件进行精确编辑 |
+| Bash      | 执行 shell 命令               |
+| Glob      | 按模式查找文件                |
+| Grep      | 按内容搜索文件               |
+| WebSearch | 搜索网络信息       |
+| WebFetch        | 获取并分析网页          |
+| AskUserQuestion | 向用户询问澄清问题         |
+| Agent           | 生成子代理                      |
 
 ---
 
-## Permission System
+## 权限系统
 
-\`\`\`typescript
+```typescript
 for await (const message of query({
-  prompt: "Refactor the authentication module",
+  prompt: "重构认证模块",
   options: {
     allowedTools: ["Read", "Edit", "Write"],
     permissionMode: "acceptEdits",
@@ -61,23 +61,23 @@ for await (const message of query({
 })) {
   if ("result" in message) console.log(message.result);
 }
-\`\`\`
+```
 
-Permission modes:
+权限模式：
 
-- \`"default"\`: Prompt for dangerous operations
-- \`"plan"\`: Planning only, no execution
-- \`"acceptEdits"\`: Auto-accept file edits
-- \`"dontAsk"\`: Don't prompt — **denies** anything not pre-approved (not an auto-approve mode)
-- \`"bypassPermissions"\`: Skip all prompts (requires \`allowDangerouslySkipPermissions: true\` in options)
+- `"default"`：对危险操作进行提示
+- `"plan"`：仅规划，不执行
+- `"acceptEdits"`：自动接受文件编辑
+- `"dontAsk"`：不进行提示 —— **拒绝**任何未经预先批准的操作（不是自动批准模式）
+- `"bypassPermissions"`：跳过所有提示（需要在选项中设置 `allowDangerouslySkipPermissions: true`）
 
 ---
 
-## MCP (Model Context Protocol) Support
+## MCP（模型上下文协议）支持
 
-\`\`\`typescript
+```typescript
 for await (const message of query({
-  prompt: "Open example.com and describe what you see",
+  prompt: "打开 example.com 并描述你看到的内容",
   options: {
     mcpServers: {
       playwright: { command: "npx", args: ["@playwright/mcp@latest"] },
@@ -86,36 +86,36 @@ for await (const message of query({
 })) {
   if ("result" in message) console.log(message.result);
 }
-\`\`\`
+```
 
-### In-Process MCP Tools
+### 进程内 MCP 工具
 
-You can define custom tools that run in-process using \`tool()\` and \`createSdkMcpServer\`:
+你可以使用 `tool()` 和 `createSdkMcpServer` 定义在进程内运行的自定义工具：
 
-\`\`\`typescript
+```typescript
 import { query, tool, createSdkMcpServer } from "@anthropic-ai/claude-agent-sdk";
 import { z } from "zod";
 
-const myTool = tool("my-tool", "Description", { input: z.string() }, async (args) => {
+const myTool = tool("my-tool", "描述", { input: z.string() }, async (args) => {
   return { content: [{ type: "text", text: "result" }] };
 });
 
 const server = createSdkMcpServer({ name: "my-server", tools: [myTool] });
 
-// Pass to query
+// 传递给 query
 for await (const message of query({
-  prompt: "Use my-tool to do something",
+  prompt: "使用 my-tool 执行某些操作",
   options: { mcpServers: { myServer: server } },
 })) {
   if ("result" in message) console.log(message.result);
 }
-\`\`\`
+```
 
 ---
 
-## Hooks
+## 钩子（Hooks）
 
-\`\`\`typescript
+```typescript
 import { query, HookCallback } from "@anthropic-ai/claude-agent-sdk";
 import { appendFileSync } from "fs";
 
@@ -123,13 +123,13 @@ const logFileChange: HookCallback = async (input) => {
   const filePath = (input as any).tool_input?.file_path ?? "unknown";
   appendFileSync(
     "./audit.log",
-    \`\${new Date().toISOString()}: modified \${filePath}\\n\`,
+    `${new Date().toISOString()}: modified ${filePath}\n`,
   );
   return {};
 };
 
 for await (const message of query({
-  prompt: "Refactor utils.py to improve readability",
+  prompt: "重构 utils.py 以提高可读性",
   options: {
     allowedTools: ["Read", "Edit", "Write"],
     permissionMode: "acceptEdits",
@@ -140,56 +140,56 @@ for await (const message of query({
 })) {
   if ("result" in message) console.log(message.result);
 }
-\`\`\`
+```
 
-Hook event inputs for tool-lifecycle events (\`PreToolUse\`, \`PostToolUse\`, \`PostToolUseFailure\`) include \`agent_id\` and \`agent_type\` fields, allowing hooks to identify which agent (main or subagent) triggered the tool call.
+工具生命周期事件（`PreToolUse`、`PostToolUse`、`PostToolUseFailure`）的钩子事件输入包含 `agent_id` 和 `agent_type` 字段，允许钩子识别是哪个代理（主代理或子代理）触发了工具调用。
 
-Available hook events: \`PreToolUse\`, \`PostToolUse\`, \`PostToolUseFailure\`, \`Notification\`, \`UserPromptSubmit\`, \`SessionStart\`, \`SessionEnd\`, \`Stop\`, \`SubagentStart\`, \`SubagentStop\`, \`PreCompact\`, \`PermissionRequest\`, \`Setup\`, \`TeammateIdle\`, \`TaskCompleted\`, \`ConfigChange\`, \`Elicitation\`, \`ElicitationResult\`, \`WorktreeCreate\`, \`WorktreeRemove\`, \`InstructionsLoaded\`
+可用的钩子事件：`PreToolUse`、`PostToolUse`、`PostToolUseFailure`、`Notification`、`UserPromptSubmit`、`SessionStart`、`SessionEnd`、`Stop`、`SubagentStart`、`SubagentStop`、`PreCompact`、`PermissionRequest`、`Setup`、`TeammateIdle`、`TaskCompleted`、`ConfigChange`、`Elicitation`、`ElicitationResult`、`WorktreeCreate`、`WorktreeRemove`、`InstructionsLoaded`
 
 ---
 
-## Common Options
+## 常用选项
 
-\`query()\` takes a top-level \`prompt\` (string) and an \`options\` object:
+`query()` 接受顶级 `prompt`（字符串）和 `options` 对象：
 
-\`\`\`typescript
+```typescript
 query({ prompt: "...", options: { ... } })
-\`\`\`
+```
 
-| Option                              | Type   | Description                                                                |
+| 选项                              | 类型   | 描述                                                                |
 | ----------------------------------- | ------ | -------------------------------------------------------------------------- |
-| \`cwd\`                               | string | Working directory for file operations                                      |
-| \`allowedTools\`                      | array  | Tools the agent can use (e.g., \`["Read", "Edit", "Bash"]\`)                |
-| \`tools\`                             | array \\| preset | Built-in tools to make available (\`string[]\` or \`{type:'preset', preset:'claude_code'}\`) |
-| \`disallowedTools\`                   | array  | Tools to explicitly disallow                                               |
-| \`permissionMode\`                    | string | How to handle permission prompts                                           |
-| \`allowDangerouslySkipPermissions\`   | bool   | Must be \`true\` to use \`permissionMode: "bypassPermissions"\`                |
-| \`mcpServers\`                        | object | MCP servers to connect to                                                  |
-| \`hooks\`                             | object | Hooks for customizing behavior                                             |
-| \`systemPrompt\`                      | string \\| preset | Custom system prompt (\`string\` or \`{type:'preset', preset:'claude_code', append?:string}\`) |
-| \`maxTurns\`                          | number | Maximum agent turns before stopping                                        |
-| \`maxBudgetUsd\`                      | number | Maximum budget in USD for the query                                        |
-| \`model\`                             | string | Model ID (default: determined by CLI)                                      |
-| \`agents\`                            | object | Subagent definitions (\`Record<string, AgentDefinition>\`)                   |
-| \`outputFormat\`                      | object | Structured output schema                                                   |
-| \`thinking\`                          | object | Thinking/reasoning control                                                 |
-| \`betas\`                             | array  | Beta features to enable (e.g., \`["context-1m-2025-08-07"]\`)               |
-| \`settingSources\`                    | array  | Settings to load (e.g., \`["project"]\`). Default: none (no CLAUDE.md files) |
-| \`env\`                               | object | Environment variables to set for the session                               |
+| `cwd`                               | string | 文件操作的工作目录                                      |
+| `allowedTools`                      | array  | 代理可以使用的工具（例如 `["Read", "Edit", "Bash"]`）                |
+| `tools`                             | array \| preset | 可用的内置工具（`string[]` 或 `{type:'preset', preset:'claude_code'}`） |
+| `disallowedTools`                   | array  | 明确禁止使用的工具                                               |
+| `permissionMode`                    | string | 如何处理权限提示                                           |
+| `allowDangerouslySkipPermissions`   | bool   | 必须设置为 `true` 才能使用 `permissionMode: "bypassPermissions"`                |
+| `mcpServers`                        | object | 要连接的 MCP 服务器                                                  |
+| `hooks`                             | object | 用于自定义行为的钩子                                             |
+| `systemPrompt`                      | string \| preset | 自定义系统提示词（`string` 或 `{type:'preset', preset:'claude_code', append?:string}`） |
+| `maxTurns`                          | number | 停止前的最大代理轮数                                        |
+| `maxBudgetUsd`                      | number | 查询的最大预算（美元）                                        |
+| `model`                             | string | 模型 ID（默认：由 CLI 确定）                                      |
+| `agents`                            | object | 子代理定义（`Record<string, AgentDefinition>`）                   |
+| `outputFormat`                      | object | 结构化输出模式                                                   |
+| `thinking`                          | object | 思考/推理控制                                                 |
+| `betas`                             | array  | 要启用的测试版功能（例如 `["context-1m-2025-08-07"]`）               |
+| `settingSources`                    | array  | 要加载的设置（例如 `["project"]`）。默认：无（不加载 CLAUDE.md 文件） |
+| `env`                               | object | 为会话设置的环境变量                               |
 
 ---
 
-## Subagents
+## 子代理
 
-\`\`\`typescript
+```typescript
 for await (const message of query({
-  prompt: "Use the code-reviewer agent to review this codebase",
+  prompt: "使用代码审查代理审查此代码库",
   options: {
     allowedTools: ["Read", "Glob", "Grep", "Agent"],
     agents: {
       "code-reviewer": {
-        description: "Expert code reviewer for quality and security reviews.",
-        prompt: "Analyze code quality and suggest improvements.",
+        description: "质量和安全审查的专家代码审查员。",
+        prompt: "分析代码质量并提出改进建议。",
         tools: ["Read", "Glob", "Grep"],
       },
     },
@@ -197,79 +197,79 @@ for await (const message of query({
 })) {
   if ("result" in message) console.log(message.result);
 }
-\`\`\`
+```
 
 ---
 
-## Message Types
+## 消息类型
 
-\`\`\`typescript
+```typescript
 for await (const message of query({
-  prompt: "Find TODO comments",
+  prompt: "查找 TODO 注释",
   options: { allowedTools: ["Read", "Glob", "Grep"] },
 })) {
   if ("result" in message) {
     console.log(message.result);
-    console.log(\`Stop reason: \${message.stop_reason}\`); // e.g., "end_turn", "tool_use", "max_tokens"
+    console.log(`停止原因: ${message.stop_reason}`); // 例如 "end_turn"、"tool_use"、"max_tokens"
   } else if (message.type === "system" && message.subtype === "init") {
-    const sessionId = message.session_id; // Capture for resuming later
+    const sessionId = message.session_id; // 捕获以供稍后恢复
   }
 }
-\`\`\`
+```
 
-Task-related system messages are also emitted for subagent operations:
-- \`task_started\` — emitted when a subagent task is registered
-- \`task_progress\` — real-time progress updates with cumulative usage metrics, tool counts, and duration
-- \`task_notification\` — task completion notifications (includes \`tool_use_id\` for correlating with originating tool calls)
+子代理操作也会发出与任务相关的系统消息：
+- `task_started` —— 子代理任务注册时发出
+- `task_progress` —— 实时进度更新，包含累积的使用指标、工具计数和持续时间
+- `task_notification` —— 任务完成通知（包含 `tool_use_id` 用于与原始工具调用关联）
 
 ---
 
-## Session History
+## 会话历史
 
-Retrieve past session data:
+检索过去的会话数据：
 
-\`\`\`typescript
+```typescript
 import { listSessions, getSessionMessages } from "@anthropic-ai/claude-agent-sdk";
 
-// List all past sessions
+// 列出所有过去的会话
 const sessions = await listSessions();
 for (const session of sessions) {
-  console.log(\`\${session.sessionId}: \${session.cwd}\`);
+  console.log(`${session.sessionId}: ${session.cwd}`);
 }
 
-// Get messages from a specific session (supports pagination via limit/offset)
+// 获取特定会话的消息（支持通过 limit/offset 分页）
 const messages = await getSessionMessages(sessionId, { limit: 50, offset: 0 });
 for (const msg of messages) {
   console.log(msg);
 }
-\`\`\`
+```
 
 ---
 
-## MCP Server Management
+## MCP 服务器管理
 
-Manage MCP servers at runtime on a running query:
+在运行中的查询上运行时管理 MCP 服务器：
 
-\`\`\`typescript
-// Reconnect a disconnected MCP server
+```typescript
+// 重新连接断开的 MCP 服务器
 await queryHandle.reconnectMcpServer("my-server");
 
-// Toggle an MCP server on/off
-await queryHandle.toggleMcpServer("my-server", false);  // (name, enabled) — both required
+// 切换 MCP 服务器的开关状态
+await queryHandle.toggleMcpServer("my-server", false);  // (name, enabled) —— 两者都是必需的
 
-// Get status of ALL configured MCP servers — returns an ARRAY
+// 获取所有已配置 MCP 服务器的状态 —— 返回一个数组
 const statuses: McpServerStatus[] = await queryHandle.mcpServerStatus();
 for (const s of statuses) {
   console.log(s.name, s.scope, s.tools.length, s.error);
 }
-\`\`\`
+```
 
 ---
 
-## Best Practices
+## 最佳实践
 
-1. **Always specify allowedTools** — Explicitly list which tools the agent can use
-2. **Set working directory** — Always specify \`cwd\` for file operations
-3. **Use appropriate permission modes** — Start with \`"default"\` and only escalate when needed
-4. **Handle all message types** — Check for \`result\` property to get agent output
-5. **Limit maxTurns** — Prevent runaway agents with reasonable limits
+1. **始终指定 allowedTools** —— 明确列出代理可以使用的工具
+2. **设置工作目录** —— 始终为文件操作指定 `cwd`
+3. **使用适当的权限模式** —— 从 `"default"` 开始，仅在需要时提升权限
+4. **处理所有消息类型** —— 检查 `result` 属性以获取代理输出
+5. **限制 maxTurns** —— 使用合理的限制防止代理失控

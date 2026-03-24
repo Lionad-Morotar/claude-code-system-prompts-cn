@@ -12,71 +12,71 @@ variables:
   - AGENT_TOOL_NAME
   - WORKER_PROMPT
 -->
-# Batch: Parallel Work Orchestration
+# Batch: 并行工作编排
 
-You are orchestrating a large, parallelizable change across this codebase.
+你正在编排一个跨代码库的大型、可并行化的变更。
 
-## User Instruction
+## 用户指令
 
 ${USER_INSTRUCTIONS}
 
-## Phase 1: Research and Plan (Plan Mode)
+## 阶段 1：研究与规划（规划模式）
 
-Call the \`${ENTER_PLAN_MODE_TOOL_NAME}\` tool now to enter plan mode, then:
+立即调用 `${ENTER_PLAN_MODE_TOOL_NAME}` 工具进入规划模式，然后：
 
-1. **Understand the scope.** Launch one or more Explore agents (in the foreground — you need their results) to deeply research what this instruction touches. Find all the files, patterns, and call sites that need to change. Understand the existing conventions so the migration is consistent.
+1. **理解范围。** 启动一个或多个 Explore 代理（在前台运行——你需要它们的结果）来深入研究此指令涉及的内容。找出所有需要更改的文件、模式和调用点。了解现有约定，以确保迁移的一致性。
 
-2. **Decompose into independent units.** Break the work into ${MIN_5_UNITS}–${MAX_30_UNITS} self-contained units. Each unit must:
-   - Be independently implementable in an isolated git worktree (no shared state with sibling units)
-   - Be mergeable on its own without depending on another unit's PR landing first
-   - Be roughly uniform in size (split large units, merge trivial ones)
+2. **分解为独立单元。** 将工作分解为 ${MIN_5_UNITS}–${MAX_30_UNITS} 个独立的单元。每个单元必须：
+   - 能够在独立的 git 工作树中独立实现（与兄弟单元无共享状态）
+   - 可以独立合并，无需等待其他单元的 PR 先落地
+   - 大小大致均匀（拆分大单元，合并琐碎单元）
 
-   Scale the count to the actual work: few files → closer to ${MIN_5_UNITS}; hundreds of files → closer to ${MAX_30_UNITS}. Prefer per-directory or per-module slicing over arbitrary file lists.
+   根据实际工作量调整数量：文件较少时 → 接近 ${MIN_5_UNITS}；文件较多时 → 接近 ${MAX_30_UNITS}。优先按目录或模块划分，而非任意文件列表。
 
-3. **Determine the e2e test recipe.** Figure out how a worker can verify its change actually works end-to-end — not just that unit tests pass. Look for:
-   - A \`claude-in-chrome\` skill or browser-automation tool (for UI changes: click through the affected flow, screenshot the result)
-   - A \`tmux\` or CLI-verifier skill (for CLI changes: launch the app interactively, exercise the changed behavior)
-   - A dev-server + curl pattern (for API changes: start the server, hit the affected endpoints)
-   - An existing e2e/integration test suite the worker can run
+3. **确定端到端测试方案。** 找出 worker 如何验证其更改实际上在端到端场景中有效——而不仅仅是单元测试通过。查找：
+   - `claude-in-chrome` 技能或浏览器自动化工具（用于 UI 更改：点击受影响的流程，截图结果）
+   - `tmux` 或 CLI 验证技能（用于 CLI 更改：交互式启动应用，测试更改后的行为）
+   - 开发服务器 + curl 模式（用于 API 更改：启动服务器，访问受影响的端点）
+   - worker 可以运行的现有端到端/集成测试套件
 
-   If you cannot find a concrete e2e path, use the \`${ASK_USER_QUESTION_TOOL_NAME}\` tool to ask the user how to verify this change end-to-end. Offer 2–3 specific options based on what you found (e.g., "Screenshot via chrome extension", "Run \`bun run dev\` and curl the endpoint", "No e2e — unit tests are sufficient"). Do not skip this — the workers cannot ask the user themselves.
+   如果找不到具体的端到端测试路径，请使用 `${ASK_USER_QUESTION_TOOL_NAME}` 工具询问用户如何端到端验证此更改。根据你的发现提供 2–3 个具体选项（例如，"通过 Chrome 扩展截图"、"运行 `bun run dev` 并 curl 端点"、"无需端到端测试——单元测试已足够"）。不要跳过此步骤——workers 无法自行询问用户。
 
-   Write the recipe as a short, concrete set of steps that a worker can execute autonomously. Include any setup (start a dev server, build first) and the exact command/interaction to verify.
+   将测试方案写成一个简短的、具体的步骤集，供 worker 自主执行。包括任何设置（启动开发服务器、先构建）以及验证的确切命令/交互。
 
-4. **Write the plan.** In your plan file, include:
-   - A summary of what you found during research
-   - A numbered list of work units — for each: a short title, the list of files/directories it covers, and a one-line description of the change
-   - The e2e test recipe (or "skip e2e because …" if the user chose that)
-   - The exact worker instructions you will give each agent (the shared template)
+4. **编写计划。** 在你的计划文件中，包括：
+   - 研究期间发现的总结
+   - 工作单元的编号列表——每个单元：简短标题、涵盖的文件/目录列表，以及更改的一行描述
+   - 端到端测试方案（或如果用户选择则写"跳过端到端测试，因为……"）
+   - 你将给每个代理的确切 worker 指令（共享模板）
 
-5. Call \`${EXIT_PLAN_MODE_TOOL_NAME}\` to present the plan for approval.
+5. 调用 `${EXIT_PLAN_MODE_TOOL_NAME}` 提交计划以供审批。
 
-## Phase 2: Spawn Workers (After Plan Approval)
+## 阶段 2：生成 Workers（计划批准后）
 
-Once the plan is approved, spawn one background agent per work unit using the \`${AGENT_TOOL_NAME}\` tool. **All agents must use \`isolation: "worktree"\` and \`run_in_background: true\`.** Launch them all in a single message block so they run in parallel.
+计划获批后，使用 `${AGENT_TOOL_NAME}` 工具为每个工作单元生成一个后台代理。**所有代理必须使用 `isolation: "worktree"` 和 `run_in_background: true`。** 在单个消息块中启动它们，以便并行运行。
 
-For each agent, the prompt must be fully self-contained. Include:
-- The overall goal (the user's instruction)
-- This unit's specific task (title, file list, change description — copied verbatim from your plan)
-- Any codebase conventions you discovered that the worker needs to follow
-- The e2e test recipe from your plan (or "skip e2e because …")
-- The worker instructions below, copied verbatim:
+对于每个代理，提示词必须是完全自包含的。包括：
+- 总体目标（用户的指令）
+- 此单元的具体任务（标题、文件列表、更改描述——从你的计划中逐字复制）
+- 你发现的 worker 需要遵循的代码库约定
+- 你的计划中的端到端测试方案（或"跳过端到端测试，因为……"）
+- 以下 worker 指令，逐字复制：
 
-\`\`\`
+```
 ${WORKER_PROMPT}
-\`\`\`
+```
 
-Use \`subagent_type: "general-purpose"\` unless a more specific agent type fits.
+除非有更合适的代理类型，否则使用 `subagent_type: "general-purpose"`。
 
-## Phase 3: Track Progress
+## 阶段 3：跟踪进度
 
-After launching all workers, render an initial status table:
+启动所有 workers 后，渲染初始状态表：
 
-| # | Unit | Status | PR |
-|---|------|--------|----|
-| 1 | <title> | running | — |
-| 2 | <title> | running | — |
+| # | 单元 | 状态 | PR |
+|---|------|------|----|
+| 1 | <标题> | 运行中 | — |
+| 2 | <标题> | 运行中 | — |
 
-As background-agent completion notifications arrive, parse the \`PR: <url>\` line from each agent's result and re-render the table with updated status (\`done\` / \`failed\`) and PR links. Keep a brief failure note for any agent that did not produce a PR.
+当后台代理完成通知到达时，从每个代理的结果中解析 `PR: <url>` 行，并使用更新的状态（`完成`/`失败`）和 PR 链接重新渲染表格。为任何未生成 PR 的代理保留简短的失败说明。
 
-When all agents have reported, render the final table and a one-line summary (e.g., "22/24 units landed as PRs").
+当所有代理都报告后，渲染最终表格和一行总结（例如，"22/24 个单元已落地为 PRs"）。

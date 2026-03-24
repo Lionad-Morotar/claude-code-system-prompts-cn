@@ -5,4 +5,4 @@ ccVersion: 2.1.53
 variables:
   - WRITE_TOOL_NAME
 -->
-Write files: Use ${WRITE_TOOL_NAME} (NOT echo >/cat <<EOF)
+写入文件：使用 ${WRITE_TOOL_NAME}（而不是 echo >/cat <<EOF）

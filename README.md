@@ -5,14 +5,14 @@
 
 <div align="left">
 
-### Check out Piebald
-We've released **Piebald**, the ultimate agentic AI developer experience. \
-Download it and try it out for free!  **https://piebald.ai/**
+### 试试 Piebald
+我们发布了 **Piebald**，终极的智能体 AI 开发体验。\
+下载它并免费试用！**https://piebald.ai/**
 
-<a href="https://piebald.ai/discord"><img src="https://img.shields.io/badge/Join%20our%20Discord-5865F2?style=flat&logo=discord&logoColor=white" alt="Join our Discord"></a>
-<a href="https://x.com/PiebaldAI"><img src="https://img.shields.io/badge/Follow%20%40PiebaldAI-000000?style=flat&logo=x&logoColor=white" alt="X"></a>
+<a href="https://piebald.ai/discord"><img src="https://img.shields.io/badge/加入%20我们的%20Discord-5865F2?style=flat&logo=discord&logoColor=white" alt="Join our Discord"></a>
+<a href="https://x.com/PiebaldAI"><img src="https://img.shields.io/badge/关注%20%40PiebaldAI-000000?style=flat&logo=x&logoColor=white" alt="X"></a>
 
-<sub>[**Scroll down for Claude Code's system prompts.**](#claude-code-system-prompts) :point_down:</sub>
+<sub>[**向下滚动查看 Claude Code 的系统提示词。**](#claude-code-system-prompts) :point_down:</sub>
 
 </div>
 </div>
@@ -27,333 +27,191 @@ Download it and try it out for free!  **https://piebald.ai/**
 </a>
 </div>
 
-# Claude Code System Prompts
+# Claude Code 系统提示词
 
 [![Mentioned in Awesome Claude Code](https://awesome.re/mentioned-badge.svg)](https://github.com/hesreallyhim/awesome-claude-code)
 
 > [!important]
-> **NEW (January 23, 2026): We've added all of Claude Code's ~40 system reminders to this list&mdash;see [System Reminders](#system-reminders).**
+> **新增（2026 年 1 月 23 日）：我们已在此列表中添加了所有 Claude Code 的约 40 个系统提醒——请参阅 [系统提醒](#system-reminders)。**
 
-This repository contains an up-to-date list of all Claude Code's various system prompts and their associated token counts as of **[Claude Code v2.1.77](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.77) (March 16th, 2026).**  It also contains a [**CHANGELOG.md**](./CHANGELOG.md) for the system prompts across 127 versions since v2.0.14.  From the team behind [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/)
+此仓库包含截至 **[Claude Code v2.1.19](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.19)（2026 年 1 月 23 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 77 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
 
-**This repository is updated within minutes of each Claude Code release.  See the [changelog](./CHANGELOG.md), and follow [@PiebaldAI](https://x.com/PiebaldAI) on X for a summary of the system prompt changes in each release.**
-
-> [!note]
-> ⭐ **Star** this repository to get notified about new Claude Code versions.  For each new Claude Code version, we create a release on GitHub, which will notify all users who've starred the repository.
+**此仓库在每次 Claude Code 发布后的几分钟内更新。请查看 [更新日志](./CHANGELOG.md)，并在 X 上关注 [@PiebaldAI](https://x.com/PiebaldAI) 以获取每次发布中系统提示词变更的摘要。**
 
 ---
 
-Why multiple "system prompts?"
+为什么有多个"系统提示词"？
 
-**Claude Code doesn't just have one single string for its system prompt.**
+**Claude Code 的系统提示词不仅仅是一个单一的字符串。**
 
-Instead, there are:
-- Large portions conditionally added depending on the environment and various configs.
-- Descriptions for builtin tools like `Write`, `Bash`, and `TodoWrite`, and some are fairly large.
-- Separate system prompts for builtin agents like Explore and Plan.
-- Numerous AI-powered utility functions, such as conversation compaction, `CLAUDE.md` generation, session title generation, etc. featuring their own systems prompts.
+相反，包括：
+- 根据环境和各种配置有条件添加的大型部分。
+- 内置工具的描述，如 `Write`、`Bash` 和 `TodoWrite`，其中一些相当大。
+- 内置代理（如 Explore 和 Plan）的独立系统提示词。
+- 众多 AI 驱动的实用函数，如对话压缩、`CLAUDE.md` 生成、会话标题生成等，它们都有自己的系统提示词。
 
-The result&mdash;110+ strings that are constantly changing and moving within a very large minified JS file.
+结果——110+ 个不断变化并在一个非常大的压缩 JS 文件中移动的字符串。
 
 > [!TIP]
-> Want to **modify a particular piece of the system prompt** in your own Claude Code installation?  **Use [tweakcc](https://github.com/Piebald-AI/tweakcc).**  It&mdash;
-> - lets you customize the the individual pieces of the system prompt as markdown files, and then
-> - patches your npm-based or native (binary) Claude Code installation with them, and also
-> - provides diffing and conflict management for when both you and Anthropic have conflicting modifications to the same prompt file.
+> 想要在你自己的 Claude Code 安装中**修改系统提示词的特定部分**？**使用 [tweakcc](https://github.com/Piebald-AI/tweakcc)。** 它——
+> - 允许你将系统提示词的各个部分自定义为 markdown 文件，然后
+> - 使用它们修补你的基于 npm 或原生（二进制）的 Claude Code 安装，并且
+> - 为当您和 Anthropic 对同一个提示词文件有冲突修改时提供差异和冲突管理。
 
-## Extraction
+## 提取
 
-This repository contains the system prompts extracted using a script from the latest npm version of Claude Code.  As they're extracted directly from Claude Code's compiled source code, they're guaranteed to be exactly what Claude Code uses.  If you use [tweakcc](https://github.com/Piebald-AI/tweakcc) to customize the system prompts, it works in a similar way&mdash;it patches the exact same strings in your local installation as are extracted into this repository.
+此仓库包含使用脚本从最新 npm 版本的 Claude Code 中提取的系统提示词。由于它们直接从 Claude Code 的编译源代码中提取，因此保证与 Claude Code 使用的完全相同。如果你使用 [tweakcc](https://github.com/Piebald-AI/tweakcc) 来自定义系统提示词，它的工作方式类似——它会修补本地安装中与提取到此仓库中的完全相同的字符串。
 
-## Prompts
+## 提示词
 
-Note that some prompts contain interpolated bits such as builtin tool name references, lists of available sub agents, and various other context-specific variables, so the actual counts in a particular Claude Code session will differ slightly&mdash;likely not beyond ±20 tokens, however.
+请注意，某些提示词包含插值位，如内置工具名称引用、可用子代理列表以及各种其他上下文特定变量，因此在特定 Claude Code 会话中的实际计数会有所不同——但可能不会超过 ±20 个 token。
 
-### Agent Prompts
+### 代理提示词
 
-Sub-agents and utilities.
+子代理和实用程序。
 
-#### Sub-agents
+#### 子代理
 
-- [Agent Prompt: Explore strengths and guidelines](./system-prompts/agent-prompt-explore-strengths-and-guidelines.md) (**185** tks) - Defines the strengths and behavioral guidelines for the codebase exploration subagent, emphasizing search strategies, thoroughness, and avoiding unnecessary file creation.
-- [Agent Prompt: Explore](./system-prompts/agent-prompt-explore.md) (**517** tks) - System prompt for the Explore subagent.
-- [Agent Prompt: Plan mode (enhanced)](./system-prompts/agent-prompt-plan-mode-enhanced.md) (**685** tks) - Enhanced prompt for the Plan subagent.
+- [代理提示词：Explore](./system-prompts/agent-prompt-explore.md) (**516** tks) - Explore 子代理的系统提示词。
+- [代理提示词：Plan 模式（增强）](./system-prompts/agent-prompt-plan-mode-enhanced.md) (**633** tks) - Plan 子代理的增强提示词。
+- [代理提示词：Task 工具（额外说明）](./system-prompts/agent-prompt-task-tool-extra-notes.md) (**129** tks) - Task 工具使用的额外说明（绝对路径、无表情符号、工具调用前无冒号）。
+- [代理提示词：Task 工具](./system-prompts/agent-prompt-task-tool.md) (**294** tks) - 通过 Task 工具生成的子代理的系统提示词。
 
-#### Creation Assistants
+### 创建助手
 
-- [Agent Prompt: Agent creation architect](./system-prompts/agent-prompt-agent-creation-architect.md) (**1110** tks) - System prompt for creating custom AI agents with detailed specifications.
-- [Agent Prompt: CLAUDE.md creation](./system-prompts/agent-prompt-claudemd-creation.md) (**384** tks) - System prompt for analyzing codebases and creating CLAUDE.md documentation files.
-- [Agent Prompt: Status line setup](./system-prompts/agent-prompt-status-line-setup.md) (**1641** tks) - System prompt for the statusline-setup agent that configures status line display.
+- [代理提示词：代理创建架构师](./system-prompts/agent-prompt-agent-creation-architect.md) (**1110** tks) - 用于创建具有详细规范的自定义 AI 代理的系统提示词。
+- [代理提示词：CLAUDE.md 创建](./system-prompts/agent-prompt-claudemd-creation.md) (**384** tks) - 用于分析代码库并创建 CLAUDE.md 文档文件的系统提示词。
+- [代理提示词：状态栏设置](./system-prompts/agent-prompt-status-line-setup.md) (**1460** tks) - 用于配置状态栏显示的 statusline-setup 代理的系统提示词。
 
-#### Slash Commands
+### 斜杠命令
 
-- [Agent Prompt: /batch slash command](./system-prompts/agent-prompt-batch-slash-command.md) (**1136** tks) - Instructions for orchestrating a large, parallelizable change across a codebase.
-- [Agent Prompt: /pr-comments slash command](./system-prompts/agent-prompt-pr-comments-slash-command.md) (**402** tks) - System prompt for fetching and displaying GitHub PR comments.
-- [Agent Prompt: /review-pr slash command](./system-prompts/agent-prompt-review-pr-slash-command.md) (**211** tks) - System prompt for reviewing GitHub pull requests with code analysis.
-- [Agent Prompt: /security-review slash command](./system-prompts/agent-prompt-security-review-slash-command.md) (**2607** tks) - Comprehensive security review prompt for analyzing code changes with focus on exploitable vulnerabilities.
+- [代理提示词：/pr-comments 斜杠命令](./system-prompts/agent-prompt-pr-comments-slash-command.md) (**402** tks) - 用于获取和显示 GitHub PR 注释的系统提示词。
+- [代理提示词：/review-pr 斜杠命令](./system-prompts/agent-prompt-review-pr-slash-command.md) (**243** tks) - 用于通过代码分析审查 GitHub 拉取请求的系统提示词。
+- [代理提示词：/security-review 斜杠命令](./system-prompts/agent-prompt-security-review-slash-command.md) (**2610** tks) - 综合安全审查提示词，用于分析代码更改，重点关注可利用的漏洞。
 
-#### Utilities
+### 实用程序
 
-- [Agent Prompt: Agent Hook](./system-prompts/agent-prompt-agent-hook.md) (**133** tks) - Prompt for an 'agent hook'.
-- [Agent Prompt: Bash command description writer](./system-prompts/agent-prompt-bash-command-description-writer.md) (**207** tks) - Instructions for generating clear, concise command descriptions in active voice for bash commands.
-- [Agent Prompt: Bash command prefix detection](./system-prompts/agent-prompt-bash-command-prefix-detection.md) (**823** tks) - System prompt for detecting command prefixes and command injection.
-- [Agent Prompt: Claude guide agent](./system-prompts/agent-prompt-claude-guide-agent.md) (**744** tks) - System prompt for the claude-guide agent that helps users understand and use Claude Code, the Claude Agent SDK and the Claude API effectively.
-- [Agent Prompt: Coding session title generator](./system-prompts/agent-prompt-coding-session-title-generator.md) (**181** tks) - Generates a title for the coding session.
-- [Agent Prompt: Common suffix (response format)](./system-prompts/agent-prompt-common-suffix-response-format.md) (**188** tks) - Appends response format instructions to agent prompts, switching between concise sub-agent reporting and detailed standalone writeups based on a caller flag.
-- [Agent Prompt: Conversation summarization](./system-prompts/agent-prompt-conversation-summarization.md) (**956** tks) - System prompt for creating detailed conversation summaries.
-- [Agent Prompt: Determine which memory files to attach](./system-prompts/agent-prompt-determine-which-memory-files-to-attach.md) (**218** tks) - Agent for determining which memory files to attach for the main agent.
-- [Agent Prompt: Hook condition evaluator](./system-prompts/agent-prompt-hook-condition-evaluator.md) (**78** tks) - System prompt for evaluating hook conditions in Claude Code.
-- [Agent Prompt: Prompt Suggestion Generator v2](./system-prompts/agent-prompt-prompt-suggestion-generator-v2.md) (**296** tks) - V2 instructions for generating prompt suggestions for Claude Code.
-- [Agent Prompt: Quick PR creation](./system-prompts/agent-prompt-quick-pr-creation.md) (**806** tks) - Streamlined prompt for creating a commit and pull request with pre-populated context.
-- [Agent Prompt: Quick git commit](./system-prompts/agent-prompt-quick-git-commit.md) (**510** tks) - Streamlined prompt for creating a single git commit with pre-populated context.
-- [Agent Prompt: Recent Message Summarization](./system-prompts/agent-prompt-recent-message-summarization.md) (**559** tks) - Agent prompt used for summarizing recent messages.
-- [Agent Prompt: Security monitor for autonomous agent actions (first part)](./system-prompts/agent-prompt-security-monitor-for-autonomous-agent-actions-first-part.md) (**2675** tks) - Instructs Claude to act as a security monitor that evaluates autonomous coding agent actions against block/allow rules to prevent prompt injection, scope creep, and accidental damage.
-- [Agent Prompt: Security monitor for autonomous agent actions (second part)](./system-prompts/agent-prompt-security-monitor-for-autonomous-agent-actions-second-part.md) (**2966** tks) - Defines the environment context, block rules, and allow exceptions that govern which tool actions the agent may or may not perform.
-- [Agent Prompt: Session Search Assistant](./system-prompts/agent-prompt-session-search-assistant.md) (**439** tks) - Agent prompt for the session search assistant that finds relevant sessions based on user queries and metadata.
-- [Agent Prompt: Session memory update instructions](./system-prompts/agent-prompt-session-memory-update-instructions.md) (**756** tks) - Instructions for updating session memory files during conversations.
-- [Agent Prompt: Session title and branch generation](./system-prompts/agent-prompt-session-title-and-branch-generation.md) (**307** tks) - Agent for generating succinct session titles and git branch names.
-- [Agent Prompt: Update Magic Docs](./system-prompts/agent-prompt-update-magic-docs.md) (**718** tks) - Prompt for the magic-docs agent.
-- [Agent Prompt: Verification specialist](./system-prompts/agent-prompt-verification-specialist.md) (**2453** tks) - System prompt for a verification subagent that adversarially tests implementations by running builds, test suites, linters, and adversarial probes, then issuing a PASS/FAIL/PARTIAL verdict.
-- [Agent Prompt: WebFetch summarizer](./system-prompts/agent-prompt-webfetch-summarizer.md) (**189** tks) - Prompt for agent that summarizes verbose output from WebFetch for the main model.
-- [Agent Prompt: Worker fork execution](./system-prompts/agent-prompt-worker-fork-execution.md) (**370** tks) - System prompt for a forked worker sub-agent that executes a directive directly without spawning further sub-agents, then reports structured results.
+- [代理提示词：代理 Hook](./system-prompts/agent-prompt-agent-hook.md) (**133** tks) - '代理 hook' 的提示词。
+- [代理提示词：Bash 命令描述编写器](./system-prompts/agent-prompt-bash-command-description-writer.md) (**207** tks) - 用于以主动语气为 bash 命令生成清晰、简洁命令描述的说明。
+- [代理提示词：Bash 命令文件路径提取](./system-prompts/agent-prompt-bash-command-file-path-extraction.md) (**286** tks) - 用于从 bash 命令输出中提取文件路径的系统提示词。
+- [代理提示词：Bash 命令前缀检测](./system-prompts/agent-prompt-bash-command-prefix-detection.md) (**835** tks) - 用于检测命令前缀和命令注入的系统提示词。
+- [代理提示词：Claude 指南代理](./system-prompts/agent-prompt-claude-guide-agent.md) (**761** tks) - 用于 claude-guide 代理的系统提示词，该代理帮助用户有效地理解和使用 Claude Code、Claude Agent SDK 和 Claude API。
+- [代理提示词：命令执行专家](./system-prompts/agent-prompt-command-execution-specialist.md) (**109** tks) - 专注于 bash 命令的命令执行代理的系统提示词。
+- [代理提示词：带有附加说明的对话总结](./system-prompts/agent-prompt-conversation-summarization-with-additional-instructions.md) (**1133** tks) - 支持自定义附加说明的扩展总结提示词。
+- [代理提示词：对话总结](./system-prompts/agent-prompt-conversation-summarization.md) (**1121** tks) - 用于创建详细对话摘要的系统提示词。
+- [代理提示词：通过 Swarm 退出计划模式](./system-prompts/agent-prompt-exit-plan-mode-with-swarm.md) (**440** tks) - 当调用 ExitPlanMode 并将 `isSwarm` 设置为 true 时的系统提醒。
+- [代理提示词：提示词 Hook 执行](./system-prompts/agent-prompt-prompt-hook-execution.md) (**134** tks) - 在评估是传递还是失败提示词 hook 时给予 Claude 的提示词。
+- [代理提示词：提示词建议生成器（明确意图）](./system-prompts/agent-prompt-prompt-suggestion-generator-stated-intent.md) (**166** tks) - 用于根据用户明确说明的下一步生成提示词建议的说明。
+- [代理提示词：提示词建议生成器 v2](./system-prompts/agent-prompt-prompt-suggestion-generator-v2.md) (**296** tks) - 用于为 Claude Code 生成提示词建议的 v2 说明。
+- [代理提示词：Remember 技能](./system-prompts/agent-prompt-remember-skill.md) (**1048** tks) - /remember 技能的系统提示词，该技能审查会话记忆并使用重复模式和学习更新 CLAUDE.local.md。
+- [代理提示词：会话搜索助手](./system-prompts/agent-prompt-session-search-assistant.md) (**439** tks) - 用于会话搜索助手的代理提示词，该助手根据用户查询和元数据查找相关会话。
+- [代理提示词：会话记录模板](./system-prompts/agent-prompt-session-notes-template.md) (**292** tks) - 用于跟踪编码工作和决策的会话记录的模板结构。
+- [代理提示词：会话记录更新说明](./system-prompts/agent-prompt-session-notes-update-instructions.md) (**756** tks) - 用于在对话期间更新会话记录文件的说明。
+- [代理提示词：会话标题和分支生成](./system-prompts/agent-prompt-session-title-and-branch-generation.md) (**355** tks) - 用于为编码会话生成简洁标题和 git 分支名称的系统提示词。
+- [代理提示词：更新 Magic Docs](./system-prompts/agent-prompt-update-magic-docs.md) (**718** tks) - 用于 magic-docs 代理的提示词。
+- [代理提示词：用户情感分析](./system-prompts/agent-prompt-user-sentiment-analysis.md) (**205** tks) - 用于分析用户沮丧和 PR 创建请求的系统提示词。
+- [代理提示词：WebFetch 总结器](./system-prompts/agent-prompt-webfetch-summarizer.md) (**185** tks) - 用于为主模型总结 WebFetch 冗长输出的代理的提示词。
 
-### Data
+<!--
+### 数据
 
-The content of various template files embedded in Claude Code.
+其他大型字符串。
 
-- [Data: Agent SDK patterns — Python](./system-prompts/data-agent-sdk-patterns-python.md) (**2495** tks) - Python Agent SDK patterns including custom tools, hooks, subagents, MCP integration, and session resumption.
-- [Data: Agent SDK patterns — TypeScript](./system-prompts/data-agent-sdk-patterns-typescript.md) (**1250** tks) - TypeScript Agent SDK patterns including basic agents, hooks, subagents, and MCP integration.
-- [Data: Agent SDK reference — Python](./system-prompts/data-agent-sdk-reference-python.md) (**3104** tks) - Python Agent SDK reference including installation, quick start, custom tools via MCP, and hooks.
-- [Data: Agent SDK reference — TypeScript](./system-prompts/data-agent-sdk-reference-typescript.md) (**2921** tks) - TypeScript Agent SDK reference including installation, quick start, custom tools, and hooks.
-- [Data: Claude API reference — C#](./system-prompts/data-claude-api-reference-c.md) (**4703** tks) - C# SDK reference including installation, client initialization, basic requests, streaming, and tool use.
-- [Data: Claude API reference — Go](./system-prompts/data-claude-api-reference-go.md) (**4341** tks) - Go SDK reference.
-- [Data: Claude API reference — Java](./system-prompts/data-claude-api-reference-java.md) (**4770** tks) - Java SDK reference including installation, client initialization, basic requests, streaming, and beta tool use.
-- [Data: Claude API reference — PHP](./system-prompts/data-claude-api-reference-php.md) (**2381** tks) - PHP SDK reference.
-- [Data: Claude API reference — Python](./system-prompts/data-claude-api-reference-python.md) (**3518** tks) - Python SDK reference including installation, client initialization, basic requests, thinking, and multi-turn conversation.
-- [Data: Claude API reference — Ruby](./system-prompts/data-claude-api-reference-ruby.md) (**696** tks) - Ruby SDK reference including installation, client initialization, basic requests, streaming, and beta tool runner.
-- [Data: Claude API reference — TypeScript](./system-prompts/data-claude-api-reference-typescript.md) (**2837** tks) - TypeScript SDK reference including installation, client initialization, basic requests, thinking, and multi-turn conversation.
-- [Data: Claude API reference — cURL](./system-prompts/data-claude-api-reference-curl.md) (**1996** tks) - Raw API reference for Claude API for use with cURL or else Raw HTTP.
-- [Data: Claude model catalog](./system-prompts/data-claude-model-catalog.md) (**1558** tks) - Catalog of current and legacy Claude models with exact model IDs, aliases, context windows, and pricing.
-- [Data: Files API reference — Python](./system-prompts/data-files-api-reference-python.md) (**1334** tks) - Python Files API reference including file upload, listing, deletion, and usage in messages.
-- [Data: Files API reference — TypeScript](./system-prompts/data-files-api-reference-typescript.md) (**797** tks) - TypeScript Files API reference including file upload, listing, deletion, and usage in messages.
-- [Data: GitHub Actions workflow for @claude mentions](./system-prompts/data-github-actions-workflow-for-claude-mentions.md) (**527** tks) - GitHub Actions workflow template for triggering Claude Code via @claude mentions.
-- [Data: GitHub App installation PR description](./system-prompts/data-github-app-installation-pr-description.md) (**424** tks) - Template for PR description when installing Claude Code GitHub App integration.
-- [Data: HTTP error codes reference](./system-prompts/data-http-error-codes-reference.md) (**1922** tks) - Reference for HTTP error codes returned by the Claude API with common causes and handling strategies.
-- [Data: Live documentation sources](./system-prompts/data-live-documentation-sources.md) (**2336** tks) - WebFetch URLs for fetching current Claude API and Agent SDK documentation from official sources.
-- [Data: Message Batches API reference — Python](./system-prompts/data-message-batches-api-reference-python.md) (**1544** tks) - Python Batches API reference including batch creation, status polling, and result retrieval at 50% cost.
-- [Data: Session memory template](./system-prompts/data-session-memory-template.md) (**292** tks) - Template structure for session memory `summary.md` files.
-- [Data: Streaming reference — Python](./system-prompts/data-streaming-reference-python.md) (**1528** tks) - Python streaming reference including sync/async streaming and handling different content types.
-- [Data: Streaming reference — TypeScript](./system-prompts/data-streaming-reference-typescript.md) (**1703** tks) - TypeScript streaming reference including basic streaming and handling different content types.
-- [Data: Tool use concepts](./system-prompts/data-tool-use-concepts.md) (**3939** tks) - Conceptual foundations of tool use with the Claude API including tool definitions, tool choice, and best practices.
-- [Data: Tool use reference — Python](./system-prompts/data-tool-use-reference-python.md) (**5106** tks) - Python tool use reference including tool runner, manual agentic loop, code execution, and structured outputs.
-- [Data: Tool use reference — TypeScript](./system-prompts/data-tool-use-reference-typescript.md) (**5033** tks) - TypeScript tool use reference including tool runner, manual agentic loop, code execution, and structured outputs.
+- [数据：用于 @claude 提及的 GitHub Actions 工作流](./system-prompts/data-github-actions-workflow-for-claude-mentions.md) (**527** tks) - 用于通过 @claude 提及触发 Claude Code 的 GitHub Actions 工作流模板。
+- [数据：GitHub App 安装 PR 描述](./system-prompts/data-github-app-installation-pr-description.md) (**424** tks) - 安装 Claude Code GitHub App 集成时的 PR 描述模板。
+-->
 
-### System Prompt
+### 系统提示词
 
-Parts of the main system prompt.
+主系统提示词的部分内容。
 
-- [System Prompt: Agent Summary Generation](./system-prompts/system-prompt-agent-summary-generation.md) (**178** tks) - System prompt used for "Agent Summary" generation.
-- [System Prompt: Agent memory instructions](./system-prompts/system-prompt-agent-memory-instructions.md) (**337** tks) - Instructions for including memory update guidance in agent system prompts.
-- [System Prompt: Agent thread notes](./system-prompts/system-prompt-agent-thread-notes.md) (**216** tks) - Behavioral guidelines for agent threads covering absolute paths, response formatting, emoji avoidance, and tool call punctuation.
-- [System Prompt: Analysis instructions for full compact prompt (full conversation)](./system-prompts/system-prompt-analysis-instructions-for-full-compact-prompt-full-conversation.md) (**182** tks) - System prompt for the analysis instructions.  Part of the compaction instructions.  Full conversation.
-- [System Prompt: Analysis instructions for full compact prompt (minimal and via feature flag)](./system-prompts/system-prompt-analysis-instructions-for-full-compact-prompt-minimal-and-via-feature-flag.md) (**157** tks) - System prompt for the analysis instructions.  Part of the compaction instructions.  Lean version - experimental.
-- [System Prompt: Analysis instructions for full compact prompt (recent messages)](./system-prompts/system-prompt-analysis-instructions-for-full-compact-prompt-recent-messages.md) (**178** tks) - System prompt for the analysis instructions.  Part of the compaction instructions.  Recent messages only.
-- [System Prompt: Auto mode](./system-prompts/system-prompt-auto-mode.md) (**188** tks) - Continuous task execution, akin to a background agent.
-- [System Prompt: Censoring assistance with malicious activities](./system-prompts/system-prompt-censoring-assistance-with-malicious-activities.md) (**98** tks) - Guidelines for assisting with authorized security testing, defensive security, CTF challenges, and educational contexts while censoring requests for malicious activities.
-- [System Prompt: Chrome browser MCP tools](./system-prompts/system-prompt-chrome-browser-mcp-tools.md) (**156** tks) - Instructions for loading Chrome browser MCP tools via MCPSearch before use.
-- [System Prompt: Claude in Chrome browser automation](./system-prompts/system-prompt-claude-in-chrome-browser-automation.md) (**759** tks) - Instructions for using Claude in Chrome browser automation tools effectively.
-- [System Prompt: Context compaction summary](./system-prompts/system-prompt-context-compaction-summary.md) (**278** tks) - Prompt used for context compaction summary (for the SDK).
-- [System Prompt: Description part of memory instructions](./system-prompts/system-prompt-description-part-of-memory-instructions.md) (**148** tks) - Field for describing _what_ the memory is.  Part of a bigger effort to instruct Claude how to create memories.
-- [System Prompt: Doing tasks (ambitious tasks)](./system-prompts/system-prompt-doing-tasks-ambitious-tasks.md) (**47** tks) - Allow users to complete ambitious tasks; defer to user judgement on scope.
-- [System Prompt: Doing tasks (avoid over-engineering)](./system-prompts/system-prompt-doing-tasks-avoid-over-engineering.md) (**30** tks) - Only make changes that are directly requested or clearly necessary.
-- [System Prompt: Doing tasks (blocked approach)](./system-prompts/system-prompt-doing-tasks-blocked-approach.md) (**90** tks) - Consider alternatives when blocked instead of brute-forcing.
-- [System Prompt: Doing tasks (help and feedback)](./system-prompts/system-prompt-doing-tasks-help-and-feedback.md) (**24** tks) - How to inform users about help and feedback channels.
-- [System Prompt: Doing tasks (minimize file creation)](./system-prompts/system-prompt-doing-tasks-minimize-file-creation.md) (**47** tks) - Prefer editing existing files over creating new ones.
-- [System Prompt: Doing tasks (no compatibility hacks)](./system-prompts/system-prompt-doing-tasks-no-compatibility-hacks.md) (**52** tks) - Delete unused code completely rather than adding compatibility shims.
-- [System Prompt: Doing tasks (no premature abstractions)](./system-prompts/system-prompt-doing-tasks-no-premature-abstractions.md) (**60** tks) - Do not create abstractions for one-time operations or hypothetical requirements.
-- [System Prompt: Doing tasks (no time estimates)](./system-prompts/system-prompt-doing-tasks-no-time-estimates.md) (**47** tks) - Avoid giving time estimates or predictions.
-- [System Prompt: Doing tasks (no unnecessary additions)](./system-prompts/system-prompt-doing-tasks-no-unnecessary-additions.md) (**78** tks) - Do not add features, refactor, or improve beyond what was asked.
-- [System Prompt: Doing tasks (no unnecessary error handling)](./system-prompts/system-prompt-doing-tasks-no-unnecessary-error-handling.md) (**64** tks) - Do not add error handling for impossible scenarios; only validate at boundaries.
-- [System Prompt: Doing tasks (read before modifying)](./system-prompts/system-prompt-doing-tasks-read-before-modifying.md) (**46** tks) - Read and understand existing code before suggesting modifications.
-- [System Prompt: Doing tasks (security)](./system-prompts/system-prompt-doing-tasks-security.md) (**67** tks) - Avoid introducing security vulnerabilities like injection, XSS, etc.
-- [System Prompt: Doing tasks (software engineering focus)](./system-prompts/system-prompt-doing-tasks-software-engineering-focus.md) (**104** tks) - Users primarily request software engineering tasks; interpret instructions in that context.
-- [System Prompt: Executing actions with care](./system-prompts/system-prompt-executing-actions-with-care.md) (**541** tks) - Instructions for executing actions carefully.
-- [System Prompt: Fork usage guidelines](./system-prompts/system-prompt-fork-usage-guidelines.md) (**339** tks) - Instructions for when to fork subagents and rules against reading fork output mid-flight or fabricating fork results.
-- [System Prompt: Git status](./system-prompts/system-prompt-git-status.md) (**97** tks) - System prompt for displaying the current git status at the start of the conversation.
-- [System Prompt: Hooks Configuration](./system-prompts/system-prompt-hooks-configuration.md) (**1493** tks) - System prompt for hooks configuration.  Used for above Claude Code config skill.
-- [System Prompt: How to use the SendUserMessage tool](./system-prompts/system-prompt-how-to-use-the-sendusermessage-tool.md) (**283** tks) - Instructions for using the SendUserMessage tool.
-- [System Prompt: Insights at a glance summary](./system-prompts/system-prompt-insights-at-a-glance-summary.md) (**569** tks) - Generates a concise 4-part summary (what's working, hindrances, quick wins, ambitious workflows) for the insights report.
-- [System Prompt: Insights friction analysis](./system-prompts/system-prompt-insights-friction-analysis.md) (**139** tks) - Analyzes aggregated usage data to identify friction patterns and categorize recurring issues.
-- [System Prompt: Insights on the horizon](./system-prompts/system-prompt-insights-on-the-horizon.md) (**148** tks) - Identifies ambitious future workflows and opportunities for autonomous AI-assisted development.
-- [System Prompt: Insights session facets extraction](./system-prompts/system-prompt-insights-session-facets-extraction.md) (**310** tks) - Extracts structured facets (goal categories, satisfaction, friction) from a single Claude Code session transcript.
-- [System Prompt: Insights suggestions](./system-prompts/system-prompt-insights-suggestions.md) (**748** tks) - Generates actionable suggestions including CLAUDE.md additions, features to try, and usage patterns.
-- [System Prompt: Learning mode (insights)](./system-prompts/system-prompt-learning-mode-insights.md) (**142** tks) - Instructions for providing educational insights when learning mode is active.
-- [System Prompt: Learning mode](./system-prompts/system-prompt-learning-mode.md) (**1042** tks) - Main system prompt for learning mode with human collaboration instructions.
-- [System Prompt: Memory system (private feedback)](./system-prompts/system-prompt-memory-system-private-feedback.md) (**112** tks) - Describes the private feedback memory type for storing user guidance and corrections, with instructions to check for contradictions against team feedback before saving.
-- [System Prompt: One of six rules for using sleep command](./system-prompts/system-prompt-one-of-six-rules-for-using-sleep-command.md) (**23** tks) - One of the six rules for using the sleep command.
-- [System Prompt: Option previewer](./system-prompts/system-prompt-option-previewer.md) (**151** tks) - System prompt for previewing UI options in a side-by-side layout.
-- [System Prompt: Output efficiency](./system-prompts/system-prompt-output-efficiency.md) (**177** tks) - Instructs Claude to be concise and direct in text output, leading with answers over reasoning and limiting responses to essential information.
-- [System Prompt: Parallel tool call note (part of "Tool usage policy")](./system-prompts/system-prompt-parallel-tool-call-note-part-of-tool-usage-policy.md) (**102** tks) - System prompt for telling Claude to using parallel tool calls.
-- [System Prompt: Phase four of plan mode](./system-prompts/system-prompt-phase-four-of-plan-mode.md) (**142** tks) - Phase four of plan mode.
-- [System Prompt: Scratchpad directory](./system-prompts/system-prompt-scratchpad-directory.md) (**170** tks) - Instructions for using a dedicated scratchpad directory for temporary files.
-- [System Prompt: Skillify Current Session](./system-prompts/system-prompt-skillify-current-session.md) (**1882** tks) - System prompt for converting the current session in to a skill.
-- [System Prompt: Subagent delegation examples](./system-prompts/system-prompt-subagent-delegation-examples.md) (**588** tks) - Provides example interactions showing how a coordinator agent should delegate tasks to subagents, handle waiting states, and report results.
-- [System Prompt: System section](./system-prompts/system-prompt-system-section.md) (**156** tks) - System section of the main system prompt.
-- [System Prompt: Team memory content display](./system-prompts/system-prompt-team-memory-content-display.md) (**52** tks) - Renders shared team memory file contents with path and content for injection into the conversation context.
-- [System Prompt: Teammate Communication](./system-prompts/system-prompt-teammate-communication.md) (**130** tks) - System prompt for teammate communication in swarm.
-- [System Prompt: Tone and style (code references)](./system-prompts/system-prompt-tone-and-style-code-references.md) (**39** tks) - Instruction to include file_path:line_number when referencing code.
-- [System Prompt: Tone and style (concise output — detailed)](./system-prompts/system-prompt-tone-and-style-concise-output-detailed.md) (**89** tks) - Instruction for concise, polished output without filler or inner monologue.
-- [System Prompt: Tone and style (concise output — short)](./system-prompts/system-prompt-tone-and-style-concise-output-short.md) (**16** tks) - Instruction for short and concise responses.
-- [System Prompt: Tool Use Summary Generation](./system-prompts/system-prompt-tool-use-summary-generation.md) (**171** tks) - Prompt for generating summaries of tool usage.
-- [System Prompt: Tool execution denied](./system-prompts/system-prompt-tool-execution-denied.md) (**144** tks) - System prompt for when tool execution is denied.
-- [System Prompt: Tool usage (create files)](./system-prompts/system-prompt-tool-usage-create-files.md) (**30** tks) - Prefer Write tool instead of cat heredoc or echo redirection.
-- [System Prompt: Tool usage (delegate exploration)](./system-prompts/system-prompt-tool-usage-delegate-exploration.md) (**95** tks) - Use Task tool for broader codebase exploration and deep research.
-- [System Prompt: Tool usage (direct search)](./system-prompts/system-prompt-tool-usage-direct-search.md) (**39** tks) - Use Glob/Grep directly for simple, directed searches.
-- [System Prompt: Tool usage (edit files)](./system-prompts/system-prompt-tool-usage-edit-files.md) (**26** tks) - Prefer Edit tool instead of sed/awk.
-- [System Prompt: Tool usage (read files)](./system-prompts/system-prompt-tool-usage-read-files.md) (**29** tks) - Prefer Read tool instead of cat/head/tail/sed.
-- [System Prompt: Tool usage (reserve Bash)](./system-prompts/system-prompt-tool-usage-reserve-bash.md) (**75** tks) - Reserve Bash tool exclusively for system commands and terminal operations.
-- [System Prompt: Tool usage (search content)](./system-prompts/system-prompt-tool-usage-search-content.md) (**30** tks) - Prefer Grep tool instead of grep or rg.
-- [System Prompt: Tool usage (search files)](./system-prompts/system-prompt-tool-usage-search-files.md) (**26** tks) - Prefer Glob tool instead of find or ls.
-- [System Prompt: Tool usage (skill invocation)](./system-prompts/system-prompt-tool-usage-skill-invocation.md) (**102** tks) - Slash commands invoke user-invocable skills via Skill tool.
-- [System Prompt: Tool usage (subagent guidance)](./system-prompts/system-prompt-tool-usage-subagent-guidance.md) (**103** tks) - Guidance on when and how to use subagents effectively.
-- [System Prompt: Tool usage (task management)](./system-prompts/system-prompt-tool-usage-task-management.md) (**73** tks) - Use TodoWrite to break down and track work progress.
-- [System Prompt: Worker instructions](./system-prompts/system-prompt-worker-instructions.md) (**272** tks) - Instructions for workers to follow when implementing a change.
-- [System Prompt: Writing subagent prompts](./system-prompts/system-prompt-writing-subagent-prompts.md) (**365** tks) - Guidelines for writing effective prompts when delegating tasks to subagents, covering context-inheriting vs fresh subagent scenarios.
+- [**系统提示词：主系统提示词**](./system-prompts/system-prompt-main-system-prompt.md) (**2896** tks) - Claude Code 的核心系统提示词，定义行为、语气和工具使用策略。
+- [系统提示词：审查恶意活动协助](./system-prompts/system-prompt-censoring-assistance-with-malicious-activities.md) (**98** tks) - 用于协助授权安全测试、防御性安全、CTF 挑战和教育背景的指导，同时审查恶意活动请求。
+- [系统提示词：Chrome 浏览器 MCP 工具](./system-prompts/system-prompt-chrome-browser-mcp-tools.md) (**158** tks) - 在使用前通过 MCPSearch 加载 Chrome 浏览器 MCP 工具的说明。
+- [系统提示词：Chrome 浏览器自动化中的 Claude](./system-prompts/system-prompt-claude-in-chrome-browser-automation.md) (**761** tks) - 有效使用 Chrome 浏览器自动化工具中的 Claude 的说明。
+- [系统提示词：Git 状态](./system-prompts/system-prompt-git-status.md) (**95** tks) - 用于在对话开始时显示当前 git 状态的系统提示词。
+- [系统提示词：Hooks 配置](./system-prompts/system-prompt-hooks-configuration.md) (**1268** tks) - hooks 配置的系统提示词。用于上述 Claude Code 配置技能。
+- [系统提示词：学习模式（见解）](./system-prompts/system-prompt-learning-mode-insights.md) (**142** tks) - 在学习模式处于活动状态时提供教育见解的说明。
+- [系统提示词：学习模式](./system-prompts/system-prompt-learning-mode.md) (**1042** tks) - 带有人类协作说明的学习模式的主系统提示词。
+- [系统提示词：MCP CLI](./system-prompts/system-prompt-mcp-cli.md) (**1335** tks) - 使用 mcp-cli 与模型上下文协议服务器交互的说明。
+- [系统提示词：临时目录](./system-prompts/system-prompt-scratchpad-directory.md) (**172** tks) - 使用专用临时目录存储临时文件的说明。
+- [系统提示词：队友通信](./system-prompts/system-prompt-teammate-communication.md) (**138** tks) - 用于 swarm 中队友通信的系统提示词。
+- [系统提示词：工具使用总结生成](./system-prompts/system-prompt-tool-use-summary-generation.md) (**171** tks) - 用于生成工具使用摘要的提示词。
+- [系统提示词：工具执行被拒绝](./system-prompts/system-prompt-tool-execution-denied.md) (**157** tks) - 工具执行被拒绝时的系统提示词。
 
-### System Reminders
+### 系统提醒
 
-Text for large system reminders.
+所有 Claude Code 系统提醒。
 
-- [System Reminder: /btw side question](./system-prompts/system-reminder-btw-side-question.md) (**244** tks) - System reminder for /btw slash command side questions without tools.
-- [System Reminder: Agent mention](./system-prompts/system-reminder-agent-mention.md) (**45** tks) - Notification that user wants to invoke an agent.
-- [System Reminder: Compact file reference](./system-prompts/system-reminder-compact-file-reference.md) (**57** tks) - Reference to file read before conversation summarization.
-- [System Reminder: Exited plan mode](./system-prompts/system-reminder-exited-plan-mode.md) (**73** tks) - Notification when exiting plan mode.
-- [System Reminder: File exists but empty](./system-prompts/system-reminder-file-exists-but-empty.md) (**27** tks) - Warning when reading an empty file.
-- [System Reminder: File modified by user or linter](./system-prompts/system-reminder-file-modified-by-user-or-linter.md) (**97** tks) - Notification that a file was modified externally.
-- [System Reminder: File opened in IDE](./system-prompts/system-reminder-file-opened-in-ide.md) (**37** tks) - Notification that user opened a file in IDE.
-- [System Reminder: File shorter than offset](./system-prompts/system-reminder-file-shorter-than-offset.md) (**59** tks) - Warning when file read offset exceeds file length.
-- [System Reminder: File truncated](./system-prompts/system-reminder-file-truncated.md) (**74** tks) - Notification that file was truncated due to size.
-- [System Reminder: Hook additional context](./system-prompts/system-reminder-hook-additional-context.md) (**35** tks) - Additional context from a hook.
-- [System Reminder: Hook blocking error](./system-prompts/system-reminder-hook-blocking-error.md) (**52** tks) - Error from a blocking hook command.
-- [System Reminder: Hook stopped continuation prefix](./system-prompts/system-reminder-hook-stopped-continuation-prefix.md) (**12** tks) - Prefix for hook stopped continuation messages.
-- [System Reminder: Hook stopped continuation](./system-prompts/system-reminder-hook-stopped-continuation.md) (**30** tks) - Message when a hook stops continuation.
-- [System Reminder: Hook success](./system-prompts/system-reminder-hook-success.md) (**29** tks) - Success message from a hook.
-- [System Reminder: Invoked skills](./system-prompts/system-reminder-invoked-skills.md) (**33** tks) - List of skills invoked in this session.
-- [System Reminder: Lines selected in IDE](./system-prompts/system-reminder-lines-selected-in-ide.md) (**66** tks) - Notification about lines selected by user in IDE.
-- [System Reminder: MCP resource no content](./system-prompts/system-reminder-mcp-resource-no-content.md) (**41** tks) - Shown when MCP resource has no content.
-- [System Reminder: MCP resource no displayable content](./system-prompts/system-reminder-mcp-resource-no-displayable-content.md) (**43** tks) - Shown when MCP resource has no displayable content.
-- [System Reminder: Malware analysis after Read tool call](./system-prompts/system-reminder-malware-analysis-after-read-tool-call.md) (**87** tks) - Instructions for analyzing malware without improving or augmenting it.
-- [System Reminder: Memory file contents](./system-prompts/system-reminder-memory-file-contents.md) (**38** tks) - Contents of a memory file by path.
-- [System Reminder: Nested memory contents](./system-prompts/system-reminder-nested-memory-contents.md) (**33** tks) - Contents of a nested memory file.
-- [System Reminder: New diagnostics detected](./system-prompts/system-reminder-new-diagnostics-detected.md) (**35** tks) - Notification about new diagnostic issues.
-- [System Reminder: Output style active](./system-prompts/system-reminder-output-style-active.md) (**32** tks) - Notification that an output style is active.
-- [System Reminder: Plan file reference](./system-prompts/system-reminder-plan-file-reference.md) (**62** tks) - Reference to an existing plan file.
-- [System Reminder: Plan mode is active (5-phase)](./system-prompts/system-reminder-plan-mode-is-active-5-phase.md) (**1297** tks) - Enhanced plan mode system reminder with parallel exploration and multi-agent planning.
-- [System Reminder: Plan mode is active (iterative)](./system-prompts/system-reminder-plan-mode-is-active-iterative.md) (**919** tks) - Iterative plan mode system reminder for main agent with user interviewing workflow.
-- [System Reminder: Plan mode is active (subagent)](./system-prompts/system-reminder-plan-mode-is-active-subagent.md) (**307** tks) - Simplified plan mode system reminder for sub agents.
-- [System Reminder: Plan mode re-entry](./system-prompts/system-reminder-plan-mode-re-entry.md) (**236** tks) - System reminder sent when the user enters Plan mode after having previously exited it either via shift+tab or by approving Claude's plan.
-- [System Reminder: Session continuation](./system-prompts/system-reminder-session-continuation.md) (**37** tks) - Notification that session continues from another machine.
-- [System Reminder: Task status](./system-prompts/system-reminder-task-status.md) (**18** tks) - Task status with TaskOutput tool reference.
-- [System Reminder: Task tools reminder](./system-prompts/system-reminder-task-tools-reminder.md) (**123** tks) - Reminder to use task tracking tools.
-- [System Reminder: Team Coordination](./system-prompts/system-reminder-team-coordination.md) (**250** tks) - System reminder for team coordination.
-- [System Reminder: Team Shutdown](./system-prompts/system-reminder-team-shutdown.md) (**136** tks) - System reminder for team shutdown.
-- [System Reminder: TodoWrite reminder](./system-prompts/system-reminder-todowrite-reminder.md) (**98** tks) - Reminder to use TodoWrite tool for task tracking.
-- [System Reminder: Token usage](./system-prompts/system-reminder-token-usage.md) (**39** tks) - Current token usage statistics.
-- [System Reminder: USD budget](./system-prompts/system-reminder-usd-budget.md) (**42** tks) - Current USD budget statistics.
-- [System Reminder: Verify plan reminder](./system-prompts/system-reminder-verify-plan-reminder.md) (**47** tks) - Reminder to verify completed plan.
+- [系统提醒：代理提及](./system-prompts/system-reminder-agent-mention.md) (**45** tks) - 通知用户想要调用代理。
+- [系统提醒：紧凑文件引用](./system-prompts/system-reminder-compact-file-reference.md) (**57** tks) - 对话总结之前读取的文件的引用。
+- [系统提醒：委派模式提示词](./system-prompts/system-reminder-delegate-mode-prompt.md) (**185** tks) - 委派模式的系统提醒。
+- [系统提醒：退出委派模式](./system-prompts/system-reminder-exited-delegate-mode.md) (**50** tks) - 在 swarm 中退出委派模式时的通知。
+- [系统提醒：退出计划模式](./system-prompts/system-reminder-exited-plan-mode.md) (**73** tks) - 退出计划模式时的通知。
+- [系统提醒：文件存在但为空](./system-prompts/system-reminder-file-exists-but-empty.md) (**27** tks) - 读取空文件时的警告。
+- [系统提醒：文件被用户或 linter 修改](./system-prompts/system-reminder-file-modified-by-user-or-linter.md) (**97** tks) - 文件被外部修改的通知。
+- [系统提醒：文件在 IDE 中打开](./system-prompts/system-reminder-file-opened-in-ide.md) (**37** tks) - 用户在 IDE 中打开文件的通知。
+- [系统提醒：文件短于偏移量](./system-prompts/system-reminder-file-shorter-than-offset.md) (**59** tks) - 文件读取偏移量超过文件长度时的警告。
+- [系统提醒：文件被截断](./system-prompts/system-reminder-file-truncated.md) (**74** tks) - 文件由于大小而被截断的通知。
+- [系统提醒：Hook 附加上下文](./system-prompts/system-reminder-hook-additional-context.md) (**35** tks) - 来自 hook 的附加上下文。
+- [系统提醒：Hook 阻塞错误](./system-prompts/system-reminder-hook-blocking-error.md) (**52** tks) - 来自阻塞 hook 命令的错误。
+- [系统提醒：Hook 停止继续](./system-prompts/system-reminder-hook-stopped-continuation.md) (**30** tks) - hook 停止继续时的消息。
+- [系统提醒：Hook 成功](./system-prompts/system-reminder-hook-success.md) (**29** tks) - 来自 hook 的成功消息。
+- [系统提醒：已调用技能](./system-prompts/system-reminder-invoked-skills.md) (**33** tks) - 此会话中调用的技能列表。
+- [系统提醒：IDE 中选中的行](./system-prompts/system-reminder-lines-selected-in-ide.md) (**66** tks) - 关于用户在 IDE 中选中的行的通知。
+- [系统提醒：MCP 资源无内容](./system-prompts/system-reminder-mcp-resource-no-content.md) (**41** tks) - 当 MCP 资源没有内容时显示。
+- [系统提醒：MCP 资源无可显示内容](./system-prompts/system-reminder-mcp-resource-no-displayable-content.md) (**43** tks) - 当 MCP 资源没有可显示内容时显示。
+- [系统提醒：Read 工具调用后的恶意软件分析](./system-prompts/system-reminder-malware-analysis-after-read-tool-call.md) (**87** tks) - 用于在不改进或增强恶意软件的情况下分析恶意软件的说明。
+- [系统提醒：记忆文件内容](./system-prompts/system-reminder-memory-file-contents.md) (**38** tks) - 按路径的记忆文件内容。
+- [系统提醒：嵌套记忆内容](./system-prompts/system-reminder-nested-memory-contents.md) (**33** tks) - 嵌套记忆文件的内容。
+- [系统提醒：检测到新诊断](./system-prompts/system-reminder-new-diagnostics-detected.md) (**35** tks) - 关于新诊断问题的通知。
+- [系统提醒：输出样式处于活动状态](./system-prompts/system-reminder-output-style-active.md) (**32** tks) - 通知输出样式处于活动状态。
+- [系统提醒：输出 token 限制超出](./system-prompts/system-reminder-output-token-limit-exceeded.md) (**35** tks) - 响应超出输出 token 限制时的警告。
+- [系统提醒：计划文件引用](./system-prompts/system-reminder-plan-file-reference.md) (**62** tks) - 对现有计划文件的引用。
+- [系统提醒：计划模式处于活动状态（5 阶段）](./system-prompts/system-reminder-plan-mode-is-active-5-phase.md) (**1348** tks) - 增强的计划模式系统提醒，支持并行探索和多代理规划。
+- [系统提醒：计划模式处于活动状态（迭代）](./system-prompts/system-reminder-plan-mode-is-active-iterative.md) (**854** tks) - 带有用户访谈工作流的主代理的迭代计划模式系统提醒。
+- [系统提醒：计划模式处于活动状态（子代理）](./system-prompts/system-reminder-plan-mode-is-active-subagent.md) (**310** tks) - 子代理的简化计划模式系统提醒。
+- [系统提醒：计划模式重新进入](./system-prompts/system-reminder-plan-mode-re-entry.md) (**236** tks) - 当用户在通过 shift+tab 或批准 Claude 的计划退出计划模式后再次进入计划模式时发送的系统提醒。
+- [系统提醒：排队命令（提示词）](./system-prompts/system-reminder-queued-command-prompt.md) (**35** tks) - 要处理的排队用户消息（提示词变体）。
+- [系统提醒：排队命令](./system-prompts/system-reminder-queued-command.md) (**31** tks) - 要处理的排队用户消息。
+- [系统提醒：会话继续](./system-prompts/system-reminder-session-continuation.md) (**37** tks) - 会话从另一台机器继续的通知。
+- [系统提醒：会话记忆](./system-prompts/system-reminder-session-memory.md) (**105** tks) - 可能相关的过去会话摘要。
+- [系统提醒：任务状态](./system-prompts/system-reminder-task-status.md) (**18** tks) - 带有 TaskOutput 工具引用的任务状态。
+- [系统提醒：任务工具提醒](./system-prompts/system-reminder-task-tools-reminder.md) (**123** tks) - 使用任务跟踪工具的提醒。
+- [系统提醒：团队协调](./system-prompts/system-reminder-team-coordination.md) (**247** tks) - 团队协调的系统提醒。
+- [系统提醒：团队关闭](./system-prompts/system-reminder-team-shutdown.md) (**136** tks) - 团队关闭的系统提醒。
+- [系统提醒：待办事项列表已更改](./system-prompts/system-reminder-todo-list-changed.md) (**61** tks) - 待办事项列表已更改的通知。
+- [系统提醒：待办事项列表为空](./system-prompts/system-reminder-todo-list-empty.md) (**83** tks) - 待办事项列表为空的提醒。
+- [系统提醒：TodoWrite 提醒](./system-prompts/system-reminder-todowrite-reminder.md) (**98** tks) - 使用 TodoWrite 工具进行任务跟踪的提醒。
+- [系统提醒：Token 使用情况](./system-prompts/system-reminder-token-usage.md) (**39** tks) - 当前 token 使用情况统计。
+- [系统提醒：USD 预算](./system-prompts/system-reminder-usd-budget.md) (**42** tks) - 当前 USD 预算统计。
+- [系统提醒：验证计划提醒](./system-prompts/system-reminder-verify-plan-reminder.md) (**47** tks) - 验证已完成计划的提醒。
 
-### Builtin Tool Descriptions
+### 内置工具描述
 
-- [Tool Description: AskUserQuestion](./system-prompts/tool-description-askuserquestion.md) (**287** tks) - Tool description for asking user questions.
-- [Tool Description: Computer](./system-prompts/tool-description-computer.md) (**161** tks) - Main description for the Chrome browser computer automation tool.
-- [Tool Description: CronCreate](./system-prompts/tool-description-croncreate.md) (**738** tks) - Describes the CronCreate tool for enqueuing one-shot or recurring cron-based jobs with jitter and off-minute scheduling guidance.
-- [Tool Description: Edit](./system-prompts/tool-description-edit.md) (**246** tks) - Tool for performing exact string replacements in files.
-- [Tool Description: EnterPlanMode](./system-prompts/tool-description-enterplanmode.md) (**878** tks) - Tool description for entering plan mode to explore and design implementation approaches.
-- [Tool Description: EnterWorktree](./system-prompts/tool-description-enterworktree.md) (**359** tks) - Tool description for the EnterWorktree tool.
-- [Tool Description: ExitPlanMode](./system-prompts/tool-description-exitplanmode.md) (**417** tks) - Description for the ExitPlanMode tool, which presents a plan dialog for the user to approve.
-- [Tool Description: ExitWorktree](./system-prompts/tool-description-exitworktree.md) (**527** tks) - Roughly, the reverse of the ExitWorktree.
-- [Tool Description: Glob](./system-prompts/tool-description-glob.md) (**122** tks) - Tool description for file pattern matching and searching by name.
-- [Tool Description: Grep](./system-prompts/tool-description-grep.md) (**300** tks) - Tool description for content search using ripgrep.
-- [Tool Description: LSP](./system-prompts/tool-description-lsp.md) (**255** tks) - Description for the LSP tool.
-- [Tool Description: NotebookEdit](./system-prompts/tool-description-notebookedit.md) (**121** tks) - Tool description for editing Jupyter notebook cells.
-- [Tool Description: ReadFile](./system-prompts/tool-description-readfile.md) (**440** tks) - Tool description for reading files.
-- [Tool Description: SendMessageTool](./system-prompts/tool-description-sendmessagetool.md) (**1205** tks) - Agent teams version of SendMessageTool.
-- [Tool Description: Skill](./system-prompts/tool-description-skill.md) (**326** tks) - Tool description for executing skills in the main conversation.
-- [Tool Description: Sleep](./system-prompts/tool-description-sleep.md) (**154** tks) - Tool for waiting/sleeping with early wake capability on user input.
-- [Tool Description: TaskCreate](./system-prompts/tool-description-taskcreate.md) (**528** tks) - Tool description for TaskCreate tool.
-- [Tool Description: TeamDelete](./system-prompts/tool-description-teamdelete.md) (**154** tks) - Tool description for the TeamDelete tool.
-- [Tool Description: TeammateTool](./system-prompts/tool-description-teammatetool.md) (**1645** tks) - Tool for managing teams and coordinating teammates in a swarm.
-- [Tool Description: TodoWrite](./system-prompts/tool-description-todowrite.md) (**2161** tks) - Tool description for creating and managing task lists.
-- [Tool Description: WebFetch](./system-prompts/tool-description-webfetch.md) (**297** tks) - Tool description for web fetch functionality.
-- [Tool Description: WebSearch](./system-prompts/tool-description-websearch.md) (**321** tks) - Tool description for web search functionality.
-- [Tool Description: Write](./system-prompts/tool-description-write.md) (**129** tks) - Tool for writing files to the local filesystem.
+- [工具描述：AskUserQuestion](./system-prompts/tool-description-askuserquestion.md) (**194** tks) - 用于向用户提问的工具描述。
+- [工具描述：Bash](./system-prompts/tool-description-bash.md) (**1067** tks) - Bash 工具的描述，允许 Claude 运行 shell 命令。
+- [工具描述：Computer](./system-prompts/tool-description-computer.md) (**161** tks) - Chrome 浏览器计算机自动化工具的主描述。
+- [工具描述：Edit](./system-prompts/tool-description-edit.md) (**278** tks) - 用于在文件中执行精确字符串替换的工具描述。
+- [工具描述：EnterPlanMode](./system-prompts/tool-description-enterplanmode.md) (**970** tks) - 用于进入计划模式以探索和设计实现方法的工具描述。
+- [工具描述：ExitPlanMode](./system-prompts/tool-description-exitplanmode.md) (**417** tks) - ExitPlanMode 工具的描述，它显示计划对话框供用户批准。
+- [工具描述：Glob](./system-prompts/tool-description-glob.md) (**122** tks) - 用于文件模式匹配和按名称搜索的工具描述。
+- [工具描述：Grep](./system-prompts/tool-description-grep.md) (**300** tks) - 使用 ripgrep 进行内容搜索的工具描述。
+- [工具描述：LSP](./system-prompts/tool-description-lsp.md) (**255** tks) - LSP 工具的描述。
+- [工具描述：NotebookEdit](./system-prompts/tool-description-notebookedit.md) (**121** tks) - 用于编辑 Jupyter notebook 单元格的工具描述。
+- [工具描述：ReadFile](./system-prompts/tool-description-readfile.md) (**439** tks) - 用于读取文件的工具描述。
+- [工具描述：Skill](./system-prompts/tool-description-skill.md) (**442** tks) - 用于在主对话中执行技能的工具描述。
+- [工具描述：TaskCreate](./system-prompts/tool-description-taskcreate.md) (**558** tks) - TaskCreate 工具的工具描述。
+- [工具描述：Task](./system-prompts/tool-description-task.md) (**1311** tks) - 用于启动专门的子代理来处理复杂任务的工具描述。
+- [工具描述：TeammateTool 的操作参数](./system-prompts/tool-description-teammatetools-operation-parameter.md) (**173** tks) - TeammateTool 操作参数的工具描述。
+- [工具描述：TeammateTool](./system-prompts/tool-description-teammatetool.md) (**3811** tks) - TeammateTool 的工具描述。
+- [工具描述：TodoWrite](./system-prompts/tool-description-todowrite.md) (**2167** tks) - 用于创建和管理任务列表的工具描述。
+- [工具描述：ToolSearch](./system-prompts/tool-description-toolsearch.md) (**792** tks) - 用于在使用前加载和搜索延迟工具的工具描述。
+- [工具描述：WebFetch](./system-prompts/tool-description-webfetch.md) (**297** tks) - 用于 Web 获取功能的工具描述。
+- [工具描述：WebSearch](./system-prompts/tool-description-websearch.md) (**329** tks) - 用于 Web 搜索功能的工具描述。
+- [工具描述：Write](./system-prompts/tool-description-write.md) (**159** tks) - 用于创建和覆盖单个文件的工具描述。
 
-**Additional notes for some Tool Descriptions**
+**某些工具描述的额外说明**
 
-- [Tool Description: Agent (usage notes)](./system-prompts/tool-description-agent-usage-notes.md) (**879** tks) - Usage notes and instructions for the Task/Agent tool, including guidance on launching subagents, background execution, resumption, and worktree isolation.
-- [Tool Description: Agent (when to launch subagents)](./system-prompts/tool-description-agent-when-to-launch-subagents.md) (**186** tks) - Describes _when_ to use the Agent tool - for launching specialized subagent subprocesses to autonomously handle complex multi-step tasks.
-- [Tool Description: AskUserQuestion (preview field)](./system-prompts/tool-description-askuserquestion-preview-field.md) (**134** tks) - Instructions for using the HTML preview field on single-select question options to display visual artifacts like UI mockups, code snippets, and diagrams.
-- [Tool Description: Bash (Git commit and PR creation instructions)](./system-prompts/tool-description-bash-git-commit-and-pr-creation-instructions.md) (**1558** tks) - Instructions for creating git commits and GitHub pull requests.
-- [Tool Description: Bash (alternative — communication)](./system-prompts/tool-description-bash-alternative-communication.md) (**18** tks) - Bash tool alternative: output text directly instead of echo/printf.
-- [Tool Description: Bash (alternative — content search)](./system-prompts/tool-description-bash-alternative-content-search.md) (**27** tks) - Bash tool alternative: use Grep for content search instead of grep/rg.
-- [Tool Description: Bash (alternative — edit files)](./system-prompts/tool-description-bash-alternative-edit-files.md) (**27** tks) - Bash tool alternative: use Edit for file editing instead of sed/awk.
-- [Tool Description: Bash (alternative — file search)](./system-prompts/tool-description-bash-alternative-file-search.md) (**26** tks) - Bash tool alternative: use Glob for file search instead of find/ls.
-- [Tool Description: Bash (alternative — read files)](./system-prompts/tool-description-bash-alternative-read-files.md) (**27** tks) - Bash tool alternative: use Read for file reading instead of cat/head/tail.
-- [Tool Description: Bash (alternative — write files)](./system-prompts/tool-description-bash-alternative-write-files.md) (**29** tks) - Bash tool alternative: use Write for file writing instead of echo/cat.
-- [Tool Description: Bash (built-in tools note)](./system-prompts/tool-description-bash-built-in-tools-note.md) (**53** tks) - Note that built-in tools provide better UX than Bash equivalents.
-- [Tool Description: Bash (command description)](./system-prompts/tool-description-bash-command-description.md) (**71** tks) - Bash tool instruction: write clear command descriptions.
-- [Tool Description: Bash (git — avoid destructive ops)](./system-prompts/tool-description-bash-git-avoid-destructive-ops.md) (**58** tks) - Bash tool git instruction: consider safer alternatives to destructive operations.
-- [Tool Description: Bash (git — never skip hooks)](./system-prompts/tool-description-bash-git-never-skip-hooks.md) (**59** tks) - Bash tool git instruction: never skip hooks or bypass signing unless user requests it.
-- [Tool Description: Bash (git — prefer new commits)](./system-prompts/tool-description-bash-git-prefer-new-commits.md) (**22** tks) - Bash tool git instruction: prefer new commits over amending.
-- [Tool Description: Bash (maintain cwd)](./system-prompts/tool-description-bash-maintain-cwd.md) (**41** tks) - Bash tool instruction: use absolute paths and avoid cd.
-- [Tool Description: Bash (no newlines)](./system-prompts/tool-description-bash-no-newlines.md) (**24** tks) - Bash tool instruction: do not use newlines to separate commands.
-- [Tool Description: Bash (overview)](./system-prompts/tool-description-bash-overview.md) (**19** tks) - Opening line of the Bash tool description.
-- [Tool Description: Bash (parallel commands)](./system-prompts/tool-description-bash-parallel-commands.md) (**72** tks) - Bash tool instruction: run independent commands as parallel tool calls.
-- [Tool Description: Bash (prefer dedicated tools)](./system-prompts/tool-description-bash-prefer-dedicated-tools.md) (**71** tks) - Warning to prefer dedicated tools over Bash for find, grep, cat, etc.
-- [Tool Description: Bash (quote file paths)](./system-prompts/tool-description-bash-quote-file-paths.md) (**35** tks) - Bash tool instruction: quote file paths containing spaces.
-- [Tool Description: Bash (sandbox — adjust settings)](./system-prompts/tool-description-bash-sandbox-adjust-settings.md) (**26** tks) - Work with user to adjust sandbox settings on failure.
-- [Tool Description: Bash (sandbox — default to sandbox)](./system-prompts/tool-description-bash-sandbox-default-to-sandbox.md) (**38** tks) - Default to sandbox; only bypass when user asks or evidence of sandbox restriction.
-- [Tool Description: Bash (sandbox — evidence list header)](./system-prompts/tool-description-bash-sandbox-evidence-list-header.md) (**15** tks) - Header for list of sandbox-caused failure evidence.
-- [Tool Description: Bash (sandbox — evidence: access denied)](./system-prompts/tool-description-bash-sandbox-evidence-access-denied.md) (**15** tks) - Sandbox evidence: access denied to paths outside allowed directories.
-- [Tool Description: Bash (sandbox — evidence: network failures)](./system-prompts/tool-description-bash-sandbox-evidence-network-failures.md) (**17** tks) - Sandbox evidence: network connection failures to non-whitelisted hosts.
-- [Tool Description: Bash (sandbox — evidence: operation not permitted)](./system-prompts/tool-description-bash-sandbox-evidence-operation-not-permitted.md) (**18** tks) - Sandbox evidence: operation not permitted errors.
-- [Tool Description: Bash (sandbox — evidence: unix socket errors)](./system-prompts/tool-description-bash-sandbox-evidence-unix-socket-errors.md) (**11** tks) - Sandbox evidence: unix socket connection errors.
-- [Tool Description: Bash (sandbox — explain restriction)](./system-prompts/tool-description-bash-sandbox-explain-restriction.md) (**36** tks) - Explain which sandbox restriction caused the failure.
-- [Tool Description: Bash (sandbox — failure evidence condition)](./system-prompts/tool-description-bash-sandbox-failure-evidence-condition.md) (**48** tks) - Condition: command failed with evidence of sandbox restrictions.
-- [Tool Description: Bash (sandbox — mandatory mode)](./system-prompts/tool-description-bash-sandbox-mandatory-mode.md) (**34** tks) - Policy: all commands must run in sandbox mode.
-- [Tool Description: Bash (sandbox — no exceptions)](./system-prompts/tool-description-bash-sandbox-no-exceptions.md) (**17** tks) - Commands cannot run outside sandbox under any circumstances.
-- [Tool Description: Bash (sandbox — no sensitive paths)](./system-prompts/tool-description-bash-sandbox-no-sensitive-paths.md) (**36** tks) - Do not suggest adding sensitive paths to sandbox allowlist.
-- [Tool Description: Bash (sandbox — per-command)](./system-prompts/tool-description-bash-sandbox-per-command.md) (**52** tks) - Treat each command individually; default to sandbox for future commands.
-- [Tool Description: Bash (sandbox — response header)](./system-prompts/tool-description-bash-sandbox-response-header.md) (**17** tks) - Header for how to respond when seeing sandbox-caused failures.
-- [Tool Description: Bash (sandbox — retry without sandbox)](./system-prompts/tool-description-bash-sandbox-retry-without-sandbox.md) (**33** tks) - Immediately retry with dangerouslyDisableSandbox on sandbox failure.
-- [Tool Description: Bash (sandbox — tmpdir)](./system-prompts/tool-description-bash-sandbox-tmpdir.md) (**102** tks) - Use $TMPDIR for temporary files in sandbox mode.
-- [Tool Description: Bash (sandbox — user permission prompt)](./system-prompts/tool-description-bash-sandbox-user-permission-prompt.md) (**14** tks) - Note that disabling sandbox will prompt user for permission.
-- [Tool Description: Bash (semicolon usage)](./system-prompts/tool-description-bash-semicolon-usage.md) (**29** tks) - Bash tool instruction: use semicolons when sequential order matters but failure does not.
-- [Tool Description: Bash (sequential commands)](./system-prompts/tool-description-bash-sequential-commands.md) (**42** tks) - Bash tool instruction: chain dependent commands with &&.
-- [Tool Description: Bash (sleep — keep short)](./system-prompts/tool-description-bash-sleep-keep-short.md) (**29** tks) - Bash tool instruction: keep sleep duration to 1-5 seconds.
-- [Tool Description: Bash (sleep — no polling background tasks)](./system-prompts/tool-description-bash-sleep-no-polling-background-tasks.md) (**37** tks) - Bash tool instruction: do not poll background tasks, wait for notification.
-- [Tool Description: Bash (sleep — run immediately)](./system-prompts/tool-description-bash-sleep-run-immediately.md) (**21** tks) - Bash tool instruction: do not sleep between commands that can run immediately.
-- [Tool Description: Bash (sleep — use check commands)](./system-prompts/tool-description-bash-sleep-use-check-commands.md) (**34** tks) - Bash tool instruction: use check commands rather than sleeping when polling.
-- [Tool Description: Bash (timeout)](./system-prompts/tool-description-bash-timeout.md) (**83** tks) - Bash tool instruction: optional timeout configuration.
-- [Tool Description: Bash (verify parent directory)](./system-prompts/tool-description-bash-verify-parent-directory.md) (**38** tks) - Bash tool instruction: verify parent directory before creating files.
-- [Tool Description: Bash (working directory)](./system-prompts/tool-description-bash-working-directory.md) (**37** tks) - Bash tool note about working directory persistence and shell state.
-- [Tool Description: SendMessageTool (non-agent-teams)](./system-prompts/tool-description-sendmessagetool-non-agent-teams.md) (**133** tks) - Send a message the user will read, describes this tool well.
-- [Tool Description: TaskList (teammate workflow)](./system-prompts/tool-description-tasklist-teammate-workflow.md) (**133** tks) - Conditional section appended to TaskList tool description.
-- [Tool Description: ToolSearch (second part)](./system-prompts/tool-description-toolsearch-second-part.md) (**202** tks) - The bulk of the tool description.
-- [Tool Parameter: Computer action](./system-prompts/tool-parameter-computer-action.md) (**251** tks) - Action parameter options for the Chrome browser computer tool.
-
-### Skills
-
-Built-in skill prompts for specialized tasks.
-
-- [Skill: /init CLAUDE.md and skill setup (new version)](./system-prompts/skill-init-claudemd-and-skill-setup-new-version.md) (**4783** tks) - A comprehensive onboarding flow for setting up CLAUDE.md and related skills/hooks in the current repository, including codebase exploration, user interviews, and iterative proposal refinement.
-- [Skill: /loop slash command](./system-prompts/skill-loop-slash-command.md) (**1033** tks) - Parses user input into an interval and prompt, converts the interval to a cron expression, and schedules a recurring task.
-- [Skill: /stuck slash command](./system-prompts/skill-stuck-slash-command.md) (**964** tks) - Diagnozse frozen or slow Claude Code sessions.
-- [Skill: Build with Claude API (reference guide)](./system-prompts/skill-build-with-claude-api-reference-guide.md) (**410** tks) - Template for presenting language-specific reference documentation with quick task navigation.
-- [Skill: Build with Claude API](./system-prompts/skill-build-with-claude-api.md) (**5144** tks) - Main routing guide for building LLM-powered applications with Claude, including language detection, surface selection, and architecture overview.
-- [Skill: Create verifier skills](./system-prompts/skill-create-verifier-skills.md) (**2625** tks) - Prompt for creating verifier skills for the Verify agent to automatically verify code changes.
-- [Skill: Debugging](./system-prompts/skill-debugging.md) (**412** tks) - Instructions for debugging an issue that the user is encountering in the Claude Code session.
-- [Skill: Simplify](./system-prompts/skill-simplify.md) (**822** tks) - Instructions for simplifying code.
-- [Skill: Update Claude Code Config](./system-prompts/skill-update-claude-code-config.md) (**1255** tks) - Skill for modifying Claude Code configuration file (settings.json).
-- [Skill: Verification specialist](./system-prompts/skill-verification-specialist.md) (**2472** tks) - Skill for verifying that code changes work correctly.
-- [Skill: update-config (7-step verification flow)](./system-prompts/skill-update-config-7-step-verification-flow.md) (**1160** tks) - A skill that guides Claude through a 7-step process to construct and verify hooks for Claude Code, ensuring they work correctly in the user's specific project environment.
+- [工具描述：Bash（Git 提交和 PR 创建说明）](./system-prompts/tool-description-bash-git-commit-and-pr-creation-instructions.md) (**1557** tks) - 用于创建 git 提交和 GitHub 拉取请求的说明。
+- [工具描述：Bash（沙箱说明）](./system-prompts/tool-description-bash-sandbox-note.md) (**454** tks) - 关于 bash 命令沙箱的说明。

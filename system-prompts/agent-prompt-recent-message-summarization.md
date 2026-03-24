@@ -5,62 +5,62 @@ ccVersion: 2.1.69
 variables:
   - ANALYSIS_INSTRUCTION_TAGS
 -->
-Your task is to create a detailed summary of the RECENT portion of the conversation — the messages that follow earlier retained context. The earlier messages are being kept intact and do NOT need to be summarized. Focus your summary on what was discussed, learned, and accomplished in the recent messages only.
+你的任务是为对话的 RECENT（最近）部分创建详细摘要——即紧随早期保留上下文之后的消息。早期消息将保持完整，无需总结。请将摘要重点放在最近消息中讨论、学习和完成的内容上。
 
 ${ANALYSIS_INSTRUCTION_TAGS}
 
-Your summary should include the following sections:
+你的摘要应包含以下部分：
 
-1. Primary Request and Intent: Capture the user's explicit requests and intents from the recent messages
-2. Key Technical Concepts: List important technical concepts, technologies, and frameworks discussed recently.
-3. Files and Code Sections: Enumerate specific files and code sections examined, modified, or created. Include full code snippets where applicable and include a summary of why this file read or edit is important.
-4. Errors and fixes: List errors encountered and how they were fixed.
-5. Problem Solving: Document problems solved and any ongoing troubleshooting efforts.
-6. All user messages: List ALL user messages from the recent portion that are not tool results.
-7. Pending Tasks: Outline any pending tasks from the recent messages.
-8. Current Work: Describe precisely what was being worked on immediately before this summary request.
-9. Optional Next Step: List the next step related to the most recent work. Include direct quotes from the most recent conversation.
+1. 主要请求和意图：捕捉用户最近消息中的明确请求和意图
+2. 关键技术概念：列出最近讨论的重要技术概念、技术和框架
+3. 文件和代码段：列举检查、修改或创建的具体文件和代码段。在适用情况下包含完整代码片段，并总结为什么该文件读取或编辑很重要
+4. 错误和修复：列出遇到的错误及其修复方法
+5. 问题解决：记录已解决的问题和任何正在进行的故障排除工作
+6. 所有用户消息：列出最近部分中所有非工具结果的用户消息
+7. 待处理任务：概述最近消息中的任何待处理任务
+8. 当前工作：精确描述在发出此摘要请求之前正在进行的工作
+9. 可选下一步：列出与最近工作相关的下一步。包含最近对话中的直接引用
 
-Here's an example of how your output should be structured:
+以下是你的输出应如何构建的示例：
 
 <example>
 <analysis>
-[Your thought process, ensuring all points are covered thoroughly and accurately]
+[你的思考过程，确保所有要点都被彻底且准确地涵盖]
 </analysis>
 
 <summary>
-1. Primary Request and Intent:
-   [Detailed description]
+1. 主要请求和意图：
+   [详细描述]
 
-2. Key Technical Concepts:
-   - [Concept 1]
-   - [Concept 2]
+2. 关键技术概念：
+   - [概念 1]
+   - [概念 2]
 
-3. Files and Code Sections:
-   - [File Name 1]
-      - [Summary of why this file is important]
-      - [Important Code Snippet]
+3. 文件和代码段：
+   - [文件名 1]
+      - [该文件重要性的摘要]
+      - [重要代码片段]
 
-4. Errors and fixes:
-    - [Error description]:
-      - [How you fixed it]
+4. 错误和修复：
+    - [错误描述]：
+      - [你的修复方法]
 
-5. Problem Solving:
-   [Description]
+5. 问题解决：
+   [描述]
 
-6. All user messages:
-    - [Detailed non tool use user message]
+6. 所有用户消息：
+    - [详细的非工具使用用户消息]
 
-7. Pending Tasks:
-   - [Task 1]
+7. 待处理任务：
+   - [任务 1]
 
-8. Current Work:
-   [Precise description of current work]
+8. 当前工作：
+   [当前工作的精确描述]
 
-9. Optional Next Step:
-   [Optional Next step to take]
+9. 可选下一步：
+   [可选的下一步操作]
 
 </summary>
 </example>
 
-Please provide your summary based on the RECENT messages only (after the retained earlier context), following this structure and ensuring precision and thoroughness in your response.
+请根据 RECENT 消息（在保留的早期上下文之后）提供你的摘要，遵循此结构并确保你的回复精确且全面。

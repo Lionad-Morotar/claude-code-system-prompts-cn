@@ -5,4 +5,4 @@ ccVersion: 2.1.53
 variables:
   - BASH_TOOL_NAME
 -->
-While the ${BASH_TOOL_NAME} tool can do similar things, it’s better to use the built-in tools as they provide a better user experience and make it easier to review tool calls and give permission.
+虽然 ${BASH_TOOL_NAME} 工具也能完成类似的任务，但使用内置工具会更好，因为它们能提供更好的用户体验，并且更便于审查工具调用和授予权限。

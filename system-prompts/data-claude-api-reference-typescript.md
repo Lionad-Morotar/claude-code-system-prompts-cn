@@ -5,48 +5,48 @@ ccVersion: 2.1.73
 -->
 # Claude API — TypeScript
 
-## Installation
+## 安装
 
-\`\`\`bash
+```bash
 npm install @anthropic-ai/sdk
-\`\`\`
+```
 
-## Client Initialization
+## 客户端初始化
 
-\`\`\`typescript
+```typescript
 import Anthropic from "@anthropic-ai/sdk";
 
-// Default (uses ANTHROPIC_API_KEY env var)
+// 默认（使用 ANTHROPIC_API_KEY 环境变量）
 const client = new Anthropic();
 
-// Explicit API key
+// 显式指定 API 密钥
 const client = new Anthropic({ apiKey: "your-api-key" });
-\`\`\`
+```
 
 ---
 
-## Basic Message Request
+## 基本消息请求
 
-\`\`\`typescript
+```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 1024,
   messages: [{ role: "user", content: "What is the capital of France?" }],
 });
-// response.content is ContentBlock[] — a discriminated union. Narrow by .type
-// before accessing .text (TypeScript will error on content[0].text without this).
+// response.content 是 ContentBlock[] — 一个可辨识的联合类型。在使用前需通过 .type 进行类型收窄
+// 否则 TypeScript 会在访问 content[0].text 时报错。
 for (const block of response.content) {
   if (block.type === "text") {
     console.log(block.text);
   }
 }
-\`\`\`
+```
 
 ---
 
-## System Prompts
+## 系统提示词
 
-\`\`\`typescript
+```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 1024,
@@ -54,15 +54,15 @@ const response = await client.messages.create({
     "You are a helpful coding assistant. Always provide examples in Python.",
   messages: [{ role: "user", content: "How do I read a JSON file?" }],
 });
-\`\`\`
+```
 
 ---
 
-## Vision (Images)
+## 视觉（图像）
 
 ### URL
 
-\`\`\`typescript
+```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 1024,
@@ -79,11 +79,11 @@ const response = await client.messages.create({
     },
   ],
 });
-\`\`\`
+```
 
 ### Base64
 
-\`\`\`typescript
+```typescript
 import fs from "fs";
 
 const imageData = fs.readFileSync("image.png").toString("base64");
@@ -104,31 +104,31 @@ const response = await client.messages.create({
     },
   ],
 });
-\`\`\`
+```
 
 ---
 
-## Prompt Caching
+## 提示词缓存
 
-### Automatic Caching (Recommended)
+### 自动缓存（推荐）
 
-Use top-level \`cache_control\` to automatically cache the last cacheable block in the request:
+使用顶层的 `cache_control` 自动缓存请求中最后一个可缓存的块：
 
-\`\`\`typescript
+```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 1024,
-  cache_control: { type: "ephemeral" }, // auto-caches the last cacheable block
+  cache_control: { type: "ephemeral" }, // 自动缓存最后一个可缓存的块
   system: "You are an expert on this large document...",
   messages: [{ role: "user", content: "Summarize the key points" }],
 });
-\`\`\`
+```
 
-### Manual Cache Control
+### 手动缓存控制
 
-For fine-grained control, add \`cache_control\` to specific content blocks:
+如需精细控制，可在特定内容块上添加 `cache_control`：
 
-\`\`\`typescript
+```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 1024,
@@ -136,13 +136,13 @@ const response = await client.messages.create({
     {
       type: "text",
       text: "You are an expert on this large document...",
-      cache_control: { type: "ephemeral" }, // default TTL is 5 minutes
+      cache_control: { type: "ephemeral" }, // 默认 TTL 为 5 分钟
     },
   ],
   messages: [{ role: "user", content: "Summarize the key points" }],
 });
 
-// With explicit TTL (time-to-live)
+// 显式指定 TTL（存活时间）
 const response2 = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 1024,
@@ -150,22 +150,22 @@ const response2 = await client.messages.create({
     {
       type: "text",
       text: "You are an expert on this large document...",
-      cache_control: { type: "ephemeral", ttl: "1h" }, // 1 hour TTL
+      cache_control: { type: "ephemeral", ttl: "1h" }, // 1 小时 TTL
     },
   ],
   messages: [{ role: "user", content: "Summarize the key points" }],
 });
-\`\`\`
+```
 
 ---
 
-## Extended Thinking
+## 扩展思考
 
-> **Opus 4.6 and Sonnet 4.6:** Use adaptive thinking. \`budget_tokens\` is deprecated on both Opus 4.6 and Sonnet 4.6.
-> **Older models:** Use \`thinking: {type: "enabled", budget_tokens: N}\` (must be < \`max_tokens\`, min 1024).
+> **Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在这两个模型上已弃用。
+> **旧版模型：** 使用 `thinking: {type: "enabled", budget_tokens: N}`（必须小于 `max_tokens`，最小值为 1024）。
 
-\`\`\`typescript
-// Opus 4.6: adaptive thinking (recommended)
+```typescript
+// Opus 4.6：自适应思考（推荐）
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 16000,
@@ -183,15 +183,15 @@ for (const block of response.content) {
     console.log("Response:", block.text);
   }
 }
-\`\`\`
+```
 
 ---
 
-## Error Handling
+## 错误处理
 
-Use the SDK's typed exception classes — never check error messages with string matching:
+使用 SDK 提供的类型化异常类 —— 切勿通过字符串匹配检查错误消息：
 
-\`\`\`typescript
+```typescript
 import Anthropic from "@anthropic-ai/sdk";
 
 try {
@@ -204,20 +204,20 @@ try {
   } else if (error instanceof Anthropic.RateLimitError) {
     console.error("Rate limited - retry later");
   } else if (error instanceof Anthropic.APIError) {
-    console.error(\`API error \${error.status}:\`, error.message);
+    console.error(`API error ${error.status}:`, error.message);
   }
 }
-\`\`\`
+```
 
-All classes extend \`Anthropic.APIError\` with a typed \`status\` field. Check from most specific to least specific. See [shared/error-codes.md](../../shared/error-codes.md) for the full error code reference.
+所有类都继承自 `Anthropic.APIError`，并带有类型化的 `status` 字段。请从最具体的类型检查到最通用的类型。完整的错误代码参考请参见 [shared/error-codes.md](../../shared/error-codes.md)。
 
 ---
 
-## Multi-Turn Conversations
+## 多轮对话
 
-The API is stateless — send the full conversation history each time. Use \`Anthropic.MessageParam[]\` to type the messages array:
+API 是无状态的 —— 每次请求都需要发送完整的对话历史。使用 `Anthropic.MessageParam[]` 来类型化消息数组：
 
-\`\`\`typescript
+```typescript
 const messages: Anthropic.MessageParam[] = [
   { role: "user", content: "My name is Alice." },
   { role: "assistant", content: "Hello Alice! Nice to meet you." },
@@ -229,21 +229,21 @@ const response = await client.messages.create({
   max_tokens: 1024,
   messages: messages,
 });
-\`\`\`
+```
 
-**Rules:**
+**规则：**
 
-- Consecutive same-role messages are allowed — the API combines them into a single turn
-- First message must be \`user\`
-- Use SDK types (\`Anthropic.MessageParam\`, \`Anthropic.Message\`, \`Anthropic.Tool\`, etc.) for all API data structures — don't redefine equivalent interfaces
+- 允许连续相同角色的消息 —— API 会将它们合并为单轮
+- 第一条消息必须是 `user`
+- 对所有 API 数据结构使用 SDK 类型（`Anthropic.MessageParam`、`Anthropic.Message`、`Anthropic.Tool` 等）—— 不要重新定义等效接口
 
 ---
 
-### Compaction (long conversations)
+### 压缩（长对话）
 
-> **Beta, Opus 4.6 and Sonnet 4.6.** When conversations approach the 200K context window, compaction automatically summarizes earlier context server-side. The API returns a \`compaction\` block; you must pass it back on subsequent requests — append \`response.content\`, not just the text.
+> **Beta 功能，Opus 4.6 和 Sonnet 4.6。** 当对话接近 200K 上下文窗口时，压缩功能会自动在服务端总结早期上下文。API 会返回一个 `compaction` 块；你必须在后续请求中将其传回 —— 追加 `response.content`，而不仅仅是文本。
 
-\`\`\`typescript
+```typescript
 import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic();
@@ -262,7 +262,7 @@ async function chat(userMessage: string): Promise<string> {
     },
   });
 
-  // Append full content — compaction blocks must be preserved
+  // 追加完整内容 —— 压缩块必须被保留
   messages.push({ role: "assistant", content: response.content });
 
   const textBlock = response.content.find(
@@ -271,50 +271,50 @@ async function chat(userMessage: string): Promise<string> {
   return textBlock?.text ?? "";
 }
 
-// Compaction triggers automatically when context grows large
+// 当上下文增长较大时，压缩会自动触发
 console.log(await chat("Help me build a Python web scraper"));
 console.log(await chat("Add support for JavaScript-rendered pages"));
 console.log(await chat("Now add rate limiting and error handling"));
-\`\`\`
+```
 
 ---
 
-## Stop Reasons
+## 停止原因
 
-The \`stop_reason\` field in the response indicates why the model stopped generating:
+响应中的 `stop_reason` 字段指示模型停止生成的原因：
 
-| Value           | Meaning                                                         |
+| 值              | 含义                                                            |
 | --------------- | --------------------------------------------------------------- |
-| \`end_turn\`      | Claude finished its response naturally                          |
-| \`max_tokens\`    | Hit the \`max_tokens\` limit — increase it or use streaming       |
-| \`stop_sequence\` | Hit a custom stop sequence                                      |
-| \`tool_use\`      | Claude wants to call a tool — execute it and continue           |
-| \`pause_turn\`    | Model paused and can be resumed (agentic flows)                 |
-| \`refusal\`       | Claude refused for safety reasons — output may not match schema |
+| `end_turn`      | Claude 自然完成了其响应                                         |
+| `max_tokens`    | 达到 `max_tokens` 限制 —— 增加该值或使用流式传输                |
+| `stop_sequence` | 触发了自定义停止序列                                            |
+| `tool_use`      | Claude 想要调用工具 —— 执行它并继续                             |
+| `pause_turn`    | 模型已暂停，可以恢复（代理流程）                                |
+| `refusal`       | Claude 因安全原因拒绝 —— 输出可能不符合模式                     |
 
 ---
 
-## Cost Optimization Strategies
+## 成本优化策略
 
-### 1. Use Prompt Caching for Repeated Context
+### 1. 对重复上下文使用提示词缓存
 
-\`\`\`typescript
-// Automatic caching (simplest — caches the last cacheable block)
+```typescript
+// 自动缓存（最简单 —— 缓存最后一个可缓存的块）
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 1024,
   cache_control: { type: "ephemeral" },
-  system: largeDocumentText, // e.g., 50KB of context
+  system: largeDocumentText, // 例如，50KB 的上下文
   messages: [{ role: "user", content: "Summarize the key points" }],
 });
 
-// First request: full cost
-// Subsequent requests: ~90% cheaper for cached portion
-\`\`\`
+// 首次请求：全额费用
+// 后续请求：缓存部分约便宜 90%
+```
 
-### 2. Use Token Counting Before Requests
+### 2. 请求前使用令牌计数
 
-\`\`\`typescript
+```typescript
 const countResponse = await client.messages.countTokens({
   model: "{{OPUS_ID}}",
   messages: messages,
@@ -322,5 +322,5 @@ const countResponse = await client.messages.countTokens({
 });
 
 const estimatedInputCost = countResponse.input_tokens * 0.000005; // $5/1M tokens
-console.log(\`Estimated input cost: $\${estimatedInputCost.toFixed(4)}\`);
-\`\`\`
+console.log(`Estimated input cost: $${estimatedInputCost.toFixed(4)}`);
+```

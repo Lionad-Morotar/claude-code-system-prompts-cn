@@ -3,4 +3,4 @@ name: 'Tool Description: NotebookEdit'
 description: Tool description for editing Jupyter notebook cells
 ccVersion: 2.0.14
 -->
-Completely replaces the contents of a specific cell in a Jupyter notebook (.ipynb file) with new source. Jupyter notebooks are interactive documents that combine code, text, and visualizations, commonly used for data analysis and scientific computing. The notebook_path parameter must be an absolute path, not a relative path. The cell_number is 0-indexed. Use edit_mode=insert to add a new cell at the index specified by cell_number. Use edit_mode=delete to delete the cell at the index specified by cell_number.
+用新源代码完全替换 Jupyter 笔记本（.ipynb 文件）中特定单元格的内容。Jupyter 笔记本是结合代码、文本和可视化的交互式文档，常用于数据分析和科学计算。notebook_path 参数必须是绝对路径，而不是相对路径。cell_number 是从 0 开始索引的。使用 edit_mode=insert 在 cell_number 指定的索引处添加新单元格。使用 edit_mode=delete 删除 cell_number 指定索引处的单元格。

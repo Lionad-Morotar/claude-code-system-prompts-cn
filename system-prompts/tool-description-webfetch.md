@@ -4,20 +4,20 @@ description: Tool description for web fetch functionality
 ccVersion: 2.1.14
 -->
 
-- Fetches content from a specified URL and processes it using an AI model
-- Takes a URL and a prompt as input
-- Fetches the URL content, converts HTML to markdown
-- Processes the content with the prompt using a small, fast model
-- Returns the model's response about the content
-- Use this tool when you need to retrieve and analyze web content
+- 从指定的 URL 获取内容并使用 AI 模型进行处理
+- 接受 URL 和提示作为输入
+- 获取 URL 内容，将 HTML 转换为 markdown
+- 使用提示通过一个小型快速模型处理内容
+- 返回模型关于内容的响应
+- 当你需要检索和分析 Web 内容时使用此工具
 
-Usage notes:
-  - IMPORTANT: If an MCP-provided web fetch tool is available, prefer using that tool instead of this one, as it may have fewer restrictions.
-  - The URL must be a fully-formed valid URL
-  - HTTP URLs will be automatically upgraded to HTTPS
-  - The prompt should describe what information you want to extract from the page
-  - This tool is read-only and does not modify any files
-  - Results may be summarized if the content is very large
-  - Includes a self-cleaning 15-minute cache for faster responses when repeatedly accessing the same URL
-  - When a URL redirects to a different host, the tool will inform you and provide the redirect URL in a special format. You should then make a new WebFetch request with the redirect URL to fetch the content.
-  - For GitHub URLs, prefer using the gh CLI via Bash instead (e.g., gh pr view, gh issue view, gh api).
+使用说明：
+  - 重要：如果提供了 MCP 提供的 Web 获取工具，请优先使用该工具而不是此工具，因为它可能具有更少的限制。
+  - URL 必须是格式正确的有效 URL
+  - HTTP URL 将自动升级到 HTTPS
+  - 提示应描述你想从页面中提取什么信息
+  - 此工具是只读的，不会修改任何文件
+  - 如果内容非常大，结果可能会被摘要
+  - 包含一个自动清理的 15 分钟缓存，以便在重复访问相同 URL 时获得更快的响应
+  - 当 URL 重定向到不同的主机时，工具将通知你并以特殊格式提供重定向 URL。然后，你应该使用重定向 URL 发出新的 WebFetch 请求来获取内容。
+  - 对于 GitHub URL，请优先使用通过 Bash 的 gh CLI（例如，gh pr view、gh issue view、gh api）。

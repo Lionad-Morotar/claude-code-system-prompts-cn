@@ -5,4 +5,4 @@ ccVersion: 2.1.18
 variables:
   - ATTACHMENT_OBJECT
 -->
-The user opened the file ${ATTACHMENT_OBJECT.filename} in the IDE. This may or may not be related to the current task.
+用户在 IDE 中打开了文件 ${ATTACHMENT_OBJECT.filename}。这可能与当前任务有关，也可能无关。

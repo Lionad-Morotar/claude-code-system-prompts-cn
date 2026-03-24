@@ -5,21 +5,21 @@ ccVersion: 2.1.73
 -->
 # Message Batches API — Python
 
-The Batches API (\`POST /v1/messages/batches\`) processes Messages API requests asynchronously at 50% of standard prices.
+Batches API (`POST /v1/messages/batches`) 以标准价格的 50% 异步处理 Messages API 请求。
 
-## Key Facts
+## 关键信息
 
-- Up to 100,000 requests or 256 MB per batch
-- Most batches complete within 1 hour; maximum 24 hours
-- Results available for 29 days after creation
-- 50% cost reduction on all token usage
-- All Messages API features supported (vision, tools, caching, etc.)
+- 每批最多 100,000 个请求或 256 MB
+- 大多数批次在 1 小时内完成；最长 24 小时
+- 结果在创建后 29 天内可用
+- 所有 token 使用费用降低 50%
+- 支持所有 Messages API 功能（视觉、工具、缓存等）
 
 ---
 
-## Create a Batch
+## 创建批次
 
-\`\`\`python
+```python
 import anthropic
 from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
 from anthropic.types.messages.batch_create_params import Request
@@ -49,13 +49,13 @@ message_batch = client.messages.batches.create(
 
 print(f"Batch ID: {message_batch.id}")
 print(f"Status: {message_batch.processing_status}")
-\`\`\`
+```
 
 ---
 
-## Poll for Completion
+## 轮询完成状态
 
-\`\`\`python
+```python
 import time
 
 while True:
@@ -68,15 +68,15 @@ while True:
 print("Batch complete!")
 print(f"Succeeded: {batch.request_counts.succeeded}")
 print(f"Errored: {batch.request_counts.errored}")
-\`\`\`
+```
 
 ---
 
-## Retrieve Results
+## 获取结果
 
-> **Note:** Examples below use \`match/case\` syntax, requiring Python 3.10+. For earlier versions, use \`if/elif\` chains instead.
+> **注意：** 以下示例使用 `match/case` 语法，需要 Python 3.10+。对于早期版本，请改用 `if/elif` 链。
 
-\`\`\`python
+```python
 for result in client.messages.batches.results(message_batch.id):
     match result.result.type:
         case "succeeded":
@@ -92,22 +92,22 @@ for result in client.messages.batches.results(message_batch.id):
             print(f"[{result.custom_id}] Canceled")
         case "expired":
             print(f"[{result.custom_id}] Expired - resubmit")
-\`\`\`
+```
 
 ---
 
-## Cancel a Batch
+## 取消批次
 
-\`\`\`python
+```python
 cancelled = client.messages.batches.cancel(message_batch.id)
 print(f"Status: {cancelled.processing_status}")  # "canceling"
-\`\`\`
+```
 
 ---
 
-## Batch with Prompt Caching
+## 使用提示缓存的批次
 
-\`\`\`python
+```python
 shared_system = [
     {"type": "text", "text": "You are a literary analyst."},
     {
@@ -131,13 +131,13 @@ message_batch = client.messages.batches.create(
         for i, question in enumerate(questions)
     ]
 )
-\`\`\`
+```
 
 ---
 
-## Full End-to-End Example
+## 完整端到端示例
 
-\`\`\`python
+```python
 import anthropic
 import time
 from anthropic.types.message_create_params import MessageCreateParamsNonStreaming
@@ -145,7 +145,7 @@ from anthropic.types.messages.batch_create_params import Request
 
 client = anthropic.Anthropic()
 
-# 1. Prepare requests
+# 1. 准备请求
 items_to_classify = [
     "The product quality is excellent!",
     "Terrible customer service, never again.",
@@ -167,18 +167,18 @@ requests = [
     for i, text in enumerate(items_to_classify)
 ]
 
-# 2. Create batch
+# 2. 创建批次
 batch = client.messages.batches.create(requests=requests)
 print(f"Created batch: {batch.id}")
 
-# 3. Wait for completion
+# 3. 等待完成
 while True:
     batch = client.messages.batches.retrieve(batch.id)
     if batch.processing_status == "ended":
         break
     time.sleep(10)
 
-# 4. Collect results
+# 4. 收集结果
 results = {}
 for result in client.messages.batches.results(batch.id):
     if result.result.type == "succeeded":
@@ -187,4 +187,4 @@ for result in client.messages.batches.results(batch.id):
 
 for custom_id, classification in sorted(results.items()):
     print(f"{custom_id}: {classification}")
-\`\`\`
+```

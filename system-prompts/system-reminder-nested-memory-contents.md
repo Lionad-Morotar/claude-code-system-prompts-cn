@@ -1,10 +1,10 @@
 <!--
-name: 'System Reminder: Nested memory contents'
-description: Contents of a nested memory file
+name: '系统提醒：嵌套记忆内容'
+description: 嵌套记忆文件的内容
 ccVersion: 2.1.18
 variables:
   - ATTACHMENT_OBJECT
 -->
-Contents of ${ATTACHMENT_OBJECT.content.path}:
+${ATTACHMENT_OBJECT.content.path} 的内容：
 
 ${ATTACHMENT_OBJECT.content.content}

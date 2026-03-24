@@ -3,17 +3,17 @@ name: 'Data: Tool use reference — Python'
 description: Python tool use reference including tool runner, manual agentic loop, code execution, and structured outputs
 ccVersion: 2.1.73
 -->
-# Tool Use — Python
+# 工具使用 — Python
 
-For conceptual overview (tool definitions, tool choice, tips), see [shared/tool-use-concepts.md](../../shared/tool-use-concepts.md).
+有关概念概述（工具定义、工具选择、技巧），请参阅 [shared/tool-use-concepts.md](../../shared/tool-use-concepts.md)。
 
-## Tool Runner (Recommended)
+## 工具运行器（推荐）
 
-**Beta:** The tool runner is in beta in the Python SDK.
+**测试版：** 工具运行器在 Python SDK 中处于测试阶段。
 
-Use the \`@beta_tool\` decorator to define tools as typed functions, then pass them to \`client.beta.messages.tool_runner()\`:
+使用 `@beta_tool` 装饰器将工具定义为类型化函数，然后将其传递给 `client.beta.messages.tool_runner()`：
 
-\`\`\`python
+```python
 import anthropic
 from anthropic import beta_tool
 
@@ -21,16 +21,16 @@ client = anthropic.Anthropic()
 
 @beta_tool
 def get_weather(location: str, unit: str = "celsius") -> str:
-    """Get current weather for a location.
+    """获取某个位置的当前天气。
 
     Args:
-        location: City and state, e.g., San Francisco, CA.
-        unit: Temperature unit, either "celsius" or "fahrenheit".
+        location: 城市和州，例如：San Francisco, CA。
+        unit: 温度单位，"celsius" 或 "fahrenheit"。
     """
-    # Your implementation here
+    # 你的实现代码
     return f"72°F and sunny in {location}"
 
-# The tool runner handles the agentic loop automatically
+# 工具运行器自动处理代理循环
 runner = client.beta.messages.tool_runner(
     model="{{OPUS_ID}}",
     max_tokens=4096,
@@ -38,31 +38,31 @@ runner = client.beta.messages.tool_runner(
     messages=[{"role": "user", "content": "What's the weather in Paris?"}],
 )
 
-# Each iteration yields a BetaMessage; iteration stops when Claude is done
+# 每次迭代产生一个 BetaMessage；当 Claude 完成时迭代停止
 for message in runner:
     print(message)
-\`\`\`
+```
 
-For async usage, use \`@beta_async_tool\` with \`async def\` functions.
+对于异步用法，将 `@beta_async_tool` 与 `async def` 函数一起使用。
 
-**Key benefits of the tool runner:**
+**工具运行器的主要优点：**
 
-- No manual loop — the SDK handles calling tools and feeding results back
-- Type-safe tool inputs via decorators
-- Tool schemas are generated automatically from function signatures
-- Iteration stops automatically when Claude has no more tool calls
+- 无需手动循环 — SDK 自动处理工具调用和结果反馈
+- 通过装饰器实现类型安全的工具输入
+- 工具模式从函数签名自动生成
+- 当 Claude 不再调用工具时自动停止迭代
 
 ---
 
-## MCP Tool Conversion Helpers
+## MCP 工具转换助手
 
-**Beta.** Convert [MCP (Model Context Protocol)](https://modelcontextprotocol.io/) tools, prompts, and resources to Anthropic API types for use with the tool runner. Requires \`pip install anthropic[mcp]\` (Python 3.10+).
+**测试版。** 将 [MCP（模型上下文协议）](https://modelcontextprotocol.io/) 工具、提示词和资源转换为 Anthropic API 类型，以便与工具运行器一起使用。需要 `pip install anthropic[mcp]`（Python 3.10+）。
 
-> **Note:** The Claude API also supports an \`mcp_servers\` parameter that lets Claude connect directly to remote MCP servers. Use these helpers instead when you need local MCP servers, prompts, resources, or more control over the MCP connection.
+> **注意：** Claude API 还支持 `mcp_servers` 参数，允许 Claude 直接连接到远程 MCP 服务器。当你需要本地 MCP 服务器、提示词、资源或需要对 MCP 连接有更多控制时，请改用这些助手。
 
-### MCP Tools with Tool Runner
+### 与工具运行器一起使用 MCP 工具
 
-\`\`\`python
+```python
 from anthropic import AsyncAnthropic
 from anthropic.lib.tools.mcp import async_mcp_tool
 from mcp import ClientSession
@@ -75,7 +75,7 @@ async with stdio_client(StdioServerParameters(command="mcp-server")) as (read, w
         await mcp_client.initialize()
 
         tools_result = await mcp_client.list_tools()
-        # tool_runner is sync — returns the runner, not a coroutine
+        # tool_runner 是同步的 — 返回运行器而不是协程
         runner = client.beta.messages.tool_runner(
             model="{{OPUS_ID}}",
             max_tokens=1024,
@@ -84,13 +84,13 @@ async with stdio_client(StdioServerParameters(command="mcp-server")) as (read, w
         )
         async for message in runner:
             print(message)
-\`\`\`
+```
 
-For sync usage, use \`mcp_tool\` instead of \`async_mcp_tool\`.
+对于同步用法，使用 `mcp_tool` 代替 `async_mcp_tool`。
 
-### MCP Prompts
+### MCP 提示词
 
-\`\`\`python
+```python
 from anthropic.lib.tools.mcp import mcp_message
 
 prompt = await mcp_client.get_prompt(name="my-prompt")
@@ -99,11 +99,11 @@ response = await client.beta.messages.create(
     max_tokens=1024,
     messages=[mcp_message(m) for m in prompt.messages],
 )
-\`\`\`
+```
 
-### MCP Resources as Content
+### 作为内容的 MCP 资源
 
-\`\`\`python
+```python
 from anthropic.lib.tools.mcp import mcp_resource_to_content
 
 resource = await mcp_client.read_resource(uri="file:///path/to/doc.txt")
@@ -118,33 +118,33 @@ response = await client.beta.messages.create(
         ],
     }],
 )
-\`\`\`
+```
 
-### Upload MCP Resources as Files
+### 将 MCP 资源作为文件上传
 
-\`\`\`python
+```python
 from anthropic.lib.tools.mcp import mcp_resource_to_file
 
 resource = await mcp_client.read_resource(uri="file:///path/to/data.json")
 uploaded = await client.beta.files.upload(file=mcp_resource_to_file(resource))
-\`\`\`
+```
 
-Conversion functions raise \`UnsupportedMCPValueError\` if an MCP value cannot be converted (e.g., unsupported content types like audio, unsupported MIME types).
+如果 MCP 值无法转换（例如，不支持的内容类型如音频、不支持的 MIME 类型），转换函数将引发 `UnsupportedMCPValueError`。
 
 ---
 
-## Manual Agentic Loop
+## 手动代理循环
 
-Use this when you need fine-grained control over the loop (e.g., custom logging, conditional tool execution, human-in-the-loop approval):
+当你需要对循环进行细粒度控制时使用（例如，自定义日志记录、条件工具执行、人工介入审批）：
 
-\`\`\`python
+```python
 import anthropic
 
 client = anthropic.Anthropic()
-tools = [...]  # Your tool definitions
+tools = [...]  # 你的工具定义
 messages = [{"role": "user", "content": user_input}]
 
-# Agentic loop: keep going until Claude stops calling tools
+# 代理循环：持续进行直到 Claude 停止调用工具
 while True:
     response = client.messages.create(
         model="{{OPUS_ID}}",
@@ -153,11 +153,11 @@ while True:
         messages=messages
     )
 
-    # If Claude is done (no more tool calls), break
+    # 如果 Claude 完成（不再调用工具），则退出
     if response.stop_reason == "end_turn":
         break
 
-    # Server-side tool hit iteration limit; re-send to continue
+    # 服务器端工具达到迭代限制；重新发送以继续
     if response.stop_reason == "pause_turn":
         messages = [
             {"role": "user", "content": user_input},
@@ -165,34 +165,34 @@ while True:
         ]
         continue
 
-    # Extract tool use blocks from the response
+    # 从响应中提取工具使用块
     tool_use_blocks = [b for b in response.content if b.type == "tool_use"]
 
-    # Append assistant's response (including tool_use blocks)
+    # 附加助手的响应（包括 tool_use 块）
     messages.append({"role": "assistant", "content": response.content})
 
-    # Execute each tool and collect results
+    # 执行每个工具并收集结果
     tool_results = []
     for tool in tool_use_blocks:
-        result = execute_tool(tool.name, tool.input)  # Your implementation
+        result = execute_tool(tool.name, tool.input)  # 你的实现
         tool_results.append({
             "type": "tool_result",
-            "tool_use_id": tool.id,  # Must match the tool_use block's id
+            "tool_use_id": tool.id,  # 必须与 tool_use 块的 id 匹配
             "content": result
         })
 
-    # Append tool results as a user message
+    # 将工具结果作为用户消息附加
     messages.append({"role": "user", "content": tool_results})
 
-# Final response text
+# 最终响应文本
 final_text = next(b.text for b in response.content if b.type == "text")
-\`\`\`
+```
 
 ---
 
-## Handling Tool Results
+## 处理工具结果
 
-\`\`\`python
+```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
@@ -225,13 +225,13 @@ for block in response.content:
                 }
             ]
         )
-\`\`\`
+```
 
 ---
 
-## Multiple Tool Calls
+## 多工具调用
 
-\`\`\`python
+```python
 tool_results = []
 
 for block in response.content:
@@ -243,7 +243,7 @@ for block in response.content:
             "content": result
         })
 
-# Send all results back at once
+# 一次性发送所有结果
 if tool_results:
     followup = client.messages.create(
         model="{{OPUS_ID}}",
@@ -255,42 +255,42 @@ if tool_results:
             {"role": "user", "content": tool_results}
         ]
     )
-\`\`\`
+```
 
 ---
 
-## Error Handling in Tool Results
+## 工具结果中的错误处理
 
-\`\`\`python
+```python
 tool_result = {
     "type": "tool_result",
     "tool_use_id": tool_use_id,
     "content": "Error: Location 'xyz' not found. Please provide a valid city name.",
     "is_error": True
 }
-\`\`\`
+```
 
 ---
 
-## Tool Choice
+## 工具选择
 
-\`\`\`python
+```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
     tools=tools,
-    tool_choice={"type": "tool", "name": "get_weather"},  # Force specific tool
+    tool_choice={"type": "tool", "name": "get_weather"},  # 强制使用特定工具
     messages=[{"role": "user", "content": "What's the weather in Paris?"}]
 )
-\`\`\`
+```
 
 ---
 
-## Code Execution
+## 代码执行
 
-### Basic Usage
+### 基本用法
 
-\`\`\`python
+```python
 import anthropic
 
 client = anthropic.Anthropic()
@@ -313,16 +313,16 @@ for block in response.content:
         print(block.text)
     elif block.type == "bash_code_execution_tool_result":
         print(f"stdout: {block.content.stdout}")
-\`\`\`
+```
 
-### Upload Files for Analysis
+### 上传文件进行分析
 
-\`\`\`python
-# 1. Upload a file
+```python
+# 1. 上传文件
 uploaded = client.beta.files.upload(file=open("sales_data.csv", "rb"))
 
-# 2. Pass to code execution via container_upload block
-# Code execution is GA; Files API is still beta (pass via extra_headers)
+# 2. 通过 container_upload 块传递给代码执行
+# 代码执行已正式发布；文件 API 仍处于测试阶段（通过 extra_headers 传递）
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=4096,
@@ -336,11 +336,11 @@ response = client.messages.create(
     }],
     tools=[{"type": "code_execution_20260120", "name": "code_execution"}]
 )
-\`\`\`
+```
 
-### Retrieve Generated Files
+### 检索生成的文件
 
-\`\`\`python
+```python
 import os
 
 OUTPUT_DIR = "./claude_outputs"
@@ -354,7 +354,7 @@ for block in response.content:
                 if file_ref.type == "bash_code_execution_output":
                     metadata = client.beta.files.retrieve_metadata(file_ref.file_id)
                     file_content = client.beta.files.download(file_ref.file_id)
-                    # Use basename to prevent path traversal; validate result
+                    # 使用 basename 防止路径遍历；验证结果
                     safe_name = os.path.basename(metadata.filename)
                     if not safe_name or safe_name in (".", ".."):
                         print(f"Skipping invalid filename: {metadata.filename}")
@@ -362,12 +362,12 @@ for block in response.content:
                     output_path = os.path.join(OUTPUT_DIR, safe_name)
                     file_content.write_to_file(output_path)
                     print(f"Saved: {output_path}")
-\`\`\`
+```
 
-### Container Reuse
+### 容器复用
 
-\`\`\`python
-# First request: set up environment
+```python
+# 第一个请求：设置环境
 response1 = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=4096,
@@ -375,10 +375,10 @@ response1 = client.messages.create(
     tools=[{"type": "code_execution_20260120", "name": "code_execution"}]
 )
 
-# Get container ID from response
+# 从响应中获取容器 ID
 container_id = response1.container.id
 
-# Second request: reuse the same container
+# 第二个请求：复用同一个容器
 response2 = client.messages.create(
     container=container_id,
     model="{{OPUS_ID}}",
@@ -386,16 +386,16 @@ response2 = client.messages.create(
     messages=[{"role": "user", "content": "Read data.json and display as a formatted table"}],
     tools=[{"type": "code_execution_20260120", "name": "code_execution"}]
 )
-\`\`\`
+```
 
-### Response Structure
+### 响应结构
 
-\`\`\`python
+```python
 for block in response.content:
     if block.type == "text":
-        print(block.text)  # Claude's explanation
+        print(block.text)  # Claude 的解释
     elif block.type == "server_tool_use":
-        print(f"Running: {block.name} - {block.input}")  # What Claude is doing
+        print(f"Running: {block.name} - {block.input}")  # Claude 正在做什么
     elif block.type == "bash_code_execution_tool_result":
         result = block.content
         if result.type == "bash_code_execution_result":
@@ -407,15 +407,15 @@ for block in response.content:
             print(f"Tool error: {result.error_code}")
     elif block.type == "text_editor_code_execution_tool_result":
         print(f"File operation: {block.content}")
-\`\`\`
+```
 
 ---
 
-## Memory Tool
+## 记忆工具
 
-### Basic Usage
+### 基本用法
 
-\`\`\`python
+```python
 import anthropic
 
 client = anthropic.Anthropic()
@@ -426,13 +426,13 @@ response = client.messages.create(
     messages=[{"role": "user", "content": "Remember that my preferred language is Python."}],
     tools=[{"type": "memory_20250818", "name": "memory"}],
 )
-\`\`\`
+```
 
-### SDK Memory Helper
+### SDK 记忆助手
 
-Subclass \`BetaAbstractMemoryTool\`:
+子类化 `BetaAbstractMemoryTool`：
 
-\`\`\`python
+```python
 from anthropic.lib.tools import BetaAbstractMemoryTool
 
 class MyMemoryTool(BetaAbstractMemoryTool):
@@ -445,7 +445,7 @@ class MyMemoryTool(BetaAbstractMemoryTool):
 
 memory = MyMemoryTool()
 
-# Use with tool runner
+# 与工具运行器一起使用
 runner = client.beta.messages.tool_runner(
     model="{{OPUS_ID}}",
     max_tokens=2048,
@@ -455,19 +455,19 @@ runner = client.beta.messages.tool_runner(
 
 for message in runner:
     print(message)
-\`\`\`
+```
 
-For full implementation examples, use WebFetch:
+完整的实现示例，请使用 WebFetch：
 
-- \`https://github.com/anthropics/anthropic-sdk-python/blob/main/examples/memory/basic.py\`
+- `https://github.com/anthropics/anthropic-sdk-python/blob/main/examples/memory/basic.py`
 
 ---
 
-## Structured Outputs
+## 结构化输出
 
-### JSON Outputs (Pydantic — Recommended)
+### JSON 输出（Pydantic — 推荐）
 
-\`\`\`python
+```python
 from pydantic import BaseModel
 from typing import List
 import anthropic
@@ -491,15 +491,15 @@ response = client.messages.parse(
     output_format=ContactInfo,
 )
 
-# response.parsed_output is a validated ContactInfo instance
+# response.parsed_output 是一个经过验证的 ContactInfo 实例
 contact = response.parsed_output
 print(contact.name)           # "Jane Doe"
 print(contact.interests)      # ["API", "SDKs"]
-\`\`\`
+```
 
-### Raw Schema
+### 原始模式
 
-\`\`\`python
+```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
@@ -526,14 +526,14 @@ response = client.messages.create(
 )
 
 import json
-# output_config.format guarantees the first block is text with valid JSON
+# output_config.format 保证第一个块是包含有效 JSON 的文本
 text = next(b.text for b in response.content if b.type == "text")
 data = json.loads(text)
-\`\`\`
+```
 
-### Strict Tool Use
+### 严格工具使用
 
-\`\`\`python
+```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
@@ -554,11 +554,11 @@ response = client.messages.create(
         }
     }]
 )
-\`\`\`
+```
 
-### Using Both Together
+### 同时使用两者
 
-\`\`\`python
+```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
@@ -592,4 +592,4 @@ response = client.messages.create(
         }
     }]
 )
-\`\`\`
+```

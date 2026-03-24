@@ -5,40 +5,40 @@ ccVersion: 2.0.58
 variables:
   - MAX_SECTION_TOKENS
 -->
-IMPORTANT: This message and these instructions are NOT part of the actual user conversation. Do NOT include any references to "note-taking", "session notes extraction", or these update instructions in the notes content.
+重要：此消息及这些说明**不属于**实际的用户对话。请勿在笔记内容中包含任何关于"记笔记"、"会话笔记提取"或这些更新说明的引用。
 
-Based on the user conversation above (EXCLUDING this note-taking instruction message as well as system prompt, claude.md entries, or any past session summaries), update the session notes file.
+根据上述用户对话（**排除**此笔记说明消息、系统提示词、claude.md 条目或任何过去的会话摘要），更新会话笔记文件。
 
-The file {{notesPath}} has already been read for you. Here are its current contents:
+文件 {{notesPath}} 已为您读取。以下是其当前内容：
 <current_notes_content>
 {{currentNotes}}
 </current_notes_content>
 
-Your ONLY task is to use the Edit tool to update the notes file, then stop. You can make multiple edits (update every section as needed) - make all Edit tool calls in parallel in a single message. Do not call any other tools.
+您的**唯一**任务是使用 Edit 工具更新笔记文件，然后停止。您可以进行多次编辑（根据需要更新每个部分）——在一条消息中并行进行所有 Edit 工具调用。不要调用任何其他工具。
 
-CRITICAL RULES FOR EDITING:
-- The file must maintain its exact structure with all sections, headers, and italic descriptions intact
--- NEVER modify, delete, or add section headers (the lines starting with '#' like # Task specification)
--- NEVER modify or delete the italic _section description_ lines (these are the lines in italics immediately following each header - they start and end with underscores)
--- The italic _section descriptions_ are TEMPLATE INSTRUCTIONS that must be preserved exactly as-is - they guide what content belongs in each section
--- ONLY update the actual content that appears BELOW the italic _section descriptions_ within each existing section
--- Do NOT add any new sections, summaries, or information outside the existing structure
-- Do NOT reference this note-taking process or instructions anywhere in the notes
-- It's OK to skip updating a section if there are no substantial new insights to add. Do not add filler content like "No info yet", just leave sections blank/unedited if appropriate.
-- Write DETAILED, INFO-DENSE content for each section - include specifics like file paths, function names, error messages, exact commands, technical details, etc.
-- For "Key results", include the complete, exact output the user requested (e.g., full table, full answer, etc.)
-- Do not include information that's already in the CLAUDE.md files included in the context
-- Keep each section under ~${MAX_SECTION_TOKENS} tokens/words - if a section is approaching this limit, condense it by cycling out less important details while preserving the most critical information
-- Focus on actionable, specific information that would help someone understand or recreate the work discussed in the conversation
-- IMPORTANT: Always update "Current State" to reflect the most recent work - this is critical for continuity after compaction
+编辑的关键规则：
+- 文件必须保持其确切结构，所有部分、标题和斜体描述保持完整
+-- **切勿**修改、删除或添加章节标题（以 '#' 开头的行，如 # 任务规范）
+-- **切勿**修改或删除斜体 _章节描述_ 行（这些是紧跟在每个标题后的斜体行——它们以和下划线开头和结尾）
+-- 斜体 _章节描述_ 是必须原样保留的**模板说明**，用于指导每个部分应包含什么内容
+-- **仅**更新每个现有章节中斜体 _章节描述_ 下方的实际内容
+-- 不要在现有结构之外添加任何新章节、摘要或信息
+- 不要在笔记中的任何地方引用此笔记记录过程或说明
+- 如果没有实质性的新见解需要添加，跳过更新某个章节是可以的。不要添加诸如"暂无信息"之类的填充内容，如果合适，只需将章节留空/不编辑即可
+- 为每个章节撰写**详细、信息密集**的内容——包括具体信息，如文件路径、函数名、错误消息、确切命令、技术细节等
+- 对于"关键结果"，包含用户请求的完整、确切的输出（例如，完整的表格、完整的答案等）
+- 不要包含上下文中 CLAUDE.md 文件中已有的信息
+- 将每个章节控制在约 ${MAX_SECTION_TOKENS} 个词元/单词以内——如果某个章节接近此限制，通过轮换掉不太重要的细节来压缩内容，同时保留最关键的信息
+- 专注于可操作、具体的信息，这些信息有助于某人理解或复现对话中讨论的工作
+- **重要**：始终更新"当前状态"以反映最新的工作——这对于压缩后的连续性至关重要
 
-Use the Edit tool with file_path: {{notesPath}}
+使用 Edit 工具，file_path: {{notesPath}}
 
-STRUCTURE PRESERVATION REMINDER:
-Each section has TWO parts that must be preserved exactly as they appear in the current file:
-1. The section header (line starting with #)
-2. The italic description line (the _italicized text_ immediately after the header - this is a template instruction)
+结构保留提醒：
+每个章节有两个必须按原样保留的部分：
+1. 章节标题（以 # 开头的行）
+2. 斜体描述行（紧跟在标题后的 _斜体文本_ —— 这是模板说明）
 
-You ONLY update the actual content that comes AFTER these two preserved lines. The italic description lines starting and ending with underscores are part of the template structure, NOT content to be edited or removed.
+您**仅**更新这两行保留行之后的实际内容。以和下划线开头和结尾的斜体描述行是模板结构的一部分，**不是**要编辑或删除的内容。
 
-REMEMBER: Use the Edit tool in parallel and stop. Do not continue after the edits. Only include insights from the actual user conversation, never from these note-taking instructions. Do not delete or change section headers or italic _section descriptions_.
+记住：并行使用 Edit 工具然后停止。编辑后不要继续。仅包含来自实际用户对话的见解，切勿来自这些笔记说明。不要删除或更改章节标题或斜体 _章节描述_。

@@ -3,4 +3,4 @@ name: 'Tool Description: Bash (sandbox — mandatory mode)'
 description: Policy: all commands must run in sandbox mode
 ccVersion: 2.1.53
 -->
-All commands MUST run in sandbox mode - the `dangerouslyDisableSandbox` parameter is disabled by policy.
+所有命令必须在沙盒模式下运行 - 根据策略，`dangerouslyDisableSandbox` 参数已被禁用。

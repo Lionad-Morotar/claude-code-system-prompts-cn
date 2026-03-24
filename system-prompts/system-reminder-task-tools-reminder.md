@@ -6,4 +6,4 @@ variables:
   - TASK_CREATE_TOOL_NAME
   - TASK_UPDATE_TOOL_NAME
 -->
-The task tools haven't been used recently. If you're working on tasks that would benefit from tracking progress, consider using ${TASK_CREATE_TOOL_NAME} to add new tasks and ${TASK_UPDATE_TOOL_NAME} to update task status (set to in_progress when starting, completed when done). Also consider cleaning up the task list if it has become stale. Only use these if relevant to the current work. This is just a gentle reminder - ignore if not applicable. Make sure that you NEVER mention this reminder to the user
+最近没有使用任务工具。如果你正在处理将从跟踪进度中受益的任务，请考虑使用 ${TASK_CREATE_TOOL_NAME} 添加新任务和使用 ${TASK_UPDATE_TOOL_NAME} 更新任务状态（开始时设置为 in_progress，完成时设置为 completed）。如果任务列表已变得陈旧，还要考虑清理任务列表。仅在与当前工作相关时使用这些。这只是一个温和的提醒 - 如果不适用，请忽略。确保你永远不要向用户提及此提醒

@@ -5,4 +5,4 @@ ccVersion: 2.1.18
 variables:
   - RESULT_OBJECT
 -->
-<system-reminder>Warning: the file exists but is shorter than the provided offset (${RESULT_OBJECT.file.startLine}). The file has ${RESULT_OBJECT.file.totalLines} lines.</system-reminder>
+<system-reminder>警告：文件存在但比提供的偏移量（${RESULT_OBJECT.file.startLine}）短。文件有 ${RESULT_OBJECT.file.totalLines} 行。</system-reminder>

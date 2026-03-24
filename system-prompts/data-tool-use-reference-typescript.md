@@ -3,17 +3,17 @@ name: 'Data: Tool use reference — TypeScript'
 description: TypeScript tool use reference including tool runner, manual agentic loop, code execution, and structured outputs
 ccVersion: 2.1.73
 -->
-# Tool Use — TypeScript
+# 工具使用 — TypeScript
 
-For conceptual overview (tool definitions, tool choice, tips), see [shared/tool-use-concepts.md](../../shared/tool-use-concepts.md).
+概念概述（工具定义、工具选择、提示）请参阅 [shared/tool-use-concepts.md](../../shared/tool-use-concepts.md)。
 
-## Tool Runner (Recommended)
+## 工具运行器（推荐）
 
-**Beta:** The tool runner is in beta in the TypeScript SDK.
+**Beta：** 工具运行器在 TypeScript SDK 中处于 Beta 阶段。
 
-Use \`betaZodTool\` with Zod schemas to define tools with a \`run\` function, then pass them to \`client.beta.messages.toolRunner()\`:
+使用带有 Zod 架构的 `betaZodTool` 来定义带有 `run` 函数的工具，然后将它们传递给 `client.beta.messages.toolRunner()`：
 
-\`\`\`typescript
+```typescript
 import Anthropic from "@anthropic-ai/sdk";
 import { betaZodTool } from "@anthropic-ai/sdk/helpers/beta/zod";
 import { z } from "zod";
@@ -29,7 +29,7 @@ const getWeather = betaZodTool({
   }),
   run: async (input) => {
     // Your implementation here
-    return \`72°F and sunny in \${input.location}\`;
+    return `72°F and sunny in ${input.location}`;
   },
 });
 
@@ -42,22 +42,22 @@ const finalMessage = await client.beta.messages.toolRunner({
 });
 
 console.log(finalMessage.content);
-\`\`\`
+```
 
-**Key benefits of the tool runner:**
+**工具运行器的主要优势：**
 
-- No manual loop — the SDK handles calling tools and feeding results back
-- Type-safe tool inputs via Zod schemas
-- Tool schemas are generated automatically from Zod definitions
-- Iteration stops automatically when Claude has no more tool calls
+- 无需手动循环 — SDK 自动处理工具调用和结果反馈
+- 通过 Zod 架构实现类型安全的工具输入
+- 工具架构从 Zod 定义自动生成
+- 当 Claude 没有更多工具调用时自动停止迭代
 
 ---
 
-## Manual Agentic Loop
+## 手动 Agentic 循环
 
-Use this when you need fine-grained control (custom logging, conditional tool execution, streaming individual iterations, human-in-the-loop approval):
+当您需要细粒度控制时使用此方法（自定义日志、条件工具执行、流式传输单个迭代、人工介入审批）：
 
-\`\`\`typescript
+```typescript
 import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic();
@@ -98,13 +98,13 @@ while (true) {
 
   messages.push({ role: "user", content: toolResults });
 }
-\`\`\`
+```
 
-### Streaming Manual Loop
+### 流式手动循环
 
-Use \`client.messages.stream()\` + \`finalMessage()\` instead of \`.create()\` when you need streaming within a manual loop. Text deltas are streamed on each iteration; \`finalMessage()\` collects the complete \`Message\` so you can inspect \`stop_reason\` and extract tool-use blocks:
+当您需要在手动循环中进行流式传输时，使用 `client.messages.stream()` + `finalMessage()` 替代 `.create()`。每次迭代都会流式传输文本增量；`finalMessage()` 收集完整的 `Message`，以便您可以检查 `stop_reason` 和提取工具使用块：
 
-\`\`\`typescript
+```typescript
 import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic();
@@ -154,19 +154,19 @@ while (true) {
 
   messages.push({ role: "user", content: toolResults });
 }
-\`\`\`
+```
 
-> **Important:** Don't wrap \`.on()\` events in \`new Promise()\` to collect the final message — use \`stream.finalMessage()\` instead. The SDK handles all error/abort/completion states internally.
+> **重要：** 不要将 `.on()` 事件包装在 `new Promise()` 中来收集最终消息 — 请改用 `stream.finalMessage()`。SDK 在内部处理所有错误/中止/完成状态。
 
-> **Error handling in the loop:** Use the SDK's typed exceptions (e.g., \`Anthropic.RateLimitError\`, \`Anthropic.APIError\`) — see [Error Handling](./README.md#error-handling) for examples. Don't check error messages with string matching.
+> **循环中的错误处理：** 使用 SDK 的类型化异常（例如 `Anthropic.RateLimitError`、`Anthropic.APIError`）— 示例请参阅 [错误处理](./README.md#error-handling)。不要使用字符串匹配来检查错误消息。
 
-> **SDK types:** Use \`Anthropic.MessageParam\`, \`Anthropic.Tool\`, \`Anthropic.ToolUseBlock\`, \`Anthropic.ToolResultBlockParam\`, \`Anthropic.Message\`, etc. for all API-related data structures. Don't redefine equivalent interfaces.
+> **SDK 类型：** 对所有 API 相关的数据结构使用 `Anthropic.MessageParam`、`Anthropic.Tool`、`Anthropic.ToolUseBlock`、`Anthropic.ToolResultBlockParam`、`Anthropic.Message` 等。不要重新定义等效的接口。
 
 ---
 
-## Handling Tool Results
+## 处理工具结果
 
-\`\`\`typescript
+```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 1024,
@@ -195,13 +195,13 @@ for (const block of response.content) {
     });
   }
 }
-\`\`\`
+```
 
 ---
 
-## Tool Choice
+## 工具选择
 
-\`\`\`typescript
+```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 1024,
@@ -209,17 +209,17 @@ const response = await client.messages.create({
   tool_choice: { type: "tool", name: "get_weather" },
   messages: [{ role: "user", content: "What's the weather in Paris?" }],
 });
-\`\`\`
+```
 
 ---
 
-## Server-Side Tools
+## 服务端工具
 
-Version-suffixed \`type\` literals; \`name\` is fixed per interface. Pass plain object literals — the \`ToolUnion\` type is satisfied structurally. **The \`name\`/\`type\` pair must match the interface**: mixing \`str_replace_based_edit_tool\` (20250728 name) with \`text_editor_20250124\` (which expects \`str_replace_editor\`) is a TS2322.
+带有版本后缀的 `type` 字面量；`name` 在每个接口中是固定的。传递普通对象字面量 — `ToolUnion` 类型通过结构满足。**`name`/`type` 对必须与接口匹配**：将 `str_replace_based_edit_tool`（20250728 名称）与 `text_editor_20250124`（期望 `str_replace_editor`）混合会导致 TS2322 错误。
 
-**Don't type-annotate as \`Tool[]\`** — \`Tool\` is just the custom-tool variant. Let structural typing infer from the \`tools\` param, or annotate as \`Anthropic.Messages.ToolUnion[]\` if you must:
+**不要注解为 `Tool[]`** — `Tool` 只是自定义工具变体。让结构类型从 `tools` 参数推断，或者如果必须的话注解为 `Anthropic.Messages.ToolUnion[]`：
 
-\`\`\`typescript
+```typescript
 // ✓ let inference work — no annotation
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
@@ -235,28 +235,28 @@ const response = await client.messages.create({
 
 // ✗ this is a TS2352 — Tool is the CUSTOM tool variant only
 // const tools: Anthropic.Tool[] = [{ type: "text_editor_20250728", ... }]
-\`\`\`
+```
 
-| Interface | \`name\` | \`type\` |
+| 接口 | `name` | `type` |
 |---|---|---|
-| \`ToolTextEditor20250124\` | \`str_replace_editor\` | \`text_editor_20250124\` |
-| \`ToolTextEditor20250429\` | \`str_replace_based_edit_tool\` | \`text_editor_20250429\` |
-| \`ToolTextEditor20250728\` | \`str_replace_based_edit_tool\` | \`text_editor_20250728\` |
-| \`ToolBash20250124\` | \`bash\` | \`bash_20250124\` |
-| \`WebSearchTool20260209\` | \`web_search\` | \`web_search_20260209\` |
-| \`WebFetchTool20260209\` | \`web_fetch\` | \`web_fetch_20260209\` |
-| \`CodeExecutionTool20260120\` | \`code_execution\` | \`code_execution_20260120\` |
+| `ToolTextEditor20250124` | `str_replace_editor` | `text_editor_20250124` |
+| `ToolTextEditor20250429` | `str_replace_based_edit_tool` | `text_editor_20250429` |
+| `ToolTextEditor20250728` | `str_replace_based_edit_tool` | `text_editor_20250728` |
+| `ToolBash20250124` | `bash` | `bash_20250124` |
+| `WebSearchTool20260209` | `web_search` | `web_search_20260209` |
+| `WebFetchTool20260209` | `web_fetch` | `web_fetch_20260209` |
+| `CodeExecutionTool20260120` | `code_execution` | `code_execution_20260120` |
 
-**Don't mix beta and non-beta types**: if you call \`client.beta.messages.create()\`, the response \`content\` is \`BetaContentBlock[]\` — you cannot pass that to a non-beta \`ContentBlockParam[]\` without narrowing each element.
+**不要混合 beta 和非 beta 类型**：如果您调用 `client.beta.messages.create()`，响应的 `content` 是 `BetaContentBlock[]` — 您不能在没有缩小每个元素的情况下将其传递给非 beta 的 `ContentBlockParam[]`。
 
 ---
 
 
-## Code Execution
+## 代码执行
 
-### Basic Usage
+### 基本用法
 
-\`\`\`typescript
+```typescript
 import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic();
@@ -273,26 +273,26 @@ const response = await client.messages.create({
   ],
   tools: [{ type: "code_execution_20260120", name: "code_execution" }],
 });
-\`\`\`
+```
 
-### Reading Local Files (ESM note)
+### 读取本地文件（ESM 注意事项）
 
-\`__dirname\` doesn't exist in ES modules. For script-relative paths use \`import.meta.url\`:
+`__dirname` 在 ES 模块中不存在。对于脚本相对路径，使用 `import.meta.url`：
 
-\`\`\`typescript
+```typescript
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const pdfBytes = readFileSync(join(__dirname, "sample.pdf"));
-\`\`\`
+```
 
-Or use a CWD-relative path if the script runs from a known directory: \`readFileSync("./sample.pdf")\`.
+或者，如果脚本从已知目录运行，使用相对于 CWD 的路径：`readFileSync("./sample.pdf")`。
 
-### Upload Files for Analysis
+### 上传文件进行分析
 
-\`\`\`typescript
+```typescript
 import Anthropic, { toFile } from "@anthropic-ai/sdk";
 import { createReadStream } from "fs";
 
@@ -328,11 +328,11 @@ const response = await client.messages.create(
   },
   { headers: { "anthropic-beta": "files-api-2025-04-14" } },
 );
-\`\`\`
+```
 
-### Retrieve Generated Files
+### 检索生成的文件
 
-\`\`\`typescript
+```typescript
 import path from "path";
 import fs from "fs";
 
@@ -352,22 +352,22 @@ for (const block of response.content) {
           const fileBytes = Buffer.from(await downloadResponse.arrayBuffer());
           const safeName = path.basename(metadata.filename);
           if (!safeName || safeName === "." || safeName === "..") {
-            console.warn(\`Skipping invalid filename: \${metadata.filename}\`);
+            console.warn(`Skipping invalid filename: ${metadata.filename}`);
             continue;
           }
           const outputPath = path.join(OUTPUT_DIR, safeName);
           await fs.promises.writeFile(outputPath, fileBytes);
-          console.log(\`Saved: \${outputPath}\`);
+          console.log(`Saved: ${outputPath}`);
         }
       }
     }
   }
 }
-\`\`\`
+```
 
-### Container Reuse
+### 容器复用
 
-\`\`\`typescript
+```typescript
 // First request: set up environment
 const response1 = await client.messages.create({
   model: "{{OPUS_ID}}",
@@ -397,15 +397,15 @@ const response2 = await client.messages.create({
   ],
   tools: [{ type: "code_execution_20260120", name: "code_execution" }],
 });
-\`\`\`
+```
 
 ---
 
-## Memory Tool
+## 记忆工具
 
-### Basic Usage
+### 基本用法
 
-\`\`\`typescript
+```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 2048,
@@ -417,13 +417,13 @@ const response = await client.messages.create({
   ],
   tools: [{ type: "memory_20250818", name: "memory" }],
 });
-\`\`\`
+```
 
-### SDK Memory Helper
+### SDK 记忆助手
 
-Use \`betaMemoryTool\` with a \`MemoryToolHandlers\` implementation:
+将 `betaMemoryTool` 与 `MemoryToolHandlers` 实现一起使用：
 
-\`\`\`typescript
+```typescript
 import {
   betaMemoryTool,
   type MemoryToolHandlers,
@@ -450,19 +450,19 @@ const runner = client.beta.messages.toolRunner({
 for await (const message of runner) {
   console.log(message);
 }
-\`\`\`
+```
 
-For full implementation examples, use WebFetch:
+完整的实现示例，请使用 WebFetch：
 
-- \`https://github.com/anthropics/anthropic-sdk-typescript/blob/main/examples/tools-helpers-memory.ts\`
+- `https://github.com/anthropics/anthropic-sdk-typescript/blob/main/examples/tools-helpers-memory.ts`
 
 ---
 
-## Structured Outputs
+## 结构化输出
 
-### JSON Outputs (Zod — Recommended)
+### JSON 输出（Zod — 推荐）
 
-\`\`\`typescript
+```typescript
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import { zodOutputFormat } from "@anthropic-ai/sdk/helpers/zod";
@@ -494,11 +494,11 @@ const response = await client.messages.parse({
 
 // parsed_output is null if parsing failed — assert or guard
 console.log(response.parsed_output!.name); // "Jane Doe"
-\`\`\`
+```
 
-### Strict Tool Use
+### 严格工具使用
 
-\`\`\`typescript
+```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 1024,
@@ -529,4 +529,4 @@ const response = await client.messages.create({
     },
   ],
 });
-\`\`\`
+```

@@ -5,36 +5,36 @@ ccVersion: 2.1.73
 -->
 # Claude API — Go
 
-> **Note:** The Go SDK supports the Claude API and beta tool use with \`BetaToolRunner\`. Agent SDK is not yet available for Go.
+> **注意：** Go SDK 支持 Claude API 和通过 `BetaToolRunner` 使用测试版工具。Go 语言暂不支持 Agent SDK。
 
-## Installation
+## 安装
 
-\`\`\`bash
+```bash
 go get github.com/anthropics/anthropic-sdk-go
-\`\`\`
+```
 
-## Client Initialization
+## 客户端初始化
 
-\`\`\`go
+```go
 import (
     "github.com/anthropics/anthropic-sdk-go"
     "github.com/anthropics/anthropic-sdk-go/option"
 )
 
-// Default (uses ANTHROPIC_API_KEY env var)
+// 默认方式（使用 ANTHROPIC_API_KEY 环境变量）
 client := anthropic.NewClient()
 
-// Explicit API key
+// 显式指定 API 密钥
 client := anthropic.NewClient(
     option.WithAPIKey("your-api-key"),
 )
-\`\`\`
+```
 
 ---
 
-## Basic Message Request
+## 基础消息请求
 
-\`\`\`go
+```go
 response, err := client.Messages.New(context.Background(), anthropic.MessageNewParams{
     Model:     anthropic.ModelClaudeOpus4_6,
     MaxTokens: 1024,
@@ -51,13 +51,13 @@ for _, block := range response.Content {
         fmt.Println(variant.Text)
     }
 }
-\`\`\`
+```
 
 ---
 
-## Streaming
+## 流式传输
 
-\`\`\`go
+```go
 stream := client.Messages.NewStreaming(context.Background(), anthropic.MessageNewParams{
     Model:     anthropic.ModelClaudeOpus4_6,
     MaxTokens: 1024,
@@ -79,30 +79,30 @@ for stream.Next() {
 if err := stream.Err(); err != nil {
     log.Fatal(err)
 }
-\`\`\`
+```
 
-**Accumulating the final message** (there is no \`GetFinalMessage()\` on the stream):
+**累积最终消息**（流对象上没有 `GetFinalMessage()` 方法）：
 
-\`\`\`go
+```go
 stream := client.Messages.NewStreaming(ctx, params)
 message := anthropic.Message{}
 for stream.Next() {
     message.Accumulate(stream.Current())
 }
 if err := stream.Err(); err != nil { log.Fatal(err) }
-// message.Content now has the complete response
-\`\`\`
+// message.Content 现在包含完整的响应
+```
 
 
 ---
 
-## Tool Use
+## 工具使用
 
-### Tool Runner (Beta — Recommended)
+### 工具运行器（测试版 — 推荐）
 
-**Beta:** The Go SDK provides \`BetaToolRunner\` for automatic tool use loops via the \`toolrunner\` package.
+**测试版：** Go SDK 通过 `toolrunner` 包提供 `BetaToolRunner`，用于自动执行工具使用循环。
 
-\`\`\`go
+```go
 import (
     "context"
     "fmt"
@@ -112,12 +112,12 @@ import (
     "github.com/anthropics/anthropic-sdk-go/toolrunner"
 )
 
-// Define tool input with jsonschema tags for automatic schema generation
+// 使用 jsonschema 标签定义工具输入，用于自动生成 schema
 type GetWeatherInput struct {
-    City string \`json:"city" jsonschema:"required,description=The city name"\`
+    City string `json:"city" jsonschema:"required,description=The city name"`
 }
 
-// Create a tool with automatic schema generation from struct tags
+// 通过结构体标签自动生成 schema 创建工具
 weatherTool, err := toolrunner.NewBetaToolFromJSONSchema(
     "get_weather",
     "Get current weather for a city",
@@ -133,7 +133,7 @@ if err != nil {
     log.Fatal(err)
 }
 
-// Create a tool runner that handles the conversation loop automatically
+// 创建工具运行器，自动处理对话循环
 runner := client.Beta.Messages.NewToolRunner(
     []anthropic.BetaTool{weatherTool},
     anthropic.BetaToolRunnerParams{
@@ -148,38 +148,38 @@ runner := client.Beta.Messages.NewToolRunner(
     },
 )
 
-// Run until Claude produces a final response
+// 运行直到 Claude 生成最终响应
 message, err := runner.RunToCompletion(context.Background())
 if err != nil {
     log.Fatal(err)
 }
 
-// RunToCompletion returns *BetaMessage; content is []BetaContentBlockUnion.
-// Narrow via AsAny() switch — note the Beta-namespace types (BetaTextBlock,
-// not TextBlock):
+// RunToCompletion 返回 *BetaMessage；content 是 []BetaContentBlockUnion。
+// 通过 AsAny() switch 进行类型收窄 —— 注意使用 Beta 命名空间类型（BetaTextBlock，
+// 而不是 TextBlock）：
 for _, block := range message.Content {
     switch block := block.AsAny().(type) {
     case anthropic.BetaTextBlock:
         fmt.Println(block.Text)
     }
 }
-\`\`\`
+```
 
-**Key features of the Go tool runner:**
+**Go 工具运行器的主要特性：**
 
-- Automatic schema generation from Go structs via \`jsonschema\` tags
-- \`RunToCompletion()\` for simple one-shot usage
-- \`All()\` iterator for processing each message in the conversation
-- \`NextMessage()\` for step-by-step iteration
-- Streaming variant via \`NewToolRunnerStreaming()\` with \`AllStreaming()\`
+- 通过 `jsonschema` 标签从 Go 结构体自动生成 schema
+- `RunToCompletion()` 用于简单的一次性调用
+- `All()` 迭代器用于处理对话中的每条消息
+- `NextMessage()` 用于逐步迭代
+- 通过 `NewToolRunnerStreaming()` 和 `AllStreaming()` 实现流式变体
 
-### Manual Loop
+### 手动循环
 
-For fine-grained control over the agentic loop, define tools with \`ToolParam\`, check \`StopReason\`, execute tools yourself, and feed \`tool_result\` blocks back. This is the pattern when you need to intercept, validate, or log tool calls.
+如需对智能体循环进行细粒度控制，请使用 `ToolParam` 定义工具，检查 `StopReason`，自行执行工具，并将 `tool_result` 块反馈回去。当您需要拦截、验证或记录工具调用时，请使用此模式。
 
-Derived from \`anthropic-sdk-go/examples/tools/main.go\`.
+源自 `anthropic-sdk-go/examples/tools/main.go`。
 
-\`\`\`go
+```go
 package main
 
 import (
@@ -194,7 +194,7 @@ import (
 func main() {
     client := anthropic.NewClient()
 
-    // 1. Define tools. ToolParam.InputSchema uses a map, no struct tags needed.
+    // 1. 定义工具。ToolParam.InputSchema 使用 map，不需要结构体标签。
     addTool := anthropic.ToolParam{
         Name:        "add",
         Description: anthropic.String("Add two integers"),
@@ -205,7 +205,7 @@ func main() {
             },
         },
     }
-    // ToolParam must be wrapped in ToolUnionParam for the Tools slice
+    // ToolParam 必须包装在 ToolUnionParam 中才能用于 Tools 切片
     tools := []anthropic.ToolUnionParam{{OfTool: &addTool}}
 
     messages := []anthropic.MessageParam{
@@ -223,71 +223,71 @@ func main() {
             log.Fatal(err)
         }
 
-        // 2. Append the assistant response to history BEFORE processing tool calls.
-        //    resp.ToParam() converts Message → MessageParam in one call.
+        // 2. 在处理工具调用之前，先将助手响应追加到历史记录。
+        //    resp.ToParam() 可一次性将 Message 转换为 MessageParam。
         messages = append(messages, resp.ToParam())
 
-        // 3. Walk content blocks. ContentBlockUnion is a flattened struct;
-        //    use block.AsAny().(type) to switch on the actual variant.
+        // 3. 遍历内容块。ContentBlockUnion 是扁平化结构；
+        //    使用 block.AsAny().(type) 对实际变体进行 switch。
         toolResults := []anthropic.ContentBlockParamUnion{}
         for _, block := range resp.Content {
             switch variant := block.AsAny().(type) {
             case anthropic.TextBlock:
                 fmt.Println(variant.Text)
             case anthropic.ToolUseBlock:
-                // 4. Parse the tool input. Use variant.JSON.Input.Raw() to get the
-                //    raw JSON — block.Input is json.RawMessage, not the parsed value.
+                // 4. 解析工具输入。使用 variant.JSON.Input.Raw() 获取
+                //    原始 JSON —— block.Input 是 json.RawMessage，不是解析后的值。
                 var in struct {
-                    A int \`json:"a"\`
-                    B int \`json:"b"\`
+                    A int `json:"a"`
+                    B int `json:"b"`
                 }
                 if err := json.Unmarshal([]byte(variant.JSON.Input.Raw()), &in); err != nil {
                     log.Fatal(err)
                 }
                 result := fmt.Sprintf("%d", in.A+in.B)
-                // 5. NewToolResultBlock(toolUseID, content, isError) builds the
-                //    ContentBlockParamUnion for you. block.ID is the tool_use_id.
+                // 5. NewToolResultBlock(toolUseID, content, isError) 构建
+                //    ContentBlockParamUnion。block.ID 是 tool_use_id。
                 toolResults = append(toolResults,
                     anthropic.NewToolResultBlock(block.ID, result, false))
             }
         }
 
-        // 6. Exit when Claude stops asking for tools
+        // 6. 当 Claude 停止请求工具时退出
         if resp.StopReason != anthropic.StopReasonToolUse {
             break
         }
 
-        // 7. Tool results go in a user message (variadic: all results in one turn)
+        // 7. 工具结果放入用户消息中（可变参数：一次轮询中的所有结果）
         messages = append(messages, anthropic.NewUserMessage(toolResults...))
     }
 }
-\`\`\`
+```
 
-**Key API surface:**
+**关键 API 接口：**
 
-| Symbol | Purpose |
+| 符号 | 用途 |
 |---|---|
-| \`resp.ToParam()\` | Convert \`Message\` response → \`MessageParam\` for history |
-| \`block.AsAny().(type)\` | Type-switch on \`ContentBlockUnion\` variants |
-| \`variant.JSON.Input.Raw()\` | Raw JSON string of tool input (for \`json.Unmarshal\`) |
-| \`anthropic.NewToolResultBlock(id, content, isError)\` | Build \`tool_result\` block |
-| \`anthropic.NewUserMessage(blocks...)\` | Wrap tool results as a user turn |
-| \`anthropic.StopReasonToolUse\` | \`StopReason\` constant to check loop termination |
-| \`anthropic.ToolUnionParam{OfTool: &t}\` | Wrap \`ToolParam\` in the union for \`Tools:\` |
+| `resp.ToParam()` | 将 `Message` 响应转换为 `MessageParam` 用于历史记录 |
+| `block.AsAny().(type)` | 对 `ContentBlockUnion` 变体进行类型 switch |
+| `variant.JSON.Input.Raw()` | 工具输入的原始 JSON 字符串（用于 `json.Unmarshal`） |
+| `anthropic.NewToolResultBlock(id, content, isError)` | 构建 `tool_result` 块 |
+| `anthropic.NewUserMessage(blocks...)` | 将工具结果包装为用户轮询 |
+| `anthropic.StopReasonToolUse` | 用于检查循环终止的 `StopReason` 常量 |
+| `anthropic.ToolUnionParam{OfTool: &t}` | 将 `ToolParam` 包装在 union 中用于 `Tools:` |
 
 ---
 
-## Thinking
+## 思考功能
 
-Enable Claude's internal reasoning by setting \`Thinking\` in \`MessageNewParams\`. The response will contain \`ThinkingBlock\` content before the final \`TextBlock\`.
+通过在 `MessageNewParams` 中设置 `Thinking` 来启用 Claude 的内部推理。响应将在最终的 `TextBlock` 之前包含 `ThinkingBlock` 内容。
 
-**Adaptive thinking is the recommended mode for Claude 4.6+ models.** Claude decides dynamically when and how much to think. Combine with the \`effort\` parameter for cost-quality control.
+**自适应思考是 Claude 4.6+ 模型的推荐模式。** Claude 动态决定何时以及思考多少。结合 `effort` 参数进行成本-质量控制。
 
-Derived from \`anthropic-sdk-go/message.go\` (\`ThinkingConfigParamUnion\`, \`NewThinkingConfigAdaptiveParam\`).
+源自 `anthropic-sdk-go/message.go`（`ThinkingConfigParamUnion`、`NewThinkingConfigAdaptiveParam`）。
 
-\`\`\`go
-// There is no ThinkingConfigParamOfAdaptive helper — construct the union
-// struct-literal directly and take the address of the variant.
+```go
+// 没有 ThinkingConfigParamOfAdaptive 辅助函数 —— 直接构造 union
+// 结构体字面量并获取变体的地址。
 adaptive := anthropic.NewThinkingConfigAdaptiveParam()
 params := anthropic.MessageNewParams{
     Model:     anthropic.ModelClaudeSonnet4_6,
@@ -303,7 +303,7 @@ if err != nil {
     log.Fatal(err)
 }
 
-// ThinkingBlock(s) precede TextBlock in content
+// ThinkingBlock(s) 在 content 中位于 TextBlock 之前
 for _, block := range resp.Content {
     switch b := block.AsAny().(type) {
     case anthropic.ThinkingBlock:
@@ -312,53 +312,53 @@ for _, block := range resp.Content {
         fmt.Println(b.Text)
     }
 }
-\`\`\`
+```
 
-> **Deprecated:** \`ThinkingConfigParamOfEnabled(budgetTokens)\` (fixed-budget extended thinking) still works on Claude 4.6 but is deprecated. Use adaptive thinking above.
+> **已弃用：** `ThinkingConfigParamOfEnabled(budgetTokens)`（固定预算扩展思考）在 Claude 4.6 上仍然可用，但已弃用。请使用上面的自适应思考。
 
-To disable: \`anthropic.ThinkingConfigParamUnion{OfDisabled: &anthropic.ThinkingConfigDisabledParam{}}\`.
+禁用方式：`anthropic.ThinkingConfigParamUnion{OfDisabled: &anthropic.ThinkingConfigDisabledParam{}}`。
 
 ---
 
-## Server-Side Tools
+## 服务器端工具
 
-Version-suffixed struct names with \`Param\` suffix. \`Name\`/\`Type\` are \`constant.*\` types — zero value marshals correctly, so \`{}\` works. Wrap in \`ToolUnionParam\` with the matching \`Of*\` field.
+带版本后缀的结构体名称，以 `Param` 结尾。`Name`/`Type` 是 `constant.*` 类型 —— 零值可正确序列化，因此 `{}` 可用。使用匹配的 `Of*` 字段包装在 `ToolUnionParam` 中。
 
-\`\`\`go
+```go
 Tools: []anthropic.ToolUnionParam{
     {OfWebSearchTool20260209: &anthropic.WebSearchTool20260209Param{}},
     {OfBashTool20250124: &anthropic.ToolBash20250124Param{}},
     {OfTextEditor20250728: &anthropic.ToolTextEditor20250728Param{}},
     {OfCodeExecutionTool20260120: &anthropic.CodeExecutionTool20260120Param{}},
 },
-\`\`\`
+```
 
-Also available: \`WebFetchTool20260209Param\`, \`MemoryTool20250818Param\`, \`ToolSearchToolBm25_20251119Param\`, \`ToolSearchToolRegex20251119Param\`.
+还有：`WebFetchTool20260209Param`、`MemoryTool20250818Param`、`ToolSearchToolBm25_20251119Param`、`ToolSearchToolRegex20251119Param`。
 
 ---
 
-## PDF / Document Input
+## PDF / 文档输入
 
-\`NewDocumentBlock\` generic helper accepts any source type. \`MediaType\`/\`Type\` are auto-set.
+`NewDocumentBlock` 通用辅助函数接受任何源类型。`MediaType`/`Type` 自动设置。
 
-\`\`\`go
+```go
 b64 := base64.StdEncoding.EncodeToString(pdfBytes)
 
 msg := anthropic.NewUserMessage(
     anthropic.NewDocumentBlock(anthropic.Base64PDFSourceParam{Data: b64}),
     anthropic.NewTextBlock("Summarize this document"),
 )
-\`\`\`
+```
 
-Other sources: \`URLPDFSourceParam{URL: "https://..."}\`, \`PlainTextSourceParam{Data: "..."}\`.
+其他源：`URLPDFSourceParam{URL: "https://..."}`、`PlainTextSourceParam{Data: "..."}`。
 
 ---
 
-## Files API (Beta)
+## 文件 API（测试版）
 
-Under \`client.Beta.Files\`. Method is **\`Upload\`** (NOT \`New\`/\`Create\`), params struct is \`BetaFileUploadParams\`. The \`File\` field takes an \`io.Reader\`; use \`anthropic.File()\` to attach a filename + content-type for the multipart encoding.
+位于 `client.Beta.Files` 下。方法是 **`Upload`**（不是 `New`/`Create`），参数结构体是 `BetaFileUploadParams`。`File` 字段接受 `io.Reader`；使用 `anthropic.File()` 附加文件名 + 内容类型用于多部分编码。
 
-\`\`\`go
+```go
 f, _ := os.Open("./upload_me.txt")
 defer f.Close()
 
@@ -366,20 +366,20 @@ meta, err := client.Beta.Files.Upload(ctx, anthropic.BetaFileUploadParams{
     File:  anthropic.File(f, "upload_me.txt", "text/plain"),
     Betas: []anthropic.AnthropicBeta{anthropic.AnthropicBetaFilesAPI2025_04_14},
 })
-// meta.ID is the file_id to reference in subsequent message requests
-\`\`\`
+// meta.ID 是后续消息请求中引用的 file_id
+```
 
-Other \`Beta.Files\` methods: \`List\`, \`Delete\`, \`Download\`, \`GetMetadata\`.
+其他 `Beta.Files` 方法：`List`、`Delete`、`Download`、`GetMetadata`。
 
 ---
 
-## Context Editing / Compaction (Beta)
+## 上下文编辑 / 压缩（测试版）
 
-Use \`Beta.Messages.New\` with \`ContextManagement\` on \`BetaMessageNewParams\`. There is no \`NewBetaAssistantMessage\` — use \`.ToParam()\` for the round-trip.
+在 `BetaMessageNewParams` 上使用 `Beta.Messages.New` 并设置 `ContextManagement`。没有 `NewBetaAssistantMessage` —— 使用 `.ToParam()` 进行往返。
 
-\`\`\`go
+```go
 params := anthropic.BetaMessageNewParams{
-    Model:     anthropic.ModelClaudeOpus4_6,  // also supported: ModelClaudeSonnet4_6
+    Model:     anthropic.ModelClaudeOpus4_6,  // 也支持：ModelClaudeSonnet4_6
     MaxTokens: 1024,
     Betas:     []anthropic.AnthropicBeta{"compact-2026-01-12"},
     ContextManagement: anthropic.BetaContextManagementConfigParam{
@@ -395,15 +395,15 @@ if err != nil {
     log.Fatal(err)
 }
 
-// Round-trip: append response to history via .ToParam()
+// 往返：通过 .ToParam() 将响应追加到历史记录
 params.Messages = append(params.Messages, resp.ToParam())
 
-// Read compaction blocks from the response
+// 从响应中读取压缩块
 for _, block := range resp.Content {
     if c, ok := block.AsAny().(anthropic.BetaCompactionBlock); ok {
         fmt.Println("compaction summary:", c.Content)
     }
 }
-\`\`\`
+```
 
-Other edit types: \`BetaClearToolUses20250919EditParam\`, \`BetaClearThinking20251015EditParam\`.
+其他编辑类型：`BetaClearToolUses20250919EditParam`、`BetaClearThinking20251015EditParam`。

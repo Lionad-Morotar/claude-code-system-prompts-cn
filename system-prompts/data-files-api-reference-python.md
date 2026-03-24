@@ -5,23 +5,23 @@ ccVersion: 2.1.73
 -->
 # Files API — Python
 
-The Files API uploads files for use in Messages API requests. Reference files via \`file_id\` in content blocks, avoiding re-uploads across multiple API calls.
+Files API 用于上传文件，以便在 Messages API 请求中使用。通过内容块中的 `file_id` 引用文件，避免在多次 API 调用中重复上传。
 
-**Beta:** Pass \`betas=["files-api-2025-04-14"]\` in your API calls (the SDK sets the required header automatically).
+**Beta 版本：** 在 API 调用中传入 `betas=["files-api-2025-04-14"]`（SDK 会自动设置所需的请求头）。
 
-## Key Facts
+## 关键信息
 
-- Maximum file size: 500 MB
-- Total storage: 100 GB per organization
-- Files persist until deleted
-- File operations (upload, list, delete) are free; content used in messages is billed as input tokens
-- Not available on Amazon Bedrock or Google Vertex AI
+- 最大文件大小：500 MB
+- 总存储空间：每个组织 100 GB
+- 文件在删除前一直保留
+- 文件操作（上传、列出、删除）免费；消息中使用的文件内容按输入 token 计费
+- 在 Amazon Bedrock 或 Google Vertex AI 上不可用
 
 ---
 
-## Upload a File
+## 上传文件
 
-\`\`\`python
+```python
 import anthropic
 
 client = anthropic.Anthropic()
@@ -31,15 +31,15 @@ uploaded = client.beta.files.upload(
 )
 print(f"File ID: {uploaded.id}")
 print(f"Size: {uploaded.size_bytes} bytes")
-\`\`\`
+```
 
 ---
 
-## Use a File in Messages
+## 在消息中使用文件
 
-### PDF / Text Document
+### PDF / 文本文档
 
-\`\`\`python
+```python
 response = client.beta.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=1024,
@@ -50,8 +50,8 @@ response = client.beta.messages.create(
             {
                 "type": "document",
                 "source": {"type": "file", "file_id": uploaded.id},
-                "title": "Q4 Report",           # optional
-                "citations": {"enabled": True}   # optional, enables citations
+                "title": "Q4 Report",           # 可选
+                "citations": {"enabled": True}   # 可选，启用引用
             }
         ]
     }],
@@ -60,11 +60,11 @@ response = client.beta.messages.create(
 for block in response.content:
     if block.type == "text":
         print(block.text)
-\`\`\`
+```
 
-### Image
+### 图片
 
-\`\`\`python
+```python
 image_file = client.beta.files.upload(
     file=("photo.png", open("photo.png", "rb"), "image/png"),
 )
@@ -84,61 +84,61 @@ response = client.beta.messages.create(
     }],
     betas=["files-api-2025-04-14"],
 )
-\`\`\`
+```
 
 ---
 
-## Manage Files
+## 管理文件
 
-### List Files
+### 列出文件
 
-\`\`\`python
+```python
 files = client.beta.files.list()
 for f in files.data:
     print(f"{f.id}: {f.filename} ({f.size_bytes} bytes)")
-\`\`\`
+```
 
-### Get File Metadata
+### 获取文件元数据
 
-\`\`\`python
+```python
 file_info = client.beta.files.retrieve_metadata("file_011CNha8iCJcU1wXNR6q4V8w")
 print(f"Filename: {file_info.filename}")
 print(f"MIME type: {file_info.mime_type}")
-\`\`\`
+```
 
-### Delete a File
+### 删除文件
 
-\`\`\`python
+```python
 client.beta.files.delete("file_011CNha8iCJcU1wXNR6q4V8w")
-\`\`\`
+```
 
-### Download a File
+### 下载文件
 
-Only files created by the code execution tool or skills can be downloaded (not user-uploaded files).
+只有由代码执行工具或技能创建的文件才能下载（用户上传的文件不能下载）。
 
-\`\`\`python
+```python
 file_content = client.beta.files.download("file_011CNha8iCJcU1wXNR6q4V8w")
 file_content.write_to_file("output.txt")
-\`\`\`
+```
 
 ---
 
-## Full End-to-End Example
+## 完整端到端示例
 
-Upload a document once, ask multiple questions about it:
+上传一次文档，然后针对它提出多个问题：
 
-\`\`\`python
+```python
 import anthropic
 
 client = anthropic.Anthropic()
 
-# 1. Upload once
+# 1. 上传一次
 uploaded = client.beta.files.upload(
     file=("contract.pdf", open("contract.pdf", "rb"), "application/pdf"),
 )
 print(f"Uploaded: {uploaded.id}")
 
-# 2. Ask multiple questions using the same file_id
+# 2. 使用相同的 file_id 提出多个问题
 questions = [
     "What are the key terms and conditions?",
     "What is the termination clause?",
@@ -161,10 +161,10 @@ for question in questions:
         }],
         betas=["files-api-2025-04-14"],
     )
-    print(f"\\nQ: {question}")
+    print(f"\nQ: {question}")
     text = next((b.text for b in response.content if b.type == "text"), "")
     print(f"A: {text[:200]}")
 
-# 3. Clean up when done
+# 3. 使用完成后清理
 client.beta.files.delete(uploaded.id)
-\`\`\`
+```

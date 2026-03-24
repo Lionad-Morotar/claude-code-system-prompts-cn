@@ -1,6 +1,6 @@
 <!--
-name: 'Tool Description: Bash (sandbox — no exceptions)'
-description: Commands cannot run outside sandbox under any circumstances
+name: '工具描述：Bash（沙箱模式 — 无例外）'
+description: 命令在任何情况下都不能在沙箱外运行
 ccVersion: 2.1.53
 -->
-Commands cannot run outside the sandbox under any circumstances.
+命令在任何情况下都不能在沙箱外运行。

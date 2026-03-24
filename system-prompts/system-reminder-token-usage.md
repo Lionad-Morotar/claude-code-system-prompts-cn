@@ -1,8 +1,8 @@
 <!--
-name: 'System Reminder: Token usage'
-description: Current token usage statistics
+name: '系统提醒：令牌使用'
+description: 当前令牌使用统计
 ccVersion: 2.1.18
 variables:
   - ATTACHMENT_OBJECT
 -->
-Token usage: ${ATTACHMENT_OBJECT.used}/${ATTACHMENT_OBJECT.total}; ${ATTACHMENT_OBJECT.remaining} remaining
+令牌使用：${ATTACHMENT_OBJECT.used}/${ATTACHMENT_OBJECT.total}；剩余 ${ATTACHMENT_OBJECT.remaining}

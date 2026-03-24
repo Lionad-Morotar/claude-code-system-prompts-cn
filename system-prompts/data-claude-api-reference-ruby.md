@@ -5,31 +5,31 @@ ccVersion: 2.1.71
 -->
 # Claude API — Ruby
 
-> **Note:** The Ruby SDK supports the Claude API. A tool runner is available in beta via \`client.beta.messages.tool_runner()\`. Agent SDK is not yet available for Ruby.
+> **注意：** Ruby SDK 支持 Claude API。工具运行器（tool runner）可通过 `client.beta.messages.tool_runner()` 以 Beta 形式使用。Agent SDK 尚未支持 Ruby。
 
-## Installation
+## 安装
 
-\`\`\`bash
+```bash
 gem install anthropic
-\`\`\`
+```
 
-## Client Initialization
+## 客户端初始化
 
-\`\`\`ruby
+```ruby
 require "anthropic"
 
-# Default (uses ANTHROPIC_API_KEY env var)
+# 默认方式（使用 ANTHROPIC_API_KEY 环境变量）
 client = Anthropic::Client.new
 
-# Explicit API key
+# 显式指定 API 密钥
 client = Anthropic::Client.new(api_key: "your-api-key")
-\`\`\`
+```
 
 ---
 
-## Basic Message Request
+## 基础消息请求
 
-\`\`\`ruby
+```ruby
 message = client.messages.create(
   model: :"{{OPUS_ID}}",
   max_tokens: 1024,
@@ -37,19 +37,19 @@ message = client.messages.create(
     { role: "user", content: "What is the capital of France?" }
   ]
 )
-# content is an array of polymorphic block objects (TextBlock, ThinkingBlock,
-# ToolUseBlock, ...). .type is a Symbol — compare with :text, not "text".
-# .text raises NoMethodError on non-TextBlock entries.
+# content 是多态块对象的数组（TextBlock、ThinkingBlock、
+# ToolUseBlock 等）。.type 是 Symbol 类型 —— 应与 :text 比较，而非 "text"。
+# 在非 TextBlock 条目上调用 .text 会引发 NoMethodError。
 message.content.each do |block|
   puts block.text if block.type == :text
 end
-\`\`\`
+```
 
 ---
 
-## Streaming
+## 流式传输
 
-\`\`\`ruby
+```ruby
 stream = client.messages.stream(
   model: :"{{OPUS_ID}}",
   max_tokens: 1024,
@@ -57,17 +57,17 @@ stream = client.messages.stream(
 )
 
 stream.text.each { |text| print(text) }
-\`\`\`
+```
 
 ---
 
-## Tool Use
+## 工具使用
 
-The Ruby SDK supports tool use via raw JSON schema definitions and also provides a beta tool runner for automatic tool execution.
+Ruby SDK 支持通过原始 JSON schema 定义来使用工具，同时也提供了用于自动执行工具的 Beta 版工具运行器。
 
-### Tool Runner (Beta)
+### 工具运行器（Beta）
 
-\`\`\`ruby
+```ruby
 class GetWeatherInput < Anthropic::BaseModel
   required :location, String, doc: "City and state, e.g. San Francisco, CA"
 end
@@ -90,8 +90,8 @@ client.beta.messages.tool_runner(
 ).each_message do |message|
   puts message.content
 end
-\`\`\`
+```
 
-### Manual Loop
+### 手动循环
 
-See the [shared tool use concepts](../shared/tool-use-concepts.md) for the tool definition format and agentic loop pattern.
+有关工具定义格式和智能体循环模式，请参阅[共享的工具使用概念](../shared/tool-use-concepts.md)。

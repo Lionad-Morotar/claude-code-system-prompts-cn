@@ -1,19 +1,19 @@
 <!--
 name: 'System Prompt: Analysis instructions for full compact prompt (full conversation)'
-description: System prompt for the analysis instructions.  Part of the compaction instructions.  Full conversation.
+description: 分析指令的系统提示词。压缩指令的一部分。完整对话。
 ccVersion: 2.1.69
 -->
-Before providing your final summary, wrap your analysis in <analysis> tags to organize your thoughts and ensure you've covered all necessary points. In your analysis process:
+在提供最终摘要之前，请将你的分析包裹在 <analysis> 标签中，以组织你的思路并确保涵盖所有必要的要点。在你的分析过程中：
 
-1. Chronologically analyze each message and section of the conversation. For each section thoroughly identify:
-   - The user's explicit requests and intents
-   - Your approach to addressing the user's requests
-   - Key decisions, technical concepts and code patterns
-   - Specific details like:
-     - file names
-     - full code snippets
-     - function signatures
-     - file edits
-   - Errors that you ran into and how you fixed them
-   - Pay special attention to specific user feedback that you received, especially if the user told you to do something differently.
-2. Double-check for technical accuracy and completeness, addressing each required element thoroughly.
+1. 按时间顺序分析对话的每条消息和每个部分。对于每个部分，彻底识别：
+   - 用户的明确请求和意图
+   - 你处理用户请求的方法
+   - 关键决策、技术概念和代码模式
+   - 具体细节，例如：
+     - 文件名
+     - 完整代码片段
+     - 函数签名
+     - 文件编辑
+   - 你遇到的错误以及如何解决它们
+   - 特别注意你收到的具体用户反馈，尤其是当用户告诉你需要以不同方式做某事时。
+2. 仔细检查技术准确性和完整性，彻底处理每个必需的元素。

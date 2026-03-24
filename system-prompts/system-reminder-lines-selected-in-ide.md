@@ -1,12 +1,12 @@
 <!--
-name: 'System Reminder: Lines selected in IDE'
-description: Notification about lines selected by user in IDE
+name: '系统提醒：IDE 中选中的行'
+description: 关于用户在 IDE 中选中行的通知
 ccVersion: 2.1.18
 variables:
   - ATTACHMENT_OBJECT
   - TRUNCATED_CONTENT
 -->
-The user selected the lines ${ATTACHMENT_OBJECT.lineStart} to ${ATTACHMENT_OBJECT.lineEnd} from ${ATTACHMENT_OBJECT.filename}:
+用户从 ${ATTACHMENT_OBJECT.filename} 选择了第 ${ATTACHMENT_OBJECT.lineStart} 到 ${ATTACHMENT_OBJECT.lineEnd} 行：
 ${TRUNCATED_CONTENT}
 
-This may or may not be related to the current task.
+这可能与当前任务有关，也可能无关。

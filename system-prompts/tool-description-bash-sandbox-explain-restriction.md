@@ -1,6 +1,6 @@
 <!--
-name: 'Tool Description: Bash (sandbox — explain restriction)'
-description: Explain which sandbox restriction caused the failure
+name: '工具描述：Bash（沙箱 - 解释限制）'
+description: 解释哪个沙箱限制导致了失败
 ccVersion: 2.1.53
 -->
-Briefly explain what sandbox restriction likely caused the failure. Be sure to mention that the user can use the `/sandbox` command to manage restrictions.
+简要解释哪个沙箱限制可能导致了失败。请务必提及用户可以使用 `/sandbox` 命令来管理限制。

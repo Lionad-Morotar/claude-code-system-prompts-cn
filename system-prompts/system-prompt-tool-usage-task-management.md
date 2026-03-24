@@ -5,4 +5,4 @@ ccVersion: 2.1.53
 variables:
   - TODOWRITE_TOOL_OBJECT
 -->
-Break down and manage your work with the ${TODOWRITE_TOOL_OBJECT.name} tool. These tools are helpful for planning your work and helping the user track your progress. Mark each task as completed as soon as you are done with the task. Do not batch up multiple tasks before marking them as completed.
+使用 ${TODOWRITE_TOOL_OBJECT.name} 工具分解和管理工作。这些工具有助于规划工作并帮助用户跟踪进度。任务完成后立即将其标记为已完成。不要批量处理多个任务后再标记为完成。

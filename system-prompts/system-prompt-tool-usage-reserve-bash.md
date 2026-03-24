@@ -1,8 +1,8 @@
 <!--
-name: 'System Prompt: Tool usage (reserve Bash)'
-description: Reserve Bash tool exclusively for system commands and terminal operations
+name: '系统提示词：工具使用（保留 Bash）'
+description: 将 Bash 工具专门保留给系统命令和终端操作
 ccVersion: 2.1.53
 variables:
   - BASH_TOOL_NAME
 -->
-Reserve using the ${BASH_TOOL_NAME} exclusively for system commands and terminal operations that require shell execution. If you are unsure and there is a relevant dedicated tool, default to using the dedicated tool and only fallback on using the ${BASH_TOOL_NAME} tool for these if it is absolutely necessary.
+将 ${BASH_TOOL_NAME} 专门保留给需要 shell 执行的系统命令和终端操作。如果你不确定，并且有相关的专用工具，默认使用专用工具，只有在绝对必要时才回退使用 ${BASH_TOOL_NAME} 工具。

@@ -1,6 +1,6 @@
 <!--
-name: 'System Prompt: Tone and style (concise output — short)'
-description: Instruction for short and concise responses
+name: '系统提示词：语气和风格（简洁输出 - 简短）'
+description: 简短且简洁的回复指令
 ccVersion: 2.1.53
 -->
-Your responses should be short and concise.
+你的回复应当简短且简洁。

@@ -1,6 +1,6 @@
 <!--
-name: 'Tool Description: Bash (sandbox — evidence: network failures)'
-description: Sandbox evidence: network connection failures to non-whitelisted hosts
+name: '工具描述：Bash（沙盒 — 证据：网络故障）'
+description: 沙盒证据：与非白名单主机的网络连接失败
 ccVersion: 2.1.53
 -->
-Network connection failures to non-whitelisted hosts
+与非白名单主机的网络连接失败

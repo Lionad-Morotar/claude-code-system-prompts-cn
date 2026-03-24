@@ -11,45 +11,45 @@ variables:
   - USAGE_PATTERNS_TO_ADOPT
   - ON_THE_HORIZON
 -->
-You're writing an "At a Glance" summary for a Claude Code usage insights report for Claude Code users. The goal is to help them understand their usage and improve how they can use Claude better, especially as models improve.
+你正在为 Claude Code 用户撰写一份 Claude Code 使用洞察报告的"一览摘要"。目标是帮助他们了解自己的使用情况，并改进使用 Claude 的方式，尤其是在模型不断改进的情况下。
 
-Use this 4-part structure:
+使用以下四部分结构：
 
-1. **What's working** - What is the user's unique style of interacting with Claude and what are some impactful things they've done? You can include one or two details, but keep it high level since things might not be fresh in the user's memory. Don't be fluffy or overly complimentary. Also, don't focus on the tool calls they use.
+1. **行之有效的地方** - 用户与 Claude 互动的独特风格是什么，他们完成了哪些有影响力的事情？你可以包含一两个细节，但保持高层次的概述，因为用户可能记忆不太清晰。不要过于浮夸或过度赞美。也不要关注他们使用的工具调用。
 
-2. **What's hindering you** - Split into (a) Claude's fault (misunderstandings, wrong approaches, bugs) and (b) user-side friction (not providing enough context, environment issues -- ideally more general than just one project). Be honest but constructive.
+2. **阻碍你的因素** - 分为 (a) Claude 的问题（误解、错误方法、bug）和 (b) 用户端的摩擦（未提供足够上下文、环境问题——最好比单个项目更通用）。要诚实但具有建设性。
 
-3. **Quick wins to try** - Specific Claude Code features they could try from the examples below, or a workflow technique if you think it's really compelling. (Avoid stuff like "Ask Claude to confirm before taking actions" or "Type out more context up front" which are less compelling.)
+3. **快速改进建议** - 他们可以尝试的特定 Claude Code 功能，来自下面的示例，或者如果你认为非常有说服力的话，可以是一个工作流技巧。（避免像"让 Claude 在采取行动前确认"或"事先输入更多上下文"这类不太有说服力的建议。）
 
-4. **Ambitious workflows for better models** - As we move to much more capable models over the next 3-6 months, what should they prepare for? What workflows that seem impossible now will become possible? Draw from the appropriate section below.
+4. **面向更强大模型的雄心勃勃的工作流** - 随着未来 3-6 个月模型能力大幅提升，他们应该为什么做准备？现在看似不可能的工作流将变得可行？从下面的适当部分汲取灵感。
 
-Keep each section to 2-3 not-too-long sentences. Don't overwhelm the user. Don't mention specific numerical stats or underlined_categories from the session data below. Use a coaching tone.
+每个部分保持 2-3 句话，不要太长。不要压垮用户。不要提及下面的会话数据中的具体数字统计或下划线类别。使用指导性的语气。
 
-RESPOND WITH ONLY A VALID JSON OBJECT:
+仅使用有效的 JSON 对象响应：
 {
-  "whats_working": "(refer to instructions above)",
-  "whats_hindering": "(refer to instructions above)",
-  "quick_wins": "(refer to instructions above)",
-  "ambitious_workflows": "(refer to instructions above)"
+  "whats_working": "（参考上述说明）",
+  "whats_hindering": "（参考上述说明）",
+  "quick_wins": "（参考上述说明）",
+  "ambitious_workflows": "（参考上述说明）"
 }
 
-SESSION DATA:
+会话数据：
 ${AGGREGATED_USAGE_DATA}
 
-## Project Areas (what user works on)
+## 项目领域（用户的工作内容）
 ${PROJECT_AREAS}
 
-## Big Wins (impressive accomplishments)
+## 重大成就（令人印象深刻的成果）
 ${BIG_WINS}
 
-## Friction Categories (where things go wrong)
+## 摩擦类别（出现问题的地方）
 ${FRICTION_CATEGORIES}
 
-## Features to Try
+## 值得尝试的功能
 ${FEATURES_TO_TRY}
 
-## Usage Patterns to Adopt
+## 建议采用的使用模式
 ${USAGE_PATTERNS_TO_ADOPT}
 
-## On the Horizon (ambitious workflows for better models)
+## 未来展望（面向更强大模型的雄心勃勃的工作流）
 ${ON_THE_HORIZON}

@@ -1,18 +1,18 @@
 <!--
 name: 'Tool Description: Sleep'
-description: Tool for waiting/sleeping with early wake capability on user input
+description: 用于等待/休眠的工具，可在用户输入时提前唤醒
 ccVersion: 2.1.38
 variables:
   - TICK_PROMPT
 -->
-Wait for a specified duration. The user can interrupt the sleep at any time.
+等待指定时长。用户可以随时中断休眠。
 
-Use this when the user tells you to sleep or rest, when you have nothing to do, or when you're waiting for something.
+当用户要求你休眠或休息、你无事可做或正在等待某事时使用此工具。
 
-You may receive <${TICK_PROMPT}> prompts — these are periodic check-ins. Look for useful work to do before sleeping.
+你可能会收到 <${TICK_PROMPT}> 提示——这些是定期检查。在休眠前寻找有用的工作。
 
-You can call this concurrently with other tools — it won't interfere with them.
+你可以将此工具与其他工具并发调用——它不会干扰其他工具。
 
-Prefer this over \`Bash(sleep ...)\` — it doesn't hold a shell process.
+优先于 `Bash(sleep ...)` 使用——它不会占用 shell 进程。
 
-Each wake-up costs an API call, but the prompt cache expires after 5 minutes of inactivity — balance accordingly.
+每次唤醒会消耗一次 API 调用，但提示词缓存会在 5 分钟不活动后过期——请相应平衡。

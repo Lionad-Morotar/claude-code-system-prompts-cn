@@ -3,11 +3,11 @@ name: 'Data: Streaming reference — Python'
 description: Python streaming reference including sync/async streaming and handling different content types
 ccVersion: 2.1.63
 -->
-# Streaming — Python
+# 流式传输 — Python
 
-## Quick Start
+## 快速开始
 
-\`\`\`python
+```python
 with client.messages.stream(
     model="{{OPUS_ID}}",
     max_tokens=1024,
@@ -15,11 +15,11 @@ with client.messages.stream(
 ) as stream:
     for text in stream.text_stream:
         print(text, end="", flush=True)
-\`\`\`
+```
 
-### Async
+### 异步
 
-\`\`\`python
+```python
 async with async_client.messages.stream(
     model="{{OPUS_ID}}",
     max_tokens=1024,
@@ -27,17 +27,17 @@ async with async_client.messages.stream(
 ) as stream:
     async for text in stream.text_stream:
         print(text, end="", flush=True)
-\`\`\`
+```
 
 ---
 
-## Handling Different Content Types
+## 处理不同类型的内容
 
-Claude may return text, thinking blocks, or tool use. Handle each appropriately:
+Claude 可能返回文本、思考块或工具使用。请分别处理：
 
-> **Opus 4.6:** Use \`thinking: {type: "adaptive"}\`. On older models, use \`thinking: {type: "enabled", budget_tokens: N}\` instead.
+> **Opus 4.6:** 使用 `thinking: {type: "adaptive"}`。在旧模型上，请改用 `thinking: {type: "enabled", budget_tokens: N}`。
 
-\`\`\`python
+```python
 with client.messages.stream(
     model="{{OPUS_ID}}",
     max_tokens=16000,
@@ -47,24 +47,24 @@ with client.messages.stream(
     for event in stream:
         if event.type == "content_block_start":
             if event.content_block.type == "thinking":
-                print("\\n[Thinking...]")
+                print("\n[Thinking...]")
             elif event.content_block.type == "text":
-                print("\\n[Response:]")
+                print("\n[Response:]")
 
         elif event.type == "content_block_delta":
             if event.delta.type == "thinking_delta":
                 print(event.delta.thinking, end="", flush=True)
             elif event.delta.type == "text_delta":
                 print(event.delta.text, end="", flush=True)
-\`\`\`
+```
 
 ---
 
-## Streaming with Tool Use
+## 带工具使用的流式传输
 
-The Python tool runner currently returns complete messages. Use streaming for individual API calls within a manual loop if you need per-token streaming with tools:
+Python 工具运行器目前返回完整的消息。如果您需要在工具使用时进行逐令牌流式传输，请在手动循环中对单个 API 调用使用流式传输：
 
-\`\`\`python
+```python
 with client.messages.stream(
     model="{{OPUS_ID}}",
     max_tokens=4096,
@@ -75,14 +75,14 @@ with client.messages.stream(
         print(text, end="", flush=True)
 
     response = stream.get_final_message()
-    # Continue with tool execution if response.stop_reason == "tool_use"
-\`\`\`
+    # 如果 response.stop_reason == "tool_use"，继续执行工具
+```
 
 ---
 
-## Getting the Final Message
+## 获取最终消息
 
-\`\`\`python
+```python
 with client.messages.stream(
     model="{{OPUS_ID}}",
     max_tokens=1024,
@@ -91,16 +91,16 @@ with client.messages.stream(
     for text in stream.text_stream:
         print(text, end="", flush=True)
 
-    # Get full message after streaming
+    # 流式传输后获取完整消息
     final_message = stream.get_final_message()
-    print(f"\\n\\nTokens used: {final_message.usage.output_tokens}")
-\`\`\`
+    print(f"\n\nTokens used: {final_message.usage.output_tokens}")
+```
 
 ---
 
-## Streaming with Progress Updates
+## 带进度更新的流式传输
 
-\`\`\`python
+```python
 def stream_with_progress(client, **kwargs):
     """Stream a response with progress updates."""
     total_tokens = 0
@@ -120,15 +120,15 @@ def stream_with_progress(client, **kwargs):
 
         final_message = stream.get_final_message()
 
-    print(f"\\n\\n[Tokens used: {total_tokens}]")
+    print(f"\n\n[Tokens used: {total_tokens}]")
     return "".join(content_parts)
-\`\`\`
+```
 
 ---
 
-## Error Handling in Streams
+## 流式传输中的错误处理
 
-\`\`\`python
+```python
 try:
     with client.messages.stream(
         model="{{OPUS_ID}}",
@@ -138,30 +138,30 @@ try:
         for text in stream.text_stream:
             print(text, end="", flush=True)
 except anthropic.APIConnectionError:
-    print("\\nConnection lost. Please retry.")
+    print("\nConnection lost. Please retry.")
 except anthropic.RateLimitError:
-    print("\\nRate limited. Please wait and retry.")
+    print("\nRate limited. Please wait and retry.")
 except anthropic.APIStatusError as e:
-    print(f"\\nAPI error: {e.status_code}")
-\`\`\`
+    print(f"\nAPI error: {e.status_code}")
+```
 
 ---
 
-## Stream Event Types
+## 流事件类型
 
-| Event Type            | Description                 | When it fires                     |
-| --------------------- | --------------------------- | --------------------------------- |
-| \`message_start\`       | Contains message metadata   | Once at the beginning             |
-| \`content_block_start\` | New content block beginning | When a text/tool_use block starts |
-| \`content_block_delta\` | Incremental content update  | For each token/chunk              |
-| \`content_block_stop\`  | Content block complete      | When a block finishes             |
-| \`message_delta\`       | Message-level updates       | Contains \`stop_reason\`, usage     |
-| \`message_stop\`        | Message complete            | Once at the end                   |
+| 事件类型              | 描述                         | 触发时机                          |
+| --------------------- | ---------------------------- | --------------------------------- |
+| `message_start`       | 包含消息元数据               | 在开始时触发一次                  |
+| `content_block_start` | 新内容块开始                 | 当 text/tool_use 块开始时触发     |
+| `content_block_delta` | 增量内容更新                 | 对每个令牌/块触发                 |
+| `content_block_stop`  | 内容块完成                   | 当块结束时触发                    |
+| `message_delta`       | 消息级别更新                 | 包含 `stop_reason`、使用量信息    |
+| `message_stop`        | 消息完成                     | 在结束时触发一次                  |
 
-## Best Practices
+## 最佳实践
 
-1. **Always flush output** — Use \`flush=True\` to show tokens immediately
-2. **Handle partial responses** — If the stream is interrupted, you may have incomplete content
-3. **Track token usage** — The \`message_delta\` event contains usage information
-4. **Use timeouts** — Set appropriate timeouts for your application
-5. **Default to streaming** — Use \`.get_final_message()\` to get the complete response even when streaming, giving you timeout protection without needing to handle individual events
+1. **始终刷新输出** — 使用 `flush=True` 立即显示令牌
+2. **处理部分响应** — 如果流被中断，您可能会有不完整的内容
+3. **跟踪令牌使用量** — `message_delta` 事件包含使用量信息
+4. **使用超时** — 为您的应用程序设置适当的超时
+5. **默认使用流式传输** — 使用 `.get_final_message()` 即使在流式传输时也能获取完整响应，这样可以在不需要处理单个事件的情况下获得超时保护

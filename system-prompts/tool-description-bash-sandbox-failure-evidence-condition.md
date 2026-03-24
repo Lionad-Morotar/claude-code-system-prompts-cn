@@ -1,6 +1,6 @@
 <!--
-name: 'Tool Description: Bash (sandbox — failure evidence condition)'
-description: Condition: command failed with evidence of sandbox restrictions
+name: '工具描述：Bash（沙盒 — 失败证据条件）'
+description: 条件：命令因沙盒限制证据而失败
 ccVersion: 2.1.53
 -->
-A specific command just failed and you see evidence of sandbox restrictions causing the failure. Note that commands can fail for many reasons unrelated to the sandbox (missing files, wrong arguments, network issues, etc.).
+某个特定命令刚刚失败，且你看到了沙盒限制导致失败的证据。请注意，命令失败可能有许多与沙盒无关的原因（文件缺失、参数错误、网络问题等）。

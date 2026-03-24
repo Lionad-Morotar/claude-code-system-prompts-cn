@@ -1,37 +1,37 @@
 <!--
 name: 'Data: Claude API reference — C#'
-description: C# SDK reference including installation, client initialization, basic requests, streaming, and tool use
+description: C# SDK 参考，包括安装、客户端初始化、基本请求、流式传输和工具使用
 ccVersion: 2.1.73
 -->
 # Claude API — C#
 
-> **Note:** The C# SDK is the official Anthropic SDK for C#. Tool use is supported via the Messages API. A class-annotation-based tool runner is not available; use raw tool definitions with JSON schema. The SDK also supports Microsoft.Extensions.AI IChatClient integration with function invocation.
+> **注意：** C# SDK 是 Anthropic 官方提供的 C# SDK。工具使用通过 Messages API 支持。暂无可用的基于类注解的工具运行器；请使用原始工具定义配合 JSON schema。该 SDK 还支持 Microsoft.Extensions.AI IChatClient 集成与函数调用。
 
-## Installation
+## 安装
 
-\`\`\`bash
+```bash
 dotnet add package Anthropic
-\`\`\`
+```
 
-## Client Initialization
+## 客户端初始化
 
-\`\`\`csharp
+```csharp
 using Anthropic;
 
-// Default (uses ANTHROPIC_API_KEY env var)
+// 默认（使用 ANTHROPIC_API_KEY 环境变量）
 AnthropicClient client = new();
 
-// Explicit API key (use environment variables — never hardcode keys)
+// 显式指定 API 密钥（使用环境变量 —— 切勿硬编码密钥）
 AnthropicClient client = new() {
     ApiKey = Environment.GetEnvironmentVariable("ANTHROPIC_API_KEY")
 };
-\`\`\`
+```
 
 ---
 
-## Basic Message Request
+## 基本消息请求
 
-\`\`\`csharp
+```csharp
 using Anthropic.Models.Messages;
 
 var parameters = new MessageCreateParams
@@ -42,20 +42,19 @@ var parameters = new MessageCreateParams
 };
 var response = await client.Messages.Create(parameters);
 
-// ContentBlock is a union wrapper. .Value unwraps to the variant object,
-// then OfType<T> filters to the type you want. Or use the TryPick* idiom
-// shown in the Thinking section below.
+// ContentBlock 是一个联合包装器。.Value 解包为变体对象，
+// 然后 OfType<T> 过滤为你需要的类型。或者使用下方 Thinking 部分展示的 TryPick* 惯用法
 foreach (var text in response.Content.Select(b => b.Value).OfType<TextBlock>())
 {
     Console.WriteLine(text.Text);
 }
-\`\`\`
+```
 
 ---
 
-## Streaming
+## 流式传输
 
-\`\`\`csharp
+```csharp
 using Anthropic.Models.Messages;
 
 var parameters = new MessageCreateParams
@@ -73,25 +72,25 @@ await foreach (RawMessageStreamEvent streamEvent in client.Messages.CreateStream
         Console.Write(text.Text);
     }
 }
-\`\`\`
+```
 
-**\`RawMessageStreamEvent\` TryPick methods** (naming drops the \`Message\`/\`Raw\` prefix): \`TryPickStart\`, \`TryPickDelta\`, \`TryPickStop\`, \`TryPickContentBlockStart\`, \`TryPickContentBlockDelta\`, \`TryPickContentBlockStop\`. There is no \`TryPickMessageStop\` — use \`TryPickStop\`.
+**`RawMessageStreamEvent` TryPick 方法**（命名中省略了 `Message`/`Raw` 前缀）：`TryPickStart`、`TryPickDelta`、`TryPickStop`、`TryPickContentBlockStart`、`TryPickContentBlockDelta`、`TryPickContentBlockStop`。没有 `TryPickMessageStop` —— 请使用 `TryPickStop`。
 
 ---
 
-## Thinking
+## 思考
 
-**Adaptive thinking is the recommended mode for Claude 4.6+ models.** Claude decides dynamically when and how much to think.
+**自适应思考是 Claude 4.6+ 模型推荐的模式。** Claude 动态决定何时思考以及思考多少。
 
-\`\`\`csharp
+```csharp
 using Anthropic.Models.Messages;
 
 var response = await client.Messages.Create(new MessageCreateParams
 {
     Model = Model.ClaudeOpus4_6,
     MaxTokens = 16000,
-    // ThinkingConfigParam? implicitly converts from the concrete variant classes —
-    // no wrapper needed.
+    // ThinkingConfigParam? 从具体变体类隐式转换 ——
+    // 无需包装器。
     Thinking = new ThinkingConfigAdaptive(),
     Messages =
     [
@@ -99,7 +98,7 @@ var response = await client.Messages.Create(new MessageCreateParams
     ],
 });
 
-// ThinkingBlock(s) precede TextBlock in Content. TryPick* narrows the union.
+// ThinkingBlock(s) 在 Content 中位于 TextBlock 之前。TryPick* 用于收窄联合类型。
 foreach (var block in response.Content)
 {
     if (block.TryPickThinking(out ThinkingBlock? t))
@@ -111,21 +110,21 @@ foreach (var block in response.Content)
         Console.WriteLine(text.Text);
     }
 }
-\`\`\`
+```
 
-> **Deprecated:** \`new ThinkingConfigEnabled { BudgetTokens = N }\` (fixed-budget extended thinking) still works on Claude 4.6 but is deprecated. Use adaptive thinking above.
+> **已弃用：** `new ThinkingConfigEnabled { BudgetTokens = N }`（固定预算扩展思考）在 Claude 4.6 上仍然可用，但已弃用。请使用上述自适应思考。
 
-Alternative to \`TryPick*\`: \`.Select(b => b.Value).OfType<ThinkingBlock>()\` (same LINQ pattern as the Basic Message example).
+`TryPick*` 的替代方案：`.Select(b => b.Value).OfType<ThinkingBlock>()`（与基本消息示例中相同的 LINQ 模式）。
 
 ---
 
-## Tool Use
+## 工具使用
 
-### Defining a tool
+### 定义工具
 
-\`Tool\` (NOT \`ToolParam\`) with an \`InputSchema\` record. \`InputSchema.Type\` is auto-set to \`"object"\` by the constructor — don't set it. \`ToolUnion\` has an implicit conversion from \`Tool\`, triggered by the collection expression \`[...]\`.
+使用 `Tool`（不是 `ToolParam`）配合 `InputSchema` 记录。`InputSchema.Type` 由构造函数自动设置为 `"object"` —— 不要手动设置。`ToolUnion` 有从 `Tool` 的隐式转换，由集合表达式 `[...]` 触发。
 
-\`\`\`csharp
+```csharp
 using System.Text.Json;
 using Anthropic.Models.Messages;
 
@@ -148,22 +147,23 @@ var parameters = new MessageCreateParams
     ],
     Messages = [new() { Role = Role.User, Content = "Weather in Paris?" }],
 };
-\`\`\`
+```
 
-Derived from \`anthropic-sdk-csharp/src/Anthropic/Models/Messages/Tool.cs\` and \`ToolUnion.cs:799\` (implicit conversion).
+源自 `anthropic-sdk-csharp/src/Anthropic/Models/Messages/Tool.cs` 和 `ToolUnion.cs:799`（隐式转换）。
 
-See [shared tool use concepts](../shared/tool-use-concepts.md) for the loop pattern.
-### Converting response content to the follow-up assistant message
+有关循环模式，请参阅[共享工具使用概念](../shared/tool-use-concepts.md)。
 
-When echoing Claude's response back in the assistant turn, **there is no \`.ToParam()\` helper** — manually reconstruct each \`ContentBlock\` variant as its \`*Param\` counterpart. Do NOT use \`new ContentBlockParam(block.Json)\`: it compiles and serializes, but \`.Value\` stays \`null\` so \`TryPick*\`/\`Validate()\` fail (degraded JSON pass-through, not the typed path).
+### 将响应内容转换为后续助手消息
 
-\`\`\`csharp
+当在助手回合中回显 Claude 的响应时，**没有 `.ToParam()` 辅助方法** —— 手动将每个 `ContentBlock` 变体重构为其对应的 `*Param` 对应物。不要使用 `new ContentBlockParam(block.Json)`：它可以编译和序列化，但 `.Value` 保持为 `null`，导致 `TryPick*`/`Validate()` 失败（降级的 JSON 透传，而非类型化路径）。
+
+```csharp
 using Anthropic.Models.Messages;
 
 Message response = await client.Messages.Create(parameters);
 
-// No .ToParam() — reconstruct per variant. Implicit conversions from each
-// *Param type to ContentBlockParam mean no explicit wrapper.
+// 没有 .ToParam() —— 按变体重构。从每个
+// *Param 类型到 ContentBlockParam 的隐式转换意味着无需显式包装器。
 List<ContentBlockParam> assistantContent = [];
 List<ContentBlockParam> toolResults = [];
 foreach (ContentBlock block in response.Content)
@@ -174,7 +174,7 @@ foreach (ContentBlock block in response.Content)
     }
     else if (block.TryPickThinking(out ThinkingBlock? thinking))
     {
-        // Signature MUST be preserved — the API rejects tampering
+        // 签名必须保留 —— API 拒绝篡改
         assistantContent.Add(new ThinkingBlockParam
         {
             Thinking = thinking.Thinking,
@@ -187,15 +187,15 @@ foreach (ContentBlock block in response.Content)
     }
     else if (block.TryPickToolUse(out ToolUseBlock? toolUse))
     {
-        // ToolUseBlock has required Caller; ToolUseBlockParam.Caller is optional — don't copy it
+        // ToolUseBlock 有必需的 Caller；ToolUseBlockParam.Caller 是可选的 —— 不要复制它
         assistantContent.Add(new ToolUseBlockParam
         {
             ID = toolUse.ID,
             Name = toolUse.Name,
             Input = toolUse.Input,
         });
-        // Execute the tool; collect ONE result per tool_use block — the API
-        // rejects the follow-up if any tool_use ID lacks a matching tool_result.
+        // 执行工具；每个 tool_use 块收集一个结果 —— 如果任何 tool_use ID
+        // 缺少匹配的 tool_result，API 会拒绝后续请求。
         string result = ExecuteYourTool(toolUse.Name, toolUse.Input);
         toolResults.Add(new ToolResultBlockParam
         {
@@ -205,36 +205,36 @@ foreach (ContentBlock block in response.Content)
     }
 }
 
-// Follow-up: prior messages + assistant echo + user tool_result(s)
+// 后续：之前的消息 + 助手回显 + 用户 tool_result(s)
 List<MessageParam> followUpMessages =
 [
     .. parameters.Messages,
     new() { Role = Role.Assistant, Content = assistantContent },
     new() { Role = Role.User, Content = toolResults },
 ];
-\`\`\`
+```
 
-\`ToolResultBlockParam\` has no tuple constructor — use the object initializer. \`Content\` is a string-or-list union; a plain \`string\` implicitly converts.
+`ToolResultBlockParam` 没有元组构造函数 —— 使用对象初始化器。`Content` 是字符串或列表的联合类型；普通 `string` 可隐式转换。
 
 ---
 
-## Context Editing / Compaction (Beta)
+## 上下文编辑 / 压缩（Beta）
 
-**Beta-namespace prefix is inconsistent** (source-verified against \`src/Anthropic/Models/Beta/Messages/*.cs\` @ 12.8.0). No prefix: \`MessageCreateParams\`, \`MessageCountTokensParams\`, \`Role\`. **Everything else has the \`Beta\` prefix**: \`BetaMessageParam\`, \`BetaMessage\`, \`BetaContentBlock\`, \`BetaToolUseBlock\`, all block param types. The unprefixed \`Role\` WILL collide with \`Anthropic.Models.Messages.Role\` if you import both namespaces (CS0104). Safest: import only Beta; if mixing, alias the beta \`Role\`:
+**Beta 命名空间前缀不一致**（已根据 `src/Anthropic/Models/Beta/Messages/*.cs` @ 12.8.0 验证源码）。无前缀：`MessageCreateParams`、`MessageCountTokensParams`、`Role`。**其他所有内容都有 `Beta` 前缀**：`BetaMessageParam`、`BetaMessage`、`BetaContentBlock`、`BetaToolUseBlock`，所有块参数类型。如果你同时导入两个命名空间，无前缀的 `Role` 会与 `Anthropic.Models.Messages.Role` 冲突（CS0104）。最安全：只导入 Beta；如果混合使用，为 beta 的 `Role` 设置别名：
 
-\`\`\`csharp
+```csharp
 using Anthropic.Models.Beta.Messages;
-using NonBeta = Anthropic.Models.Messages;  // only if you also need non-beta types
-// Now: MessageCreateParams, BetaMessageParam, Role (beta's), NonBeta.Role (if needed)
-\`\`\`
+using NonBeta = Anthropic.Models.Messages;  // 仅在同时需要非 beta 类型时使用
+// 现在：MessageCreateParams、BetaMessageParam、Role（beta 的）、NonBeta.Role（如果需要）
+```
 
 
-\`BetaMessage.Content\` is \`IReadOnlyList<BetaContentBlock>\` — a 15-variant discriminated union. Narrow with \`TryPick*\`. **Response \`BetaContentBlock\` is NOT assignable to param \`BetaContentBlockParam\`** — there's no \`.ToParam()\` in C#. Round-trip by converting each block:
+`BetaMessage.Content` 是 `IReadOnlyList<BetaContentBlock>` —— 一个 15 变体的可辨识联合类型。使用 `TryPick*` 收窄。**响应 `BetaContentBlock` 不能赋值给参数 `BetaContentBlockParam`** —— C# 中没有 `.ToParam()`。通过转换每个块来实现往返：
 
-\`\`\`csharp
+```csharp
 using Anthropic.Models.Beta.Messages;
 
-var betaParams = new MessageCreateParams   // no Beta prefix — one of only 2 unprefixed
+var betaParams = new MessageCreateParams   // 没有 Beta 前缀 —— 仅有的 2 个无前缀之一
 {
     Model = Model.ClaudeOpus4_6,
     MaxTokens = 1024,
@@ -251,91 +251,91 @@ foreach (BetaContentBlock block in resp.Content)
 {
     if (block.TryPickCompaction(out BetaCompactionBlock? compaction))
     {
-        // Content is nullable — compaction can fail server-side
+        // Content 可为 null —— 压缩可能在服务端失败
         Console.WriteLine($"compaction summary: {compaction.Content}");
     }
 }
 
-// Context-edit metadata lives on a separate nullable field
+// 上下文编辑元数据位于单独的可空字段
 if (resp.ContextManagement is { } ctx)
 {
     foreach (var edit in ctx.AppliedEdits)
         Console.WriteLine($"cleared {edit.ClearedInputTokens} tokens");
 }
 
-// ROUND-TRIP: BetaMessageParam.Content is BetaMessageParamContent (a string|list
-// union). It implicit-converts from List<BetaContentBlockParam>, NOT from the
-// response's IReadOnlyList<BetaContentBlock>. Convert each block:
+// 往返：BetaMessageParam.Content 是 BetaMessageParamContent（string|list
+// 联合类型）。它从 List<BetaContentBlockParam> 隐式转换，而不是从
+// 响应的 IReadOnlyList<BetaContentBlock>。转换每个块：
 List<BetaContentBlockParam> paramBlocks = [];
 foreach (var b in resp.Content)
 {
     if (b.TryPickText(out var t)) paramBlocks.Add(new BetaTextBlockParam { Text = t.Text });
     else if (b.TryPickCompaction(out var c)) paramBlocks.Add(new BetaCompactionBlockParam { Content = c.Content });
-    // ... other variants as needed
+    // ... 根据需要处理其他变体
 }
 messages.Add(new BetaMessageParam { Role = Role.Assistant, Content = paramBlocks });
-\`\`\`
+```
 
-All 15 \`BetaContentBlock.TryPick*\` variants: \`Text\`, \`Thinking\`, \`RedactedThinking\`, \`ToolUse\`, \`ServerToolUse\`, \`WebSearchToolResult\`, \`WebFetchToolResult\`, \`CodeExecutionToolResult\`, \`BashCodeExecutionToolResult\`, \`TextEditorCodeExecutionToolResult\`, \`ToolSearchToolResult\`, \`McpToolUse\`, \`McpToolResult\`, \`ContainerUpload\`, \`Compaction\`.
+所有 15 个 `BetaContentBlock.TryPick*` 变体：`Text`、`Thinking`、`RedactedThinking`、`ToolUse`、`ServerToolUse`、`WebSearchToolResult`、`WebFetchToolResult`、`CodeExecutionToolResult`、`BashCodeExecutionToolResult`、`TextEditorCodeExecutionToolResult`、`ToolSearchToolResult`、`McpToolUse`、`McpToolResult`、`ContainerUpload`、`Compaction`。
 
-**\`BetaToolUseBlock.Input\` is \`IReadOnlyDictionary<string, JsonElement>\`** — index by key then call the \`JsonElement\` extractor:
+**`BetaToolUseBlock.Input` 是 `IReadOnlyDictionary<string, JsonElement>`** —— 按键索引然后调用 `JsonElement` 提取器：
 
-\`\`\`csharp
+```csharp
 if (block.TryPickToolUse(out BetaToolUseBlock? tu))
 {
     int a = tu.Input["a"].GetInt32();
     string s = tu.Input["name"].GetString()!;
 }
-\`\`\`
+```
 
 ---
 
-## Effort Parameter
+## Effort 参数
 
-Effort is nested under \`OutputConfig\`, NOT a top-level property. \`ApiEnum<string, Effort>\` has an implicit conversion from the enum, so assign \`Effort.High\` directly.
+Effort 嵌套在 `OutputConfig` 下，不是顶级属性。`ApiEnum<string, Effort>` 有从枚举的隐式转换，因此直接赋值 `Effort.High`。
 
-\`\`\`csharp
+```csharp
 OutputConfig = new OutputConfig { Effort = Effort.High },
-\`\`\`
+```
 
-Values: \`Effort.Low\`, \`Effort.Medium\`, \`Effort.High\`, \`Effort.Max\`. Combine with \`Thinking = new ThinkingConfigAdaptive()\` for cost-quality control.
+值：`Effort.Low`、`Effort.Medium`、`Effort.High`、`Effort.Max`。与 `Thinking = new ThinkingConfigAdaptive()` 结合使用以控制成本-质量。
 
 ---
 
-## Prompt Caching
+## 提示缓存
 
-\`System\` takes \`MessageCreateParamsSystem?\` — a union of \`string\` or \`List<TextBlockParam>\`. There is no \`SystemTextBlockParam\`; use plain \`TextBlockParam\`. The implicit conversion needs the concrete \`List<TextBlockParam>\` type (array literals won't convert).
+`System` 接受 `MessageCreateParamsSystem?` —— `string` 或 `List<TextBlockParam>` 的联合类型。没有 `SystemTextBlockParam`；使用普通 `TextBlockParam`。隐式转换需要具体的 `List<TextBlockParam>` 类型（数组字面量不会转换）。
 
-\`\`\`csharp
+```csharp
 System = new List<TextBlockParam> {
     new() {
         Text = longSystemPrompt,
-        CacheControl = new CacheControlEphemeral(),  // auto-sets Type = "ephemeral"
+        CacheControl = new CacheControlEphemeral(),  // 自动设置 Type = "ephemeral"
     },
 },
-\`\`\`
+```
 
-Optional \`Ttl\` on \`CacheControlEphemeral\`: \`new() { Ttl = Ttl.Ttl1h }\` or \`Ttl.Ttl5m\`. \`CacheControl\` also exists on \`Tool.CacheControl\` and top-level \`MessageCreateParams.CacheControl\`.
+`CacheControlEphemeral` 上的可选 `Ttl`：`new() { Ttl = Ttl.Ttl1h }` 或 `Ttl.Ttl5m`。`CacheControl` 也存在于 `Tool.CacheControl` 和顶级 `MessageCreateParams.CacheControl`。
 
 ---
 
-## Token Counting
+## Token 计数
 
-\`\`\`csharp
+```csharp
 MessageTokensCount result = await client.Messages.CountTokens(new MessageCountTokensParams {
     Model = Model.ClaudeOpus4_6,
     Messages = [new() { Role = Role.User, Content = "Hello" }],
 });
 long tokens = result.InputTokens;
-\`\`\`
+```
 
-\`MessageCountTokensParams.Tools\` uses a different union type (\`MessageCountTokensTool\`) than \`MessageCreateParams.Tools\` (\`ToolUnion\`) — if you're passing tools, the compiler will tell you when it matters.
+`MessageCountTokensParams.Tools` 使用不同的联合类型（`MessageCountTokensTool`）而不是 `MessageCreateParams.Tools`（`ToolUnion`）—— 如果你传递工具，编译器会在需要时告诉你。
 
 ---
 
-## Structured Output
+## 结构化输出
 
-\`\`\`csharp
+```csharp
 OutputConfig = new OutputConfig {
     Format = new JsonOutputFormat {
         Schema = new Dictionary<string, JsonElement> {
@@ -346,17 +346,17 @@ OutputConfig = new OutputConfig {
         },
     },
 },
-\`\`\`
+```
 
-\`JsonOutputFormat.Type\` is auto-set to \`"json_schema"\` by the constructor. \`Schema\` is \`required\`.
+`JsonOutputFormat.Type` 由构造函数自动设置为 `"json_schema"`。`Schema` 是 `required`。
 
 ---
 
-## PDF / Document Input
+## PDF / 文档输入
 
-\`DocumentBlockParam\` takes a \`DocumentBlockParamSource\` union: \`Base64PdfSource\` / \`UrlPdfSource\` / \`PlainTextSource\` / \`ContentBlockSource\`. \`Base64PdfSource\` auto-sets \`MediaType = "application/pdf"\` and \`Type = "base64"\`.
+`DocumentBlockParam` 接受 `DocumentBlockParamSource` 联合类型：`Base64PdfSource` / `UrlPdfSource` / `PlainTextSource` / `ContentBlockSource`。`Base64PdfSource` 自动设置 `MediaType = "application/pdf"` 和 `Type = "base64"`。
 
-\`\`\`csharp
+```csharp
 new MessageParam {
     Role = Role.User,
     Content = new List<ContentBlockParam> {
@@ -364,42 +364,42 @@ new MessageParam {
         new TextBlockParam { Text = "Summarize this PDF" },
     },
 }
-\`\`\`
+```
 
 ---
 
-## Server-Side Tools
+## 服务端工具
 
-Web search, bash, text editor, and code execution are built-in server tools. Type names are version-suffixed; constructors auto-set \`name\`/\`type\`. All implicit-convert to \`ToolUnion\`.
+网页搜索、bash、文本编辑器和代码执行是内置的服务端工具。类型名称带有版本后缀；构造函数自动设置 `name`/`type`。所有类型都隐式转换为 `ToolUnion`。
 
-\`\`\`csharp
+```csharp
 Tools = [
     new WebSearchTool20260209(),
     new ToolBash20250124(),
     new ToolTextEditor20250728(),
     new CodeExecutionTool20260120(),
 ],
-\`\`\`
+```
 
-Also available: \`WebFetchTool20260209\`, \`MemoryTool20250818\`. \`WebSearchTool20260209\` optionals: \`AllowedDomains\`, \`BlockedDomains\`, \`MaxUses\`, \`UserLocation\`.
+还有：`WebFetchTool20260209`、`MemoryTool20250818`。`WebSearchTool20260209` 的可选参数：`AllowedDomains`、`BlockedDomains`、`MaxUses`、`UserLocation`。
 
 ---
 
-## Files API (Beta)
+## 文件 API（Beta）
 
-Files live under \`client.Beta.Files\` (namespace \`Anthropic.Models.Beta.Files\`). \`BinaryContent\` implicit-converts from \`Stream\` and \`byte[]\`.
+文件位于 `client.Beta.Files` 下（命名空间 `Anthropic.Models.Beta.Files`）。`BinaryContent` 从 `Stream` 和 `byte[]` 隐式转换。
 
-\`\`\`csharp
+```csharp
 using Anthropic.Models.Beta.Files;
 using Anthropic.Models.Beta.Messages;
 
 FileMetadata meta = await client.Beta.Files.Upload(
     new FileUploadParams { File = File.OpenRead("doc.pdf") });
 
-// Referencing the uploaded file requires Beta message types:
+// 引用上传的文件需要 Beta 消息类型：
 new BetaRequestDocumentBlock {
     Source = new BetaFileDocumentSource { FileID = meta.ID },
 }
-\`\`\`
+```
 
-The non-beta \`DocumentBlockParamSource\` union has no file-ID variant — file references need \`client.Beta.Messages.Create()\`.
+非 beta 的 `DocumentBlockParamSource` 联合类型没有文件 ID 变体 —— 文件引用需要使用 `client.Beta.Messages.Create()`。

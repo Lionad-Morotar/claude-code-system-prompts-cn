@@ -3,17 +3,17 @@ name: 'Tool Parameter: Computer action'
 description: Action parameter options for the Chrome browser computer tool
 ccVersion: 2.0.71
 -->
-The action to perform:
-* `left_click`: Click the left mouse button at the specified coordinates.
-* `right_click`: Click the right mouse button at the specified coordinates to open context menus.
-* `double_click`: Double-click the left mouse button at the specified coordinates.
-* `triple_click`: Triple-click the left mouse button at the specified coordinates.
-* `type`: Type a string of text.
-* `screenshot`: Take a screenshot of the screen.
-* `wait`: Wait for a specified number of seconds.
-* `scroll`: Scroll up, down, left, or right at the specified coordinates.
-* `key`: Press a specific keyboard key.
-* `left_click_drag`: Drag from start_coordinate to coordinate.
-* `zoom`: Take a screenshot of a specific region for closer inspection.
-* `scroll_to`: Scroll an element into view using its element reference ID from read_page or find tools.
-* `hover`: Move the mouse cursor to the specified coordinates or element without clicking. Useful for revealing tooltips, dropdown menus, or triggering hover states.
+要执行的操作：
+* `left_click`：在指定坐标处单击鼠标左键。
+* `right_click`：在指定坐标处单击鼠标右键以打开上下文菜单。
+* `double_click`：在指定坐标处双击鼠标左键。
+* `triple_click`：在指定坐标处三击鼠标左键。
+* `type`：输入文本字符串。
+* `screenshot`：截取屏幕截图。
+* `wait`：等待指定的秒数。
+* `scroll`：在指定坐标处向上、向下、向左或向右滚动。
+* `key`：按特定的键盘键。
+* `left_click_drag`：从 start_coordinate 拖动到 coordinate。
+* `zoom`：截取特定区域的屏幕截图以进行更仔细的检查。
+* `scroll_to`：使用来自 read_page 或 find 工具的元素引用 ID 将元素滚动到视图中。
+* `hover`：将鼠标光标移动到指定坐标或元素而不单击。对于显示工具提示、下拉菜单或触发悬停状态很有用。

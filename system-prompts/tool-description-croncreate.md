@@ -5,39 +5,39 @@ ccVersion: 2.1.71
 variables:
   - CRON_DELETE_TOOL_NAME
 -->
-Schedule a prompt to be enqueued at a future time. Use for both recurring schedules and one-shot reminders.
+在将来的某个时间安排一个提示词进入队列。用于定期计划和一次性提醒。
 
-Uses standard 5-field cron in the user's local timezone: minute hour day-of-month month day-of-week. "0 9 * * *" means 9am local — no timezone conversion needed.
+使用用户本地时区的标准 5 字段 cron 格式：分钟 小时 日期 月份 星期。"0 9 * * *" 表示上午 9 点（本地时间）—— 无需时区转换。
 
-## One-shot tasks (recurring: false)
+## 一次性任务 (recurring: false)
 
-For "remind me at X" or "at <time>, do Y" requests — fire once then auto-delete.
-Pin minute/hour/day-of-month/month to specific values:
-  "remind me at 2:30pm today to check the deploy" → cron: "30 14 <today_dom> <today_month> *", recurring: false
-  "tomorrow morning, run the smoke test" → cron: "57 8 <tomorrow_dom> <tomorrow_month> *", recurring: false
+用于"在 X 时间提醒我"或"在<时间>执行 Y"的请求 —— 触发一次后自动删除。
+将分钟/小时/日期/月份固定为特定值：
+  "今天下午 2:30 提醒我检查部署" → cron: "30 14 <today_dom> <today_month> *", recurring: false
+  "明天早上运行冒烟测试" → cron: "57 8 <tomorrow_dom> <tomorrow_month> *", recurring: false
 
-## Recurring jobs (recurring: true, the default)
+## 定期任务 (recurring: true, 默认值)
 
-For "every N minutes" / "every hour" / "weekdays at 9am" requests:
-  "*/5 * * * *" (every 5 min), "0 * * * *" (hourly), "0 9 * * 1-5" (weekdays at 9am local)
+用于"每 N 分钟"/"每小时"/"工作日早上 9 点"的请求：
+  "*/5 * * * *" (每 5 分钟), "0 * * * *" (每小时), "0 9 * * 1-5" (工作日早上 9 点，本地时间)
 
-## Avoid the :00 and :30 minute marks when the task allows it
+## 在任务允许的情况下，避免使用 :00 和 :30 分钟标记
 
-Every user who asks for "9am" gets \`0 9\`, and every user who asks for "hourly" gets \`0 *\` — which means requests from across the planet land on the API at the same instant. When the user's request is approximate, pick a minute that is NOT 0 or 30:
-  "every morning around 9" → "57 8 * * *" or "3 9 * * *" (not "0 9 * * *")
-  "hourly" → "7 * * * *" (not "0 * * * *")
-  "in an hour or so, remind me to..." → pick whatever minute you land on, don't round
+每个要求"上午 9 点"的用户都会得到 `0 9`，每个要求"每小时"的用户都会得到 `0 *` —— 这意味着来自全球各地的请求会在同一时刻到达 API。当用户的请求是近似时间时，选择一个不是 0 或 30 的分钟数：
+  "每天早上大约 9 点" → "57 8 * * *" 或 "3 9 * * *" (而不是 "0 9 * * *")
+  "每小时" → "7 * * * *" (而不是 "0 * * * *")
+  "大约一小时后，提醒我..." → 选择你当前所在的任意分钟，不要四舍五入
 
-Only use minute 0 or 30 when the user names that exact time and clearly means it ("at 9:00 sharp", "at half past", coordinating with a meeting). When in doubt, nudge a few minutes early or late — the user will not notice, and the fleet will.
+只有当用户明确说出确切时间并明确表示该时间时（"正好 9:00"、"半点"、与会议协调），才使用 0 分或 30 分。如有疑问，提前或推迟几分钟 —— 用户不会注意到，但整个系统会受益。
 
-${`## Session-only
+${`## 仅会话期间有效
 
-Jobs live only in this Claude session — nothing is written to disk, and the job is gone when Claude exits.`}
+任务仅在此 Claude 会话期间存在 —— 不会写入磁盘，Claude 退出时任务消失。`}
 
-## Runtime behavior
+## 运行时行为
 
-Jobs only fire while the REPL is idle (not mid-query). ${""}The scheduler adds a small deterministic jitter on top of whatever you pick: recurring tasks fire up to 10% of their period late (max 15 min); one-shot tasks landing on :00 or :30 fire up to 90 s early. Picking an off-minute is still the bigger lever.
+任务仅在 REPL 空闲时触发（不在查询中途）。${""}调度器会在你选择的时间基础上添加一个小的确定性抖动：定期任务最多延迟其周期的 10%（最多 15 分钟）；落在 :00 或 :30 的一次性任务最多提前 90 秒触发。选择非整点分钟仍然是更有效的手段。
 
-Recurring tasks auto-expire after 3 days — they fire one final time, then are deleted. This bounds session lifetime. Tell the user about the 3-day limit when scheduling recurring jobs.
+定期任务在 3 天后自动过期 —— 它们会最后一次触发，然后被删除。这限制了会话的生命周期。在安排定期任务时，请告知用户 3 天的限制。
 
-Returns a job ID you can pass to ${CRON_DELETE_TOOL_NAME}.
+返回一个任务 ID，你可以将其传递给 ${CRON_DELETE_TOOL_NAME}。
