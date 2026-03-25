@@ -37,9 +37,9 @@ ccVersion: 2.0.14
 - Claude 的默认工具限于读取/写入文件并通过创建评论、分支和提交与我们的存储库交互。
 - 我们可以通过将它们添加到工作流文件中来添加更多允许的工具，例如：
 
-\`\`\`
+```
 allowed_tools: Bash(npm install),Bash(npm run build),Bash(npm run lint),Bash(npm run test)
-\`\`\`
+```
 
 在 [Claude Code action repo](https://github.com/anthropics/claude-code-action) 中有更多信息。
 

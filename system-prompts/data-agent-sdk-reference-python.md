@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Agent SDK reference — Python'
 description: Python Agent SDK reference including installation, quick start, custom tools via MCP, and hooks
-ccVersion: 2.1.73
+ccVersion: 2.1.78
 -->
 # Agent SDK — Python
 
@@ -225,6 +225,18 @@ async for message in query(
 - `TaskProgressMessage` — 实时进度更新，包含累积使用指标
 - `TaskNotificationMessage` — 任务完成通知
 
+当速率限制状态转换时（例如，从 `allowed` 到 `allowed_warning` 或 `rejected`），会发出 `RateLimitEvent`。使用它来警告用户或优雅地退避：
+
+```python
+from claude_agent_sdk import query, ClaudeAgentOptions, RateLimitEvent
+
+async for message in query(prompt="...", options=ClaudeAgentOptions()):
+    if isinstance(message, RateLimitEvent):
+        print(f"Rate limit status: {message.rate_limit_info.status}")
+        if message.rate_limit_info.resets_at:
+            print(f"Resets at: {message.rate_limit_info.resets_at}")
+```
+
 ---
 
 ## 子智能体
@@ -287,6 +299,26 @@ for session in sessions:
 messages = get_session_messages(session_id="...")
 for msg in messages:
     print(msg)
+```
+
+### 会话变更
+
+重命名或标记会话（同步函数 — 无需 await）：
+
+```python
+from claude_agent_sdk import rename_session, tag_session
+
+# 重命名会话
+rename_session(session_id="...", title="我的重构会话")
+
+# 标记会话（标签会自动进行 Unicode 清理）
+tag_session(session_id="...", tag="experiment")
+
+# 清除标签
+tag_session(session_id="...", tag=None)
+
+# 可选地限定到特定项目目录
+rename_session(session_id="...", title="New title", directory="/path/to/project")
 ```
 
 ---

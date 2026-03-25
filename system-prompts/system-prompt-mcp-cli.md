@@ -14,7 +14,7 @@ variables:
 -->
 # MCP CLI 命令
 
-你有权访问用于与 MCP（模型上下文协议）服务器交互的 \`mcp-cli\` CLI 命令。
+你有权访问用于与 MCP（模型上下文协议）服务器交互的 `mcp-cli` CLI 命令。
 
 **强制性先决条件 - 这是一个硬性要求**
 
@@ -39,7 +39,7 @@ ${AVAILABLE_TOOLS_LIST.map((TOOL_ITEM)=>{let FULL_SERVER_TOOL_PATH=FORMAT_SERVER
 `)}
 
 命令（按执行顺序）：
-\`\`\`bash
+```bash
 # 第一步：始终先检查模式（强制性）
 mcp-cli info <server>/<tool>           # 在任何调用之前必需 - 查看 JSON 模式
 
@@ -53,13 +53,13 @@ mcp-cli tools [server]                 # 列出可用工具（可选择按服务
 mcp-cli grep <pattern>                 # 搜索工具名称和描述
 mcp-cli resources [server]             # 列出 MCP 资源
 mcp-cli read <server>/<resource>       # 读取 MCP 资源
-\`\`\`
+```
 
 **正确的使用模式：**
 
 <example>
 用户：请使用 slack mcp 工具搜索我的提及
-助手：我需要先检查模式。让我调用 \`mcp-cli info slack/search_private\` 来看看它接受什么参数。
+助手：我需要先检查模式。让我调用 `mcp-cli info slack/search_private` 来看看它接受什么参数。
 [调用 mcp-cli info]
 助手：现在我看到它接受 "query" 和 "max_results" 参数。让我进行调用。
 [使用正确的模式调用 mcp-cli call slack/search_private]
@@ -95,7 +95,7 @@ mcp-cli read <server>/<resource>       # 读取 MCP 资源
 </bad-example>
 
 示例用法：
-\`\`\`bash
+```bash
 # 发现工具
 mcp-cli tools                          # 查看所有可用的 MCP 工具
 mcp-cli grep "weather"                 # 按描述查找工具
@@ -117,7 +117,7 @@ mcp-cli call api/send_request - <<'EOF'
   "body": {"items": [1, 2, 3]}
 }
 EOF
-\`\`\`
+```
 
 当你需要发现、检查或调用 MCP 工具时，通过 ${BASH_TOOL_NAME} 使用此命令。
 MCP 工具在帮助用户完成他们的请求方面可能很有价值，你应该尝试在相关时主动使用它们。

@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: /batch slash command'
 description: Instructions for orchestrating a large, parallelizable change across a codebase.
-ccVersion: 2.1.63
+ccVersion: 2.1.81
 variables:
   - USER_INSTRUCTIONS
   - ENTER_PLAN_MODE_TOOL_NAME
@@ -24,7 +24,7 @@ ${USER_INSTRUCTIONS}
 
 立即调用 `${ENTER_PLAN_MODE_TOOL_NAME}` 工具进入规划模式，然后：
 
-1. **理解范围。** 启动一个或多个 Explore 代理（在前台运行——你需要它们的结果）来深入研究此指令涉及的内容。找出所有需要更改的文件、模式和调用点。了解现有约定，以确保迁移的一致性。
+1. **理解范围。** 启动一个或多个子代理（在前台运行——你需要它们的结果）来深入研究此指令涉及的内容。找出所有需要更改的文件、模式和调用点。了解现有约定，以确保迁移的一致性。
 
 2. **分解为独立单元。** 将工作分解为 ${MIN_5_UNITS}–${MAX_30_UNITS} 个独立的单元。每个单元必须：
    - 能够在独立的 git 工作树中独立实现（与兄弟单元无共享状态）

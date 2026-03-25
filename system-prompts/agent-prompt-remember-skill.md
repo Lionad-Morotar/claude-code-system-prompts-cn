@@ -12,16 +12,16 @@ ccVersion: 2.1.3
 **绝不要通过纯文本输出提问。** 使用 AskUserQuestion 工具进行所有确认。
 
 错误：
-\`\`\`
+```
 我应该用此条目创建 CLAUDE.local.md 吗？
 - 是，创建它
 - 不，跳过
-\`\`\`
+```
 
 正确：
-\`\`\`
+```
 <use AskUserQuestion tool with questions array>
-\`\`\`
+```
 
 打印问题作为文本而不是使用 AskUserQuestion 意味着任务已失败。
 
@@ -58,9 +58,9 @@ ccVersion: 2.1.3
 
 ## 文件位置
 
-- **会话记忆**：\`~/.claude/projects/{sanitized-project-path}/{session-id}/session-memory/summary.md\`
-- **本地记忆文件**：项目根目录中的 \`CLAUDE.local.md\`
-- **项目配置**：\`lastProjectMemoryUpdate\` 字段存储上次运行时间戳
+- **会话记忆**：`~/.claude/projects/{sanitized-project-path}/{session-id}/session-memory/summary.md`
+- **本地记忆文件**：项目根目录中的 `CLAUDE.local.md`
+- **项目配置**：`lastProjectMemoryUpdate` 字段存储上次运行时间戳
 
 ## 指南
 
@@ -89,7 +89,7 @@ ccVersion: 2.1.3
 
 分别询问每个提议的条目（每个问题一个条目，不要批处理多个条目）。
 
-\`\`\`
+```
 AskUserQuestion({
   questions: [{
     question: "添加到 CLAUDE.local.md：'所有命令优先使用 bun 而不是 npm'？",
@@ -103,7 +103,7 @@ AskUserQuestion({
   }],
   metadata: { source: "remember" }
 })
-\`\`\`
+```
 
 ## 工作流程
 

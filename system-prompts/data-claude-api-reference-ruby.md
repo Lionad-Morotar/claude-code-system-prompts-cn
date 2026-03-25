@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Ruby'
 description: Ruby SDK reference including installation, client initialization, basic requests, streaming, and beta tool runner
-ccVersion: 2.1.71
+ccVersion: 2.1.78
 -->
 # Claude API — Ruby
 

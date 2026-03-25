@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — C#'
 description: C# SDK 参考，包括安装、客户端初始化、基本请求、流式传输和工具使用
-ccVersion: 2.1.73
+ccVersion: 2.1.78
 -->
 # Claude API — C#
 

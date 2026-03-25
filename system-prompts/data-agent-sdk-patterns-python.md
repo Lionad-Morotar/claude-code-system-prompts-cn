@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Agent SDK patterns — Python'
 description: Python Agent SDK patterns including custom tools, hooks, subagents, MCP integration, and session resumption
-ccVersion: 2.1.73
+ccVersion: 2.1.78
 -->
 # Agent SDK 模式 — Python
 
@@ -312,6 +312,28 @@ if sessions:
     messages = get_session_messages(session_id=sessions[0].session_id)
     for msg in messages:
         print(msg)
+```
+
+---
+
+## 会话变更
+
+```python
+from claude_agent_sdk import rename_session, tag_session
+
+session_id = "your-session-id"
+
+# 重命名会话
+rename_session(session_id=session_id, title="重构认证模块")
+
+# 为会话添加标签以便筛选
+tag_session(session_id=session_id, tag="experiment-v2")
+
+# 清除标签
+tag_session(session_id=session_id, tag=None)
+
+# 限定到特定项目目录
+rename_session(session_id=session_id, title="New title", directory="/path/to/project")
 ```
 
 ---

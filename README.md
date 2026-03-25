@@ -34,7 +34,7 @@
 > [!important]
 > **新增（2026 年 1 月 23 日）：我们已在此列表中添加了所有 Claude Code 的约 40 个系统提醒——请参阅 [系统提醒](#system-reminders)。**
 
-此仓库包含截至 **[Claude Code v2.1.19](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.19)（2026 年 1 月 23 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 77 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
+此仓库包含截至 **[Claude Code v2.1.81](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.81)（2026 年 3 月 20 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 131 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
 
 **此仓库在每次 Claude Code 发布后的几分钟内更新。请查看 [更新日志](./CHANGELOG.md)，并在 X 上关注 [@PiebaldAI](https://x.com/PiebaldAI) 以获取每次发布中系统提示词变更的摘要。**
 
@@ -81,17 +81,21 @@
 
 - [代理提示词：代理创建架构师](./system-prompts/agent-prompt-agent-creation-architect.md) (**1110** tks) - 用于创建具有详细规范的自定义 AI 代理的系统提示词。
 - [代理提示词：CLAUDE.md 创建](./system-prompts/agent-prompt-claudemd-creation.md) (**384** tks) - 用于分析代码库并创建 CLAUDE.md 文档文件的系统提示词。
-- [代理提示词：状态栏设置](./system-prompts/agent-prompt-status-line-setup.md) (**1460** tks) - 用于配置状态栏显示的 statusline-setup 代理的系统提示词。
+- [代理提示词：状态栏设置](./system-prompts/agent-prompt-status-line-setup.md) (**1999** tks) - 用于配置状态栏显示的 statusline-setup 代理的系统提示词。
 
 ### 斜杠命令
 
+- [代理提示词：/batch 斜杠命令](./system-prompts/agent-prompt-batch-slash-command.md) (**1106** tks) - 用于在代码库中协调大规模、可并行化更改的说明。
 - [代理提示词：/pr-comments 斜杠命令](./system-prompts/agent-prompt-pr-comments-slash-command.md) (**402** tks) - 用于获取和显示 GitHub PR 注释的系统提示词。
-- [代理提示词：/review-pr 斜杠命令](./system-prompts/agent-prompt-review-pr-slash-command.md) (**243** tks) - 用于通过代码分析审查 GitHub 拉取请求的系统提示词。
+- [代理提示词：/review 斜杠命令（远程）](./system-prompts/agent-prompt-review-slash-command-remote.md) (**238** tks) - /review 斜杠命令的远程版本。
+- [代理提示词：/review-pr 斜杠命令](./system-prompts/agent-prompt-review-pr-slash-command.md) (**211** tks) - 用于通过代码分析审查 GitHub 拉取请求的系统提示词。
+- [代理提示词：/schedule 斜杠命令](./system-prompts/agent-prompt-schedule-slash-command.md) (**2468** tks) - 引导用户通过 Anthropic 云 API 在 cron 触发器上调度、更新、列出或运行远程 Claude Code 代理。
 - [代理提示词：/security-review 斜杠命令](./system-prompts/agent-prompt-security-review-slash-command.md) (**2610** tks) - 综合安全审查提示词，用于分析代码更改，重点关注可利用的漏洞。
 
 ### 实用程序
 
 - [代理提示词：代理 Hook](./system-prompts/agent-prompt-agent-hook.md) (**133** tks) - '代理 hook' 的提示词。
+- [代理提示词：自动模式规则审查器](./system-prompts/agent-prompt-auto-mode-rule-reviewer.md) (**257** tks) - 审查和评估用户定义的自动模式分类器规则，检查其清晰度、完整性、冲突和可操作性。
 - [代理提示词：Bash 命令描述编写器](./system-prompts/agent-prompt-bash-command-description-writer.md) (**207** tks) - 用于以主动语气为 bash 命令生成清晰、简洁命令描述的说明。
 - [代理提示词：Bash 命令文件路径提取](./system-prompts/agent-prompt-bash-command-file-path-extraction.md) (**286** tks) - 用于从 bash 命令输出中提取文件路径的系统提示词。
 - [代理提示词：Bash 命令前缀检测](./system-prompts/agent-prompt-bash-command-prefix-detection.md) (**835** tks) - 用于检测命令前缀和命令注入的系统提示词。
@@ -136,7 +140,6 @@
 - [系统提示词：MCP CLI](./system-prompts/system-prompt-mcp-cli.md) (**1335** tks) - 使用 mcp-cli 与模型上下文协议服务器交互的说明。
 - [系统提示词：临时目录](./system-prompts/system-prompt-scratchpad-directory.md) (**172** tks) - 使用专用临时目录存储临时文件的说明。
 - [系统提示词：队友通信](./system-prompts/system-prompt-teammate-communication.md) (**138** tks) - 用于 swarm 中队友通信的系统提示词。
-- [系统提示词：工具使用总结生成](./system-prompts/system-prompt-tool-use-summary-generation.md) (**171** tks) - 用于生成工具使用摘要的提示词。
 - [系统提示词：工具执行被拒绝](./system-prompts/system-prompt-tool-execution-denied.md) (**157** tks) - 工具执行被拒绝时的系统提示词。
 
 ### 系统提醒
@@ -169,7 +172,7 @@
 - [系统提醒：输出 token 限制超出](./system-prompts/system-reminder-output-token-limit-exceeded.md) (**35** tks) - 响应超出输出 token 限制时的警告。
 - [系统提醒：计划文件引用](./system-prompts/system-reminder-plan-file-reference.md) (**62** tks) - 对现有计划文件的引用。
 - [系统提醒：计划模式处于活动状态（5 阶段）](./system-prompts/system-reminder-plan-mode-is-active-5-phase.md) (**1348** tks) - 增强的计划模式系统提醒，支持并行探索和多代理规划。
-- [系统提醒：计划模式处于活动状态（迭代）](./system-prompts/system-reminder-plan-mode-is-active-iterative.md) (**854** tks) - 带有用户访谈工作流的主代理的迭代计划模式系统提醒。
+- [系统提醒：计划模式处于活动状态（迭代）](./system-prompts/system-reminder-plan-mode-is-active-iterative.md) (**923** tks) - 带有用户访谈工作流的主代理的迭代计划模式系统提醒。
 - [系统提醒：计划模式处于活动状态（子代理）](./system-prompts/system-reminder-plan-mode-is-active-subagent.md) (**310** tks) - 子代理的简化计划模式系统提醒。
 - [系统提醒：计划模式重新进入](./system-prompts/system-reminder-plan-mode-re-entry.md) (**236** tks) - 当用户在通过 shift+tab 或批准 Claude 的计划退出计划模式后再次进入计划模式时发送的系统提醒。
 - [系统提醒：排队命令（提示词）](./system-prompts/system-reminder-queued-command-prompt.md) (**35** tks) - 要处理的排队用户消息（提示词变体）。

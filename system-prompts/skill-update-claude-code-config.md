@@ -37,9 +37,9 @@ variables:
 ## 决策：配置工具 vs 直接编辑
 
 **对于这些简单设置，使用配置工具：**
-- \`theme\`、\`editorMode\`、\`verbose\`、\`model\`
-- \`language\`、\`alwaysThinkingEnabled\`
-- \`permissions.defaultMode\`
+- `theme`、`editorMode`、`verbose`、`model`
+- `language`、`alwaysThinkingEnabled`
+- `permissions.defaultMode`
 
 **直接编辑 settings.json 用于：**
 - 钩子（PreToolUse、PostToolUse 等）
@@ -61,12 +61,12 @@ variables:
 当添加到权限数组或钩子数组时，**与现有合并，不要替换：**
 
 **错误**（替换现有权限）：
-\`\`\`json
+```json
 { "permissions": { "allow": ["Bash(npm:*)"] } }
-\`\`\`
+```
 
 **正确**（保留现有 + 添加新）：
-\`\`\`json
+```json
 {
   "permissions": {
     "allow": [
@@ -76,7 +76,7 @@ variables:
     ]
   }
 }
-\`\`\`
+```
 
 ${SETTINGS_FILE_LOCATION_PROMPT}
 
@@ -89,10 +89,10 @@ ${HOOKS_CONFIGURATION_PROMPT}
 用户："在 Claude 写入后格式化我的代码"
 
 1. **澄清**：哪个格式化程序？（prettier、gofmt 等）
-2. **读取**：\`.claude/settings.json\`（如果缺失则创建）
+2. **读取**：`.claude/settings.json`（如果缺失则创建）
 3. **合并**：添加到现有钩子，不要替换
 4. **结果**：
-\`\`\`json
+```json
 {
   "hooks": {
     "PostToolUse": [{
@@ -104,14 +104,14 @@ ${HOOKS_CONFIGURATION_PROMPT}
     }]
   }
 }
-\`\`\`
+```
 
 ### 添加权限
 
 用户："允许 npm 命令而无需提示"
 
 1. **读取**：现有权限
-2. **合并**：添加 \`Bash(npm:*)\` 到允许数组
+2. **合并**：添加 `Bash(npm:*)` 到允许数组
 3. **结果**：与现有允许组合
 
 ### 环境变量
@@ -121,9 +121,9 @@ ${HOOKS_CONFIGURATION_PROMPT}
 1. **决定**：用户设置（全局）还是项目设置？
 2. **读取**：目标文件
 3. **合并**：添加到 env 对象
-\`\`\`json
+```json
 { "env": { "DEBUG": "true" } }
-\`\`\`
+```
 
 ## 要避免的常见错误
 
@@ -140,4 +140,4 @@ ${HOOKS_CONFIGURATION_PROMPT}
 3. **检查匹配器** - 它是否匹配工具名称？（例如，"Bash"、"Write"、"Edit"）
 4. **检查钩子类型** - 它是 "command"、"prompt" 还是 "agent"？
 5. **测试命令** - 手动运行钩子命令以查看它是否工作
-6. **使用 --debug** - 运行 \`claude --debug\` 以查看钩子执行日志
+6. **使用 --debug** - 运行 `claude --debug` 以查看钩子执行日志

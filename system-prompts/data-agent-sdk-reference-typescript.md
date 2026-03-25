@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Agent SDK reference — TypeScript'
 description: TypeScript Agent SDK reference including installation, quick start, custom tools, and hooks
-ccVersion: 2.1.73
+ccVersion: 2.1.78
 -->
 # Agent SDK — TypeScript
 
@@ -176,6 +176,7 @@ query({ prompt: "...", options: { ... } })
 | `betas`                             | array  | 要启用的测试版功能（例如 `["context-1m-2025-08-07"]`）               |
 | `settingSources`                    | array  | 要加载的设置（例如 `["project"]`）。默认：无（不加载 CLAUDE.md 文件） |
 | `env`                               | object | 为会话设置的环境变量                               |
+| `agentProgressSummaries`            | bool   | 在 `task_progress` 事件上启用定期 AI 生成的进度摘要  |
 
 ---
 
@@ -219,7 +220,7 @@ for await (const message of query({
 
 子代理操作也会发出与任务相关的系统消息：
 - `task_started` —— 子代理任务注册时发出
-- `task_progress` —— 实时进度更新，包含累积的使用指标、工具计数和持续时间
+- `task_progress` —— 实时进度更新，包含累积的使用指标、工具计数和持续时间（启用 `agentProgressSummaries` 选项以通过 `summary` 字段获取定期 AI 生成的摘要）
 - `task_notification` —— 任务完成通知（包含 `tool_use_id` 用于与原始工具调用关联）
 
 ---
@@ -229,19 +230,44 @@ for await (const message of query({
 检索过去的会话数据：
 
 ```typescript
-import { listSessions, getSessionMessages } from "@anthropic-ai/claude-agent-sdk";
+import { listSessions, getSessionMessages, getSessionInfo } from "@anthropic-ai/claude-agent-sdk";
 
-// 列出所有过去的会话
-const sessions = await listSessions();
+// 列出所有过去的会话（支持通过 limit/offset 分页）
+const sessions = await listSessions({ limit: 20, offset: 0 });
 for (const session of sessions) {
-  console.log(`${session.sessionId}: ${session.cwd}`);
+  console.log(`${session.sessionId}: ${session.cwd} (tag: ${session.tag})`);
 }
+
+// 获取单个会话的元数据
+const sessionId = sessions[0]?.sessionId;
+const info = await getSessionInfo(sessionId);
+console.log(info.tag, info.createdAt);
 
 // 获取特定会话的消息（支持通过 limit/offset 分页）
 const messages = await getSessionMessages(sessionId, { limit: 50, offset: 0 });
 for (const msg of messages) {
   console.log(msg);
 }
+```
+
+### 会话变更
+
+重命名、标记或分叉会话：
+
+```typescript
+import { renameSession, tagSession, forkSession } from "@anthropic-ai/claude-agent-sdk";
+
+// 重命名会话
+await renameSession(sessionId, "我的重构会话");
+
+// 标记会话
+await tagSession(sessionId, "experiment");
+
+// 清除标签
+await tagSession(sessionId, null);
+
+// 分叉会话 —— 从特定点分支对话
+const { sessionId: forkedId } = await forkSession(sessionId);
 ```
 
 ---

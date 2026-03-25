@@ -67,10 +67,10 @@ ccVersion: 2.1.69
      - **无** - 跳过浏览器自动化（仅使用基本 HTTP 检查）
 
 3. **如果用户选择安装 Playwright**，根据包管理器运行相应命令：
-   - npm：\`npm install -D @playwright/test && npx playwright install\`
-   - yarn：\`yarn add -D @playwright/test && yarn playwright install\`
-   - pnpm：\`pnpm add -D @playwright/test && pnpm exec playwright install\`
-   - bun：\`bun add -D @playwright/test && bun playwright install\`
+   - npm：`npm install -D @playwright/test && npx playwright install`
+   - yarn：`yarn add -D @playwright/test && yarn playwright install`
+   - pnpm：`pnpm add -D @playwright/test && pnpm exec playwright install`
+   - bun：`bun add -D @playwright/test && bun playwright install`
 
 4. **如果用户选择 Chrome DevTools MCP 或 Claude Chrome 扩展**：
    - 这些需要 MCP 服务器配置而非包安装
@@ -83,7 +83,7 @@ ccVersion: 2.1.69
 
 ### 针对 CLI 工具
 
-1. 检查 asciinema 是否可用（运行 \`which asciinema\`）
+1. 检查 asciinema 是否可用（运行 `which asciinema`）
 2. 如果不可用，告知用户 asciinema 可以帮助记录验证会话，但这是可选的
 3. Tmux 通常是系统安装的，只需验证其可用性
 
@@ -91,7 +91,7 @@ ccVersion: 2.1.69
 
 1. 检查 HTTP 测试工具是否可用：
    - curl（通常是系统安装的）
-   - httpie（\`http\` 命令）
+   - httpie（`http` 命令）
 2. 通常不需要安装
 
 ## 阶段 3：交互式问答
@@ -105,12 +105,12 @@ ccVersion: 2.1.69
    - "verifier-cli" 用于 CLI/终端测试
    - "verifier-api" 用于 HTTP API 测试
 
-   如果有多个项目区域，使用格式 \`verifier-<project>-<type>\`：
+   如果有多个项目区域，使用格式 `verifier-<project>-<type>`：
    - "verifier-frontend-playwright" 用于前端 Web UI
    - "verifier-backend-api" 用于后端 API
    - "verifier-admin-playwright" 用于管理后台
 
-   \`<project>\` 部分应该是子目录或项目区域的短标识符（例如，文件夹名称或包名称）。
+   `<project>` 部分应该是子目录或项目区域的短标识符（例如，文件夹名称或包名称）。
 
    允许自定义名称，但名称中**必须**包含 "verifier" —— Verify 智能体通过查找文件夹名称中的 "verifier" 来发现 skill。
 
@@ -145,7 +145,7 @@ ccVersion: 2.1.69
    - **测试凭据**：验证器应该使用什么凭据？
      - 询问登录 URL（例如，"/login"、"http://localhost:3000/auth"）
      - 询问测试用户名/邮箱和密码，或 API 密钥
-     - 注意：建议用户使用环境变量存储敏感信息（例如 \`TEST_USER\`、\`TEST_PASSWORD\`）而非硬编码
+     - 注意：建议用户使用环境变量存储敏感信息（例如 `TEST_USER`、`TEST_PASSWORD`）而非硬编码
    - **登录后指示器**：如何确认登录成功？
      - URL 重定向（例如，重定向到 "/dashboard"）
      - 元素出现（例如，"Welcome" 文本、用户头像）
@@ -153,13 +153,13 @@ ccVersion: 2.1.69
 
 ## 阶段 4：生成验证器 Skill
 
-**所有验证器 skill 都创建在项目根目录的 \`.claude/skills/\` 目录中。** 这确保它们在 Claude 运行项目时自动加载。
+**所有验证器 skill 都创建在项目根目录的 `.claude/skills/` 目录中。** 这确保它们在 Claude 运行项目时自动加载。
 
-将 skill 文件写入 \`.claude/skills/<verifier-name>/SKILL.md\`。
+将 skill 文件写入 `.claude/skills/<verifier-name>/SKILL.md`。
 
 ### Skill 模板结构
 
-\`\`\`markdown
+```markdown
 ---
 name: <verifier-name>
 description: <基于类型的描述>
@@ -196,12 +196,12 @@ allowed-tools:
 ## 自我更新
 
 如果验证失败是因为此 skill 的说明已过时（开发服务器命令/端口/就绪信号已更改等）——而不是因为被测功能损坏——或者如果用户在运行过程中纠正了你，使用 AskUserQuestion 确认，然后使用 Edit 对此 SKILL.md 进行最小化的针对性修复。
-\`\`\`
+```
 
 ### 按类型允许的工具
 
 **verifier-playwright**:
-\`\`\`yaml
+```yaml
 allowed-tools:
   - Bash(npm:*)
   - Bash(yarn:*)
@@ -211,20 +211,20 @@ allowed-tools:
   - Read
   - Glob
   - Grep
-\`\`\`
+```
 
 **verifier-cli**:
-\`\`\`yaml
+```yaml
 allowed-tools:
   - Tmux
   - Bash(asciinema:*)
   - Read
   - Glob
   - Grep
-\`\`\`
+```
 
 **verifier-api**:
-\`\`\`yaml
+```yaml
 allowed-tools:
   - Bash(curl:*)
   - Bash(http:*)
@@ -233,13 +233,13 @@ allowed-tools:
   - Read
   - Glob
   - Grep
-\`\`\`
+```
 
 
 ## 阶段 5：确认创建
 
 写入 skill 文件后，告知用户：
-1. 每个 skill 的创建位置（始终在 \`.claude/skills/\` 中）
+1. 每个 skill 的创建位置（始终在 `.claude/skills/` 中）
 2. Verify 智能体将如何发现它们 —— 文件夹名称必须包含 "verifier"（不区分大小写）才能自动发现
 3. 他们可以编辑 skill 进行自定义
 4. 他们可以再次运行 /init-verifiers 为其他区域添加更多验证器

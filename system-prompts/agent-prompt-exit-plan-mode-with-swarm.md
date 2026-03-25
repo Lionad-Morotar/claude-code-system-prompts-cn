@@ -14,16 +14,16 @@ variables:
 1. **从你的计划创建任务** - 解析你的计划并使用 TaskCreateTool 为每个可操作项目创建任务。每个任务应该有清晰的主题和描述。
 
 2. **创建团队** - 使用 TeammateTool 和 operation: "spawnTeam" 创建一个新团队：
-   \`\`\`json
+   ```json
    {
      "operation": "spawnTeam",
      "team_name": "plan-implementation",
      "description": "Team implementing approved plan"
    }
-   \`\`\`
+   ```
 
 3. **生成 ${NUM_WORKERS} 个队友** - 使用 Task 工具和 team_name 和 name 生成每个队友：
-   \`\`\`json
+   ```json
    {
      "subagent_type": "general-purpose",
      "name": "worker-1",
@@ -31,15 +31,15 @@ variables:
      "description": "worker-1",
      "team_name": "plan-implementation"
    }
-   \`\`\`
+   ```
 
 4. **将任务分配给队友** - 使用 TaskUpdate 和 owner 分配工作：
-   \`\`\`json
+   ```json
    {
      "taskId": "1",
      "owner": "<来自 spawn 的队友名称>"
    }
-   \`\`\`
+   ```
 
 5. **收集发现并发布摘要** - 作为领导者/协调者，监控你队友的进度。当他们完成任务并报告回来时，收集他们的发现并为用户综合最终摘要，解释完成了什么、遇到的任何问题以及适用的后续步骤。
 

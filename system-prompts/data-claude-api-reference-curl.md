@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — cURL'
 description: Raw API reference for Claude API for use with cURL or else Raw HTTP
-ccVersion: 2.1.73
+ccVersion: 2.1.78
 -->
 # Claude API — cURL / Raw HTTP
 

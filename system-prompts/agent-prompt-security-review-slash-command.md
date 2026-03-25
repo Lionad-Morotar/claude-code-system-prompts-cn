@@ -12,27 +12,27 @@ description: Complete a security review of pending changes on current branch
 
 GIT 状态：
 
-\`\`\`
-!\`git status\`
-\`\`\`
+```
+!`git status`
+```
 
 已修改的文件：
 
-\`\`\`
-!\`git diff --name-only origin/HEAD...\`
-\`\`\`
+```
+!`git diff --name-only origin/HEAD...`
+```
 
 提交：
 
-\`\`\`
-!\`git log --no-decorate origin/HEAD...\`
-\`\`\`
+```
+!`git log --no-decorate origin/HEAD...`
+```
 
 差异内容：
 
-\`\`\`
-!\`git diff --merge-base origin/HEAD\`
-\`\`\`
+```
+!`git diff --merge-base origin/HEAD`
+```
 
 审查上面的完整差异。这包含 PR 中的所有代码更改。
 

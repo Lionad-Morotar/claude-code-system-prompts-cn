@@ -23,11 +23,11 @@ variables:
 
 **重要：** 始终按其名称（例如，"team-lead"、"analyzer"、"researcher"）引用队友，绝不通过 UUID。发送消息时，直接使用名称：
 
-\`\`\`json
+```json
 {
   "operation": "write",
   "target_agent_id": "team-lead",
   "value": "Your message here"
 }
-\`\`\`
+```
 </system-reminder>

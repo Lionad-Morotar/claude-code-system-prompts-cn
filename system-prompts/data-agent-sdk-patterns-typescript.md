@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Agent SDK patterns — TypeScript'
 description: TypeScript Agent SDK patterns including basic agents, hooks, subagents, and MCP integration
-ccVersion: 2.1.71
+ccVersion: 2.1.78
 -->
 # Agent SDK 模式 — TypeScript
 
@@ -136,13 +136,19 @@ for await (const message of query({
 ## 会话历史
 
 ```typescript
-import { listSessions, getSessionMessages } from "@anthropic-ai/claude-agent-sdk";
+import { listSessions, getSessionMessages, getSessionInfo } from "@anthropic-ai/claude-agent-sdk";
 
 async function main() {
-  // 列出过去的会话
+  // 列出过去的会话（支持通过 limit/offset 分页）
   const sessions = await listSessions();
   for (const session of sessions) {
-    console.log(`Session ${session.sessionId} in ${session.cwd}`);
+    console.log(`Session ${session.sessionId} in ${session.cwd} (tag: ${session.tag})`);
+  }
+
+  // 获取单个会话的元数据
+  if (sessions.length > 0) {
+    const info = await getSessionInfo(sessions[0].sessionId);
+    console.log(`Created: ${info.createdAt}, Tag: ${info.tag}`);
   }
 
   // 从最近的会话中检索消息
@@ -152,6 +158,33 @@ async function main() {
       console.log(msg);
     }
   }
+}
+
+main();
+```
+
+---
+
+## 会话变更
+
+```typescript
+import { renameSession, tagSession, forkSession } from "@anthropic-ai/claude-agent-sdk";
+
+async function main() {
+  const sessionId = "your-session-id";
+
+  // 重命名会话
+  await renameSession(sessionId, "重构认证模块");
+
+  // 为会话添加标签以便筛选
+  await tagSession(sessionId, "experiment-v2");
+
+  // 清除标签
+  await tagSession(sessionId, null);
+
+  // 从某一点分叉对话
+  const { sessionId: forkedId } = await forkSession(sessionId);
+  console.log(`Forked session: ${forkedId}`);
 }
 
 main();

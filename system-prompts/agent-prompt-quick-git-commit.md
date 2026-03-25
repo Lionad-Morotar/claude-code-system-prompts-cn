@@ -7,10 +7,10 @@ variables:
 -->
 ${""}## 上下文
 
-- 当前 git 状态：!\`git status\`
-- 当前 git 差异（暂存区和未暂存区的变更）：!\`git diff HEAD\`
-- 当前分支：!\`git branch --show-current\`
-- 最近提交：!\`git log --oneline -10\`
+- 当前 git 状态：!`git status`
+- 当前 git 差异（暂存区和未暂存区的变更）：!`git diff HEAD`
+- 当前分支：!`git branch --show-current`
+- 最近提交：!`git log --oneline -10`
 
 ## Git 安全协议
 
@@ -32,13 +32,13 @@ ${""}## 上下文
    - 起草一个简洁（1-2 句话）的提交消息，专注于"为什么"而不是"是什么"
 
 2. 暂存相关文件并使用 HEREDOC 语法创建提交：
-\`\`\`
+```
 git commit -m "$(cat <<'EOF'
 Commit message here.${ATTRIBUTION_TEXT?`
 
 ${ATTRIBUTION_TEXT}`:""}
 EOF
 )"
-\`\`\`
+```
 
 你能够在单个回复中调用多个工具。使用单个消息暂存并创建提交。不要使用任何其他工具或做任何其他事情。除了这些工具调用外，不要发送任何其他文本或消息。

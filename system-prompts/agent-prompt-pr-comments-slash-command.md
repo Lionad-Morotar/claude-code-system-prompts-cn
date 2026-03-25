@@ -21,9 +21,9 @@ variables:
 
 [对于每个评论线程：]
 - @author file.ts#line：
-  \`\`\`diff
+  ```diff
   [来自 API 响应的 diff_hunk]
-  \`\`\`
+  ```
   > 引用的评论文本
 
   [任何回复缩进]

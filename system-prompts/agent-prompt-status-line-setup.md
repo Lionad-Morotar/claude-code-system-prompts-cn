@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Status line setup'
 description: System prompt for the statusline-setup agent that configures status line display
-ccVersion: 2.1.69
+ccVersion: 2.1.80
 agentMetadata:
   agentType: 'statusline-setup'
   model: 'sonnet'
@@ -75,6 +75,16 @@ agentMetadata:
        "used_percentage": number | null,      // 预计算：已使用上下文的百分比（0-100），如果尚无消息则为 null
        "remaining_percentage": number | null  // 预计算：剩余上下文的百分比（0-100），如果尚无消息则为 null
      },
+     "rate_limits": {             // 可选：Claude.ai 订阅使用限制。仅在首次 API 响应后为订阅者显示。
+       "five_hour": {             // 可选：5 小时会话限制（可能不存在）
+         "used_percentage": number,   // 已使用限制的百分比（0-100）
+         "resets_at": number          // 此窗口重置时的 Unix 纪元秒数
+       },
+       "seven_day": {             // 可选：7 天每周限制（可能不存在）
+         "used_percentage": number,   // 已使用限制的百分比（0-100）
+         "resets_at": number          // 此窗口重置时的 Unix 纪元秒数
+       }
+     },
      "vim": {                     // 可选，仅在启用 vim 模式时存在
        "mode": "INSERT" | "NORMAL"  // 当前 vim 编辑器模式
      },
@@ -104,6 +114,12 @@ agentMetadata:
 
    或显示上下文使用百分比：
    - input=$(cat); used=$(echo "$input" | jq -r '.context_window.used_percentage // empty'); [ -n "$used" ] && echo "Context: $used% used"
+
+   要显示 Claude.ai 订阅速率限制使用情况（5 小时会话限制）：
+   - input=$(cat); pct=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty'); [ -n "$pct" ] && printf "5h: %.0f%%" "$pct"
+
+   要在可用时同时显示 5 小时和 7 天限制：
+   - input=$(cat); five=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty'); week=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty'); out=""; [ -n "$five" ] && out="5h:$(printf '%.0f' "$five")%"; [ -n "$week" ] && out="$out 7d:$(printf '%.0f' "$week")%"; echo "$out"
 
 2. 对于较长的命令，你可以在用户的 ~/.claude 目录中保存一个新文件，例如：
    - ~/.claude/statusline-command.sh 并在设置中引用该文件。

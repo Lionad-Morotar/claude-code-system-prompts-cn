@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Build with Claude API'
 description: Main routing guide for building LLM-powered applications with Claude, including language detection, surface selection, and architecture overview
-ccVersion: 2.1.73
+ccVersion: 2.1.78
 -->
 # 使用 Claude 构建大语言模型驱动的应用程序
 
@@ -125,7 +125,7 @@ ccVersion: 2.1.73
 
 **结构化输出** — 约束 Messages API 响应格式 (`output_config.format`) 和/或工具参数验证 (`strict: true`)。推荐的方法是 `client.messages.parse()`，它会自动根据你的 schema 验证响应。注意：旧的 `output_format` 参数已弃用；在 `messages.create()` 上使用 `output_config: {format: {...}}`。
 
-**支持端点** — Batches (`POST /v1/messages/batches`)、Files (`POST /v1/files`) 和 Token Counting 用于支持或输入 Messages API 请求。
+**支持端点** — Batches (`POST /v1/messages/batches`)、Files (`POST /v1/files`)、Token Counting 和 Models (`GET /v1/models`、`GET /v1/models/{id}` — 实时能力/上下文窗口发现) 用于支持或输入 Messages API 请求。
 
 ---
 
@@ -142,6 +142,8 @@ ccVersion: 2.1.73
 **重要：仅使用上表中的确切模型 ID 字符串 —— 它们按原样完整。不要附加日期后缀。** 例如，使用 `claude-sonnet-4-5`，永远不要使用 `claude-sonnet-4-5-20250514` 或你可能从训练数据中回忆起的任何其他带日期后缀的变体。如果用户请求表中不存在的旧模型（例如，"opus 4.5"、"sonnet 3.7"），请阅读 `shared/models.md` 获取确切的 ID —— 不要自己构造一个。
 
 注意：如果上述任何模型字符串对你来说不熟悉，这是意料之中的 —— 这只意味着它们是在你的训练数据截止日期之后发布的。请放心，它们是真实的模型；我们不会那样捉弄你。
+
+**实时能力查询：** 上表是缓存的。当用户询问"X 的上下文窗口是多少"、"X 是否支持视觉/思考/effort"或"哪些模型支持 Y"时，请查询 Models API (`client.models.retrieve(id)` / `client.models.list()`) —— 有关字段引用和能力过滤示例，请参见 `shared/models.md`。
 
 ---
 
@@ -234,7 +236,8 @@ ccVersion: 2.1.73
 - 向 API 传递文件或内容时不要截断输入。如果内容太长而无法放入上下文窗口，请通知用户并讨论选项（分块、摘要等），而不是静默截断。
 - **Opus 4.6 / Sonnet 4.6 思考：** 使用 `thinking: {type: "adaptive"}` —— 不要使用 `budget_tokens`（在 Opus 4.6 和 Sonnet 4.6 上已弃用）。对于旧模型，`budget_tokens` 必须小于 `max_tokens`（最小 1024）。如果弄错了会抛出错误。
 - **Opus 4.6 预填充已移除：** Assistant 消息预填充（最后一轮 assistant 预填充）在 Opus 4.6 上返回 400 错误。改用结构化输出 (`output_config.format`) 或系统提示词指令来控制响应格式。
-- **128K 输出 token：** Opus 4.6 支持最多 128K `max_tokens`，但 SDK 需要流式传输以避免大 `max_tokens` 的 HTTP 超时。使用 `.stream()` 配合 `.get_final_message()` / `.finalMessage()`。
+- **`max_tokens` 默认值：** 不要低估 `max_tokens` —— 达到上限会截断输出并需要重试。对于非流式请求，默认使用 `~16000`（保持响应在 SDK HTTP 超时范围内）。对于流式请求，默认使用 `~64000`（超时不是问题，所以给模型更多空间）。仅在以下情况下降低：分类（`~256`）、成本上限或故意缩短输出。
+- **128K 输出 token：** Opus 4.6 支持最多 128K `max_tokens`，但 SDK 需要流式传输以避免大 `max_tokens` 值的 HTTP 超时。使用 `.stream()` 配合 `.get_final_message()` / `.finalMessage()`。
 - **Tool call JSON 解析 (Opus 4.6)：** Opus 4.6 可能在 tool call `input` 字段中产生不同的 JSON 字符串转义（例如 Unicode 或正斜杠转义）。始终使用 `json.loads()` / `JSON.parse()` 解析 tool 输入 —— 永远不要对序列化输入进行原始字符串匹配。
 - **结构化输出（所有模型）：** 使用 `output_config: {format: {...}}` 而不是 `messages.create()` 上已弃用的 `output_format` 参数。这是一般的 API 更改，不是 4.6 特定的。
 - **不要重新实现 SDK 功能：** SDK 提供高级辅助功能 —— 使用它们而不是从头构建。具体来说：使用 `stream.finalMessage()` 而不是将 `.on()` 事件包装在 `new Promise()` 中；使用类型化的异常类（`Anthropic.RateLimitError` 等）而不是字符串匹配错误消息；使用 SDK 类型（`Anthropic.MessageParam`、`Anthropic.Tool`、`Anthropic.Message` 等）而不是重新定义等效接口。

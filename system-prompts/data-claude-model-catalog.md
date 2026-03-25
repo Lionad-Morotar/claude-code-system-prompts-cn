@@ -1,11 +1,62 @@
 <!--
 name: 'Data: Claude model catalog'
 description: Catalog of current and legacy Claude models with exact model IDs, aliases, context windows, and pricing
-ccVersion: 2.1.73
+ccVersion: 2.1.79
 -->
 # Claude 模型目录
 
-**仅使用本文件中列出的精确模型 ID。** 切勿猜测或构造模型 ID —— 错误的 ID 将导致 API 错误。尽可能使用别名。如需最新信息，请通过 WebFetch 获取 `shared/live-sources.md` 中的模型概览 URL。
+**仅使用本文件中列出的精确模型 ID。** 切勿猜测或构造模型 ID —— 错误的 ID 将导致 API 错误。尽可能使用别名。如需最新信息，请通过 WebFetch 获取 `shared/live-sources.md` 中的模型概览 URL，或直接查询 Models API（见下方程序化模型发现）。
+
+## 程序化模型发现
+
+如需获取**实时**能力数据 —— 上下文窗口、最大输出 token、功能支持（思考、视觉、effort、结构化输出等）—— 请查询 Models API，而不是依赖下方缓存的表格。当用户询问"X 的上下文窗口是多少"、"模型 X 是否支持视觉/思考/effort"、"哪些模型支持功能 Y"，或希望在运行时按能力选择模型时使用此方法。
+
+```python
+m = client.models.retrieve("claude-opus-4-6")
+m.id                 # "claude-opus-4-6"
+m.display_name       # "Claude Opus 4.6"
+m.max_input_tokens   # 上下文窗口 (int)
+m.max_tokens         # 最大输出 token (int)
+
+# capabilities 是一个无类型的嵌套字典 —— 使用方括号访问，在叶子节点检查 ["supported"]
+caps = m.capabilities
+caps["image_input"]["supported"]                       # 视觉
+caps["thinking"]["types"]["adaptive"]["supported"]     # 自适应思考
+caps["effort"]["max"]["supported"]                     # effort: max (还有 low/medium/high)
+caps["structured_outputs"]["supported"]
+caps["context_management"]["compact_20260112"]["supported"]
+
+# 跨所有模型过滤 —— 直接迭代 page 对象（自动分页）；不要使用 .data
+[m for m in client.models.list()
+ if m.capabilities["thinking"]["types"]["adaptive"]["supported"]
+ and m.max_input_tokens >= 200_000]
+```
+
+顶级字段（`id`、`display_name`、`max_input_tokens`、`max_tokens`）是类型化属性。`capabilities` 是一个字典 —— 使用方括号访问，而不是属性访问。API 为每个模型返回完整的能力树，每个叶子节点都有 `supported: true/false`，因此方括号链是安全的，无需 `.get()` 守卫。TypeScript SDK：方法名相同，迭代时也自动分页。
+
+### 原始 HTTP
+
+```bash
+curl https://api.anthropic.com/v1/models/claude-opus-4-6 \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01"
+```
+
+```json
+{
+  "id": "claude-opus-4-6",
+  "display_name": "Claude Opus 4.6",
+  "max_input_tokens": 1000000,
+  "max_tokens": 128000,
+  "capabilities": {
+    "image_input": {"supported": true},
+    "structured_outputs": {"supported": true},
+    "thinking": {"supported": true, "types": {"enabled": {"supported": true}, "adaptive": {"supported": true}}},
+    "effort": {"supported": true, "low": {"supported": true}, …, "max": {"supported": true}},
+    …
+  }
+}
+```
 
 ## 当前模型（推荐）
 

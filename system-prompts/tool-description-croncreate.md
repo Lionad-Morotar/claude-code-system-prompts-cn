@@ -1,8 +1,9 @@
 <!--
 name: 'Tool Description: CronCreate'
 description: Describes the CronCreate tool for enqueuing one-shot or recurring cron-based jobs with jitter and off-minute scheduling guidance
-ccVersion: 2.1.71
+ccVersion: 2.1.79
 variables:
+  - CANCEL_TIMEFRAME_DAYS
   - CRON_DELETE_TOOL_NAME
 -->
 在将来的某个时间安排一个提示词进入队列。用于定期计划和一次性提醒。
@@ -38,6 +39,6 @@ ${`## 仅会话期间有效
 
 任务仅在 REPL 空闲时触发（不在查询中途）。${""}调度器会在你选择的时间基础上添加一个小的确定性抖动：定期任务最多延迟其周期的 10%（最多 15 分钟）；落在 :00 或 :30 的一次性任务最多提前 90 秒触发。选择非整点分钟仍然是更有效的手段。
 
-定期任务在 3 天后自动过期 —— 它们会最后一次触发，然后被删除。这限制了会话的生命周期。在安排定期任务时，请告知用户 3 天的限制。
+定期任务在 ${CANCEL_TIMEFRAME_DAYS} 天后自动过期 —— 它们会最后一次触发，然后被删除。这限制了会话的生命周期。在安排定期任务时，请告知用户 ${CANCEL_TIMEFRAME_DAYS} 天的限制。
 
 返回一个任务 ID，你可以将其传递给 ${CRON_DELETE_TOOL_NAME}。

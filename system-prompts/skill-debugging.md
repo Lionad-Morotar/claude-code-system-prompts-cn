@@ -19,11 +19,11 @@ ${DEBUG_LOGGING_WAS_ALREADY_ACTIVE?"":`
 
 调试日志在此会话中一直处于关闭状态，直到此刻。此次 /debug 调用之前的内容均未被捕获。
 
-告知用户调试日志现在已激活，位于 \`${DEBUG_LOG_PATH}\`，请他们重现问题，然后重新读取日志。如果无法重现，他们也可以使用 \`claude --debug\` 重新启动，以捕获启动时的日志。
+告知用户调试日志现在已激活，位于 `${DEBUG_LOG_PATH}`，请他们重现问题，然后重新读取日志。如果无法重现，他们也可以使用 `claude --debug` 重新启动，以捕获启动时的日志。
 `}
 ## Session Debug Log
 
-当前会话的调试日志位于：\`${DEBUG_LOG_PATH}\`
+当前会话的调试日志位于：`${DEBUG_LOG_PATH}`
 
 ${DEBUG_LOG_SUMMARY}
 

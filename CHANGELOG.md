@@ -4,6 +4,63 @@
 
 ### Claude Code 系统提示词变更日志
 
+# [2.1.81](https://github.com/Piebald-AI/claude-code-system-prompts/commit/a82ade6)
+
+_+294 tokens_
+
+- **NEW:** Agent Prompt: /review 斜杠命令（远程版本）—— /review 斜杠命令的远程版本。
+- **NEW:** Agent Prompt: 自动模式规则审查器 —— 审查和评估用户定义的自动模式分类器规则，检查其清晰度、完整性、冲突和可操作性。
+- **NEW:** System Prompt: 最小模式 —— 描述最小模式的行为和约束，该模式跳过钩子、LSP、插件、自动记忆等功能，同时需要通过 CLI 标志显式提供上下文。
+- Agent Prompt: /batch 斜杠命令 —— 在范围理解步骤中将术语从 "Explore agents" 更改为 "subagents"。
+- Agent Prompt: /schedule 斜杠命令 —— 将原始的基于 curl 的 API 调用替换为用于管理远程触发器的专用工具；简化了创建请求体的文档；移除了对认证环境变量的直接引用。
+- Agent Prompt: 自主代理操作的安全监控器（第一部分）—— 将转录评估目标从 "final tool_use block" 澄清为 "agent's most recent action"；强化了 "Evaluate on Own Merits" 规则，添加了明确的 "沉默不代表同意" 原则 —— 用户在连续操作之间未进行干预并不代表获得批准。
+- Agent Prompt: 自主代理操作的安全监控器（第二部分）—— 扩展了敏感数据定义，将内部文件（仓库脚本、图表、幻灯片）在上传到公共存储（如 gists、pastebins 或图表渲染器）时默认归类为敏感。
+- Skill: /init CLAUDE.md 和技能设置（新版本）—— 在代码库探索阶段将术语从 "Explore subagent" 更改为通用的 "subagent"。
+- Skill: 简化 —— 在 hacky-patterns 审查中添加了 "不必要的注释" 检查：删除解释代码做什么、叙述变更或引用任务/调用者的注释；仅保留非显而易见的 "为什么" 注释。
+- System Prompt: Fork 使用指南 —— 在解释 fork 的缓存共享优势时，将术语从引用特定子代理类型更改为 "a fresh subagent"。
+- System Prompt: 工具使用（任务管理）—— 简化了工具名称引用。
+- System Reminder: 计划模式已激活（迭代）—— 对探索步骤的子代理指导进行了轻微措辞调整。
+
+# [2.1.80](https://github.com/Piebald-AI/claude-code-system-prompts/commit/abbb61f)
+
+_+3,065 tokens_
+
+- **NEW:** Agent Prompt: /schedule 斜杠命令 —— 指导用户通过 Anthropic 云 API 在 cron 触发器上调度、更新、列出或运行远程 Claude Code 代理。
+- Agent Prompt: 状态栏设置 —— 在状态栏 JSON 模式中添加了 `rate_limits` 对象，公开 Claude.ai 订阅使用限制，包含 5 小时会话和 7 天每周窗口（每个窗口都有使用百分比和重置时间戳）；在状态栏中添加了显示速率限制使用情况的示例 shell 命令。
+- Data: HTTP 错误代码参考 —— 对 HTTP 错误代码文档的次要更新。
+
+
+# [2.1.79](https://github.com/Piebald-AI/claude-code-system-prompts/commit/7f0098b)
+
+_+714 tokens_
+
+- **REMOVED:** System Prompt: Tool Use Summary Generation —— 删除了用于生成工具使用简要过去时摘要的提示词。
+- Data: Claude model catalog —— 添加了程序化模型发现章节，包含 Python SDK 和原始 HTTP 示例，用于查询 Models API 以获取实时能力数据（上下文窗口、最大输出令牌数、视觉、思考、努力程度、结构化输出）；包含关于迭代和按能力过滤模型的指导。
+- Skill: Build with Claude API —— 将 Models API 端点（`GET /v1/models`、`GET /v1/models/{id}`）添加到支持端点列表；添加了实时能力查找说明，指导用户查询 Models API 而不是依赖缓存的模型表。
+- Skill: /loop 斜杠命令 —— 将重复任务自动过期时间从硬编码的 3 天限制更改为可配置的时间范围。
+- Tool Description: CronCreate —— 将重复任务自动过期时间从硬编码的 3 天限制更改为可配置的时间范围。
+- System Prompt: Team memory content display —— 更新记忆内容渲染以使用单独的内容引用。
+- System Reminder: Memory file contents —— 更新记忆内容渲染以使用单独的内容引用。
+
+
+# [2.1.78](https://github.com/Piebald-AI/claude-code-system-prompts/commit/9f2320d)
+
+_+1,956 tokens_
+
+- **NEW:** Agent Prompt: Dream memory consolidation —— 指导代理执行多阶段记忆整合流程——基于现有记忆进行定向、从日志和会话记录中收集近期信号、将更新合并到主题文件中，并清理索引。
+- **REMOVED:** System Prompt: Memory system (private feedback) —— 删除了用于存储用户指导和更正的私有反馈记忆类型的描述。
+- **REMOVED:** System Prompt: Tone and style (concise output — detailed) —— 删除了关于简洁、精炼输出（无填充内容或内心独白）的说明。
+- **NEW:** System Prompt: Memory description of user feedback —— 描述用户反馈记忆类型，用于存储关于工作方式的指导，强调记录成功和失败，并检查与团队记忆是否存在矛盾。
+- Data: Agent SDK patterns —— Python —— 添加了会话变更章节，包含 `rename_session`、`tag_session` 示例，包括标签清除和项目目录范围限定。
+- Data: Agent SDK patterns —— TypeScript —— 在会话历史中添加 `getSessionInfo`；在会话列表输出中添加 `tag` 字段；添加会话变更章节，包含 `renameSession`、`tagSession` 和 `forkSession` 示例；在 `listSessions` 上添加通过 `limit`/`offset` 支持分页的说明。
+- Data: Agent SDK reference —— Python —— 添加 `RateLimitEvent` 文档，包含展示如何处理速率限制状态转换的示例；添加会话变更章节，包含 `rename_session` 和 `tag_session`（同步函数，可选目录范围限定）。
+- Data: Agent SDK reference —— TypeScript —— 在选项表中添加 `agentProgressSummaries` 选项，用于在 `task_progress` 事件上启用定期 AI 生成的进度摘要；更新 `task_progress` 描述以提及 `summary` 字段；添加 `getSessionInfo` 用于单会话元数据检索；在会话列表中添加 `tag` 字段；在 `listSessions` 上添加分页支持说明；添加会话变更章节，包含 `renameSession`、`tagSession` 和 `forkSession`。
+- Data: Claude API reference —— Java —— 将 SDK 版本从 2.16.0 升级到 2.16.1。
+- Data: Claude API references（所有语言）以及 tool use / streaming / batches / files references —— 更新代码示例中的 `max_tokens` 值，非流式增加到 `16000`，流式增加到 `64000`，以避免中途截断。
+- Skill: Build with Claude API —— 添加 `max_tokens` 默认值指导：非流式使用约 16000，流式使用约 64000；澄清低估 `max_tokens` 会导致输出截断并需要重试；注明分类（约 256）、成本上限或故意短输出的例外情况。
+- System Prompt: Auto mode —— 添加规则 6：未经用户明确书面批准，不得发布到公共服务（GitHub gists、Mermaid Live、Pastebin 等），要求用户先审核内容敏感性。
+- System Prompt: Executing actions with care —— 添加指导，说明将内容上传到第三方 Web 工具（图表渲染器、粘贴板、gists）会发布内容，可能被缓存或索引，因此发送前应考虑敏感性。
+
 # [2.1.77](https://github.com/Piebald-AI/claude-code-system-prompts/commit/87fae2a)
 
 _+6,494 tokens_

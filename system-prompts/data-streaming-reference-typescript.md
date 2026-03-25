@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Streaming reference — TypeScript'
 description: TypeScript streaming reference including basic streaming and handling different content types
-ccVersion: 2.1.63
+ccVersion: 2.1.78
 -->
 # 流式传输 — TypeScript
 

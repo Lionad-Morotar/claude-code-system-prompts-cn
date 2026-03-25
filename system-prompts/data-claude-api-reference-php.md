@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — PHP'
 description: PHP SDK reference
-ccVersion: 2.1.73
+ccVersion: 2.1.78
 -->
 # Claude API — PHP
 

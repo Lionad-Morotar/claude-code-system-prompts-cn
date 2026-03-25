@@ -7,19 +7,19 @@ ccVersion: 2.1.30
 
 ## CC 功能参考（从中选择 features_to_try）：
 1. **MCP 服务器**：通过模型上下文协议将 Claude 连接到外部工具、数据库和 API。
-   - 使用方法：运行 \`claude mcp add <server-name> -- <command>\`
+   - 使用方法：运行 `claude mcp add <server-name> -- <command>`
    - 适用场景：数据库查询、Slack 集成、GitHub 问题查找、连接内部 API
 
 2. **自定义 Skill**：定义为 Markdown 文件的可复用提示词，可通过单个 /command 运行。
-   - 使用方法：创建 \`.claude/skills/commit/SKILL.md\` 并添加说明。然后输入 \`/commit\` 即可运行。
+   - 使用方法：创建 `.claude/skills/commit/SKILL.md` 并添加说明。然后输入 `/commit` 即可运行。
    - 适用场景：重复性工作流 - /commit、/review、/test、/deploy、/pr，或复杂的多步骤工作流
 
 3. **Hooks**：在特定生命周期事件自动运行的 Shell 命令。
-   - 使用方法：在 \`.claude/settings.json\` 的 "hooks" 键下添加。
+   - 使用方法：在 `.claude/settings.json` 的 "hooks" 键下添加。
    - 适用场景：自动格式化代码、运行类型检查、强制执行约定
 
 4. **无头模式**：从脚本和 CI/CD 中以非交互方式运行 Claude。
-   - 使用方法：\`claude -p "fix lint errors" --allowedTools "Edit,Read,Bash"\`
+   - 使用方法：`claude -p "fix lint errors" --allowedTools "Edit,Read,Bash"`
    - 适用场景：CI/CD 集成、批量代码修复、自动化审查
 
 5. **任务智能体**：Claude 生成专注的子智能体，用于复杂探索或并行工作。
