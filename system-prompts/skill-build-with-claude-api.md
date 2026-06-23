@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Build with Claude API'
 description: Main routing guide for building LLM-powered applications with Claude, including language detection, surface selection, and architecture overview
-ccVersion: 2.1.78
+ccVersion: 2.1.83
 -->
 # 使用 Claude 构建大语言模型驱动的应用程序
 
@@ -60,7 +60,7 @@ ccVersion: 2.1.78
 | Ruby       | Yes (beta)  | No        | beta 中的 `BaseTool` + `tool_runner`    |
 | cURL       | N/A         | N/A       | 原始 HTTP，无 SDK 功能             |
 | C#         | No          | No        | 官方 SDK                          |
-| PHP        | No          | No        | 官方 SDK                          |
+| PHP        | Yes (beta)  | No        | `BetaRunnableTool` + `toolRunner()`    |
 
 ---
 
@@ -169,6 +169,18 @@ ccVersion: 2.1.78
 
 ---
 
+## 提示缓存（快速参考）
+
+**前缀匹配。** 前缀中任何位置的字节变更都会使之后的所有内容失效。渲染顺序为 `tools` → `system` → `messages`。将稳定内容放在前面（冻结的系统提示词、确定的工具列表），将易变内容（时间戳、每请求 ID、不同的问题）放在最后一个 `cache_control` 断点之后。
+
+**顶级自动缓存**（在 `messages.create()` 上设置 `cache_control: {type: "ephemeral"}`）是在不需要细粒度放置时最简单的选项。每个请求最多 4 个断点。最小可缓存前缀约为 1024 token —— 更短的前缀静默地不会缓存。
+
+**通过 `usage.cache_read_input_tokens` 验证** —— 如果跨重复请求为零，则存在静默无效因素（系统提示词中的 `datetime.now()`、未排序的 JSON、变化的工具集）。
+
+有关放置模式、架构指南和静默无效因素审核清单：请阅读 `shared/prompt-caching.md`。语言特定语法：`{lang}/claude-api/README.md`（提示缓存部分）。
+
+---
+
 ## 阅读指南
 
 检测语言后，根据用户需求阅读相关文件：
@@ -183,6 +195,9 @@ ccVersion: 2.1.78
 
 **长对话（可能超过上下文窗口）：**
 → 阅读 `{lang}/claude-api/README.md` —— 参见压缩部分
+
+**提示缓存 / 优化缓存 / "为什么我的缓存命中率低"：**
+→ 阅读 `shared/prompt-caching.md` + `{lang}/claude-api/README.md`（提示缓存部分）
 
 **函数调用 / tool use / 智能体：**
 → 阅读 `{lang}/claude-api/README.md` + `shared/tool-use-concepts.md` + `{lang}/claude-api/tool-use.md`
@@ -206,8 +221,9 @@ ccVersion: 2.1.78
 4. **`{language}/claude-api/streaming.md`** —— 构建聊天 UI 或增量显示响应的界面时阅读。
 5. **`{language}/claude-api/batches.md`** —— 离线处理大量请求时阅读（对延迟不敏感）。以 50% 的成本异步运行。
 6. **`{language}/claude-api/files-api.md`** —— 在多个请求中发送相同文件而不重新上传时阅读。
-7. **`shared/error-codes.md`** —— 调试 HTTP 错误或实现错误处理时阅读。
-8. **`shared/live-sources.md`** —— 用于获取最新官方文档的 WebFetch URL。
+7. **`shared/prompt-caching.md`** —— 添加或优化提示缓存时阅读。涵盖前缀稳定性设计、断点放置和静默使缓存失效的反模式。
+8. **`shared/error-codes.md`** —— 调试 HTTP 错误或实现错误处理时阅读。
+9. **`shared/live-sources.md`** —— 用于获取最新官方文档的 WebFetch URL。
 
 > **注意：** 对于 Java、Go、Ruby、C#、PHP 和 cURL —— 这些每种语言都有一个涵盖所有基础知识的文件。根据需要阅读该文件以及 `shared/tool-use-concepts.md` 和 `shared/error-codes.md`。
 

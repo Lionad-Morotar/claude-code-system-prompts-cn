@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — TypeScript'
 description: TypeScript SDK reference including installation, client initialization, basic requests, thinking, and multi-turn conversation
-ccVersion: 2.1.78
+ccVersion: 2.1.83
 -->
 # Claude API — TypeScript
 
@@ -110,6 +110,8 @@ const response = await client.messages.create({
 
 ## 提示词缓存
 
+**缓存是一种前缀匹配**——前缀中任何字节的变更都会使之后的所有内容失效。有关放置模式、架构指南（冻结系统提示、确定性工具顺序、易变内容放置位置）以及静默失效审查清单，请阅读 `shared/prompt-caching.md`。
+
 ### 自动缓存（推荐）
 
 使用顶层的 `cache_control` 自动缓存请求中最后一个可缓存的块：
@@ -156,6 +158,17 @@ const response2 = await client.messages.create({
   messages: [{ role: "user", content: "Summarize the key points" }],
 });
 ```
+```
+
+### 验证缓存命中
+
+```typescript
+console.log(response.usage.cache_creation_input_tokens); // 写入缓存的 token（约 1.25 倍成本）
+console.log(response.usage.cache_read_input_tokens);     // 从缓存提供的 token（约 0.1 倍成本）
+console.log(response.usage.input_tokens);                // 未缓存的 token（全额成本）
+```
+
+如果重复的相同前缀请求中 `cache_read_input_tokens` 始终为零，则存在静默失效器——系统提示中的 `Date.now()` 或 UUID、非确定性的键顺序或变化的工具集。请参阅 `shared/prompt-caching.md` 获取完整的审查表。
 
 ---
 

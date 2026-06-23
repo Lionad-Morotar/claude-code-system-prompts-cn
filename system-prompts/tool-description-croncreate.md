@@ -1,8 +1,9 @@
 <!--
 name: 'Tool Description: CronCreate'
 description: Describes the CronCreate tool for enqueuing one-shot or recurring cron-based jobs with jitter and off-minute scheduling guidance
-ccVersion: 2.1.79
+ccVersion: 2.1.83
 variables:
+  - CRON_DURABLE_FLAG
   - CANCEL_TIMEFRAME_DAYS
   - CRON_DELETE_TOOL_NAME
 -->
@@ -31,13 +32,15 @@ variables:
 
 只有当用户明确说出确切时间并明确表示该时间时（"正好 9:00"、"半点"、与会议协调），才使用 0 分或 30 分。如有疑问，提前或推迟几分钟 —— 用户不会注意到，但整个系统会受益。
 
-${`## 仅会话期间有效
+${CRON_DURABLE_FLAG?`## 持久性
+
+默认情况下（durable: false），任务仅在此 Claude 会话期间存在 —— 不会写入磁盘，Claude 退出时任务消失。传递 durable: true 将写入 .claude/scheduled_tasks.json，使任务在重启后依然存在。仅在用户明确要求任务持久化时使用 durable: true（"每天持续执行"、"永久设置这个"）。大多数"5 分钟后提醒我"/"一小时后检查"的请求应保持仅会话有效。`:`## 仅会话期间有效
 
 任务仅在此 Claude 会话期间存在 —— 不会写入磁盘，Claude 退出时任务消失。`}
 
 ## 运行时行为
 
-任务仅在 REPL 空闲时触发（不在查询中途）。${""}调度器会在你选择的时间基础上添加一个小的确定性抖动：定期任务最多延迟其周期的 10%（最多 15 分钟）；落在 :00 或 :30 的一次性任务最多提前 90 秒触发。选择非整点分钟仍然是更有效的手段。
+任务仅在 REPL 空闲时触发（不在查询中途）。${CRON_DURABLE_FLAG?"持久任务会持久化到 .claude/scheduled_tasks.json 并在会话重启后继续存在 —— 下次启动时自动恢复。REPL 关闭期间错过的一次性持久任务会显示供补做。仅会话任务随进程一起消失。 ":""}调度器会在你选择的时间基础上添加一个小的确定性抖动：定期任务最多延迟其周期的 10%（最多 15 分钟）；落在 :00 或 :30 的一次性任务最多提前 90 秒触发。选择非整点分钟仍然是更有效的手段。
 
 定期任务在 ${CANCEL_TIMEFRAME_DAYS} 天后自动过期 —— 它们会最后一次触发，然后被删除。这限制了会话的生命周期。在安排定期任务时，请告知用户 ${CANCEL_TIMEFRAME_DAYS} 天的限制。
 

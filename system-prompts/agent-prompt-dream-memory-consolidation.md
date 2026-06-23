@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Dream memory consolidation'
 description: Instructs an agent to perform a multi-phase memory consolidation pass — orienting on existing memories, gathering recent signal from logs and transcripts, merging updates into topic files, and pruning the index
-ccVersion: 2.1.78
+ccVersion: 2.1.83
 variables:
   - MEMORY_DIR
   - MEMORY_DIR_CONTEXT
@@ -50,10 +50,10 @@ ${MEMORY_DIR_CONTEXT}
 
 ## 阶段 4 —— 修剪和索引
 
-更新 `${INDEX_FILE}`，使其保持在 ${INDEX_MAX_LINES} 行以内。它是一个**索引**，而不是转储 —— 用一行描述链接到记忆文件。永远不要将记忆内容直接写入其中。
+更新 `${INDEX_FILE}`，使其保持在 ${INDEX_MAX_LINES} 行以内且不超过约 25KB。它是一个**索引**，而不是转储 —— 每个条目应为一行的简短描述（不超过约 150 个字符）：`- [标题](file.md) —— 一行钩子`。永远不要将记忆内容直接写入其中。
 
 - 删除指向现在过时、错误或已取代的记忆的指针
-- 降级冗长条目：在索引中保留要点，将详细信息移入主题文件
+- 降级冗长条目：如果某行索引超过约 200 个字符，说明它携带了属于主题文件的内容 —— 缩短该行，将详细信息移入主题文件
 - 添加指向新重要记忆的指针
 - 解决矛盾 —— 如果两个文件不一致，修复错误的那个
 

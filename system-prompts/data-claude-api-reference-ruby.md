@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Ruby'
 description: Ruby SDK reference including installation, client initialization, basic requests, streaming, and beta tool runner
-ccVersion: 2.1.78
+ccVersion: 2.1.83
 -->
 # Claude API — Ruby
 
@@ -95,3 +95,24 @@ end
 ### 手动循环
 
 有关工具定义格式和智能体循环模式，请参阅[共享的工具使用概念](../shared/tool-use-concepts.md)。
+
+---
+
+## 提示缓存
+
+`system_:`（尾部下划线——避免与 `Kernel#system` 冲突）接受一个文本块数组；在最后一个块上设置 `cache_control`。普通哈希通过 `OrHash` 类型别名生效。有关放置模式和静默失效审查清单，请参阅 `shared/prompt-caching.md`。
+
+```ruby
+message = client.messages.create(
+  model: :"{{OPUS_ID}}",
+  max_tokens: 16000,
+  system_: [
+    { type: "text", text: long_system_prompt, cache_control: { type: "ephemeral" } }
+  ],
+  messages: [{ role: "user", content: "Summarize the key points" }]
+)
+```
+
+1 小时 TTL：`cache_control: { type: "ephemeral", ttl: "1h" }`。`messages.create` 上还有一个顶层 `cache_control:`，会自动放置在最后一个可缓存块上。
+
+通过 `message.usage.cache_creation_input_tokens` / `message.usage.cache_read_input_tokens` 验证命中情况。

@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Build with Claude API (reference guide)'
 description: Template for presenting language-specific reference documentation with quick task navigation
-ccVersion: 2.1.47
+ccVersion: 2.1.83
 -->
 ## 参考文档
 
@@ -17,6 +17,9 @@ ccVersion: 2.1.47
 
 **长时对话（可能超出上下文窗口）：**
 → 参考 `{lang}/claude-api/README.md` —— 参见 Compaction 部分
+
+**提示缓存 / 优化缓存 / "为什么我的缓存命中率低"：**
+→ 参考 `shared/prompt-caching.md` + `{lang}/claude-api/README.md`（提示缓存部分）
 
 **函数调用 / 工具使用 / 智能体：**
 → 参考 `{lang}/claude-api/README.md` + `shared/tool-use-concepts.md` + `{lang}/claude-api/tool-use.md`

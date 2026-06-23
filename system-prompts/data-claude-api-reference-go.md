@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Go'
 description: Go SDK reference
-ccVersion: 2.1.78
+ccVersion: 2.1.83
 -->
 # Claude API — Go
 
@@ -317,6 +317,23 @@ for _, block := range resp.Content {
 > **已弃用：** `ThinkingConfigParamOfEnabled(budgetTokens)`（固定预算扩展思考）在 Claude 4.6 上仍然可用，但已弃用。请使用上面的自适应思考。
 
 禁用方式：`anthropic.ThinkingConfigParamUnion{OfDisabled: &anthropic.ThinkingConfigDisabledParam{}}`。
+
+---
+
+## 提示缓存
+
+`System` 是 `[]TextBlockParam`；在最后一个块上设置 `CacheControl` 以同时缓存工具和 system。有关放置模式和静默失效审查清单，请参阅 `shared/prompt-caching.md`。
+
+```go
+System: []anthropic.TextBlockParam{{
+    Text:         longSystemPrompt,
+    CacheControl: anthropic.NewCacheControlEphemeralParam(), // 默认 5 分钟 TTL
+}},
+```
+
+1 小时 TTL：`anthropic.CacheControlEphemeralParam{TTL: anthropic.CacheControlEphemeralTTLTTL1h}`。`MessageNewParams` 上还有一个顶层 `CacheControl`，会自动放置在最后一个可缓存块上。
+
+通过 `resp.Usage.CacheCreationInputTokens` / `resp.Usage.CacheReadInputTokens` 验证命中情况。
 
 ---
 

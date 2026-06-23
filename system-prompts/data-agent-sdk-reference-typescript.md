@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Agent SDK reference — TypeScript'
 description: TypeScript Agent SDK reference including installation, quick start, custom tools, and hooks
-ccVersion: 2.1.78
+ccVersion: 2.1.83
 -->
 # Agent SDK — TypeScript
 
@@ -192,6 +192,7 @@ for await (const message of query({
         description: "质量和安全审查的专家代码审查员。",
         prompt: "分析代码质量并提出改进建议。",
         tools: ["Read", "Glob", "Grep"],
+        // 可选：skills、mcpServers 用于子代理自定义
       },
     },
   },

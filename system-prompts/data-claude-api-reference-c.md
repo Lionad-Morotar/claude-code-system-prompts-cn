@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — C#'
 description: C# SDK 参考，包括安装、客户端初始化、基本请求、流式传输和工具使用
-ccVersion: 2.1.78
+ccVersion: 2.1.83
 -->
 # Claude API — C#
 
@@ -220,7 +220,7 @@ List<MessageParam> followUpMessages =
 
 ## 上下文编辑 / 压缩（Beta）
 
-**Beta 命名空间前缀不一致**（已根据 `src/Anthropic/Models/Beta/Messages/*.cs` @ 12.8.0 验证源码）。无前缀：`MessageCreateParams`、`MessageCountTokensParams`、`Role`。**其他所有内容都有 `Beta` 前缀**：`BetaMessageParam`、`BetaMessage`、`BetaContentBlock`、`BetaToolUseBlock`，所有块参数类型。如果你同时导入两个命名空间，无前缀的 `Role` 会与 `Anthropic.Models.Messages.Role` 冲突（CS0104）。最安全：只导入 Beta；如果混合使用，为 beta 的 `Role` 设置别名：
+**Beta 命名空间前缀不一致**（已根据 `src/Anthropic/Models/Beta/Messages/*.cs` @ 12.9.0 验证源码）。无前缀：`MessageCreateParams`、`MessageCountTokensParams`、`Role`。**其他所有内容都有 `Beta` 前缀**：`BetaMessageParam`、`BetaMessage`、`BetaContentBlock`、`BetaToolUseBlock`，所有块参数类型。如果你同时导入两个命名空间，无前缀的 `Role` 会与 `Anthropic.Models.Messages.Role` 冲突（CS0104）。最安全：只导入 Beta；如果混合使用，为 beta 的 `Role` 设置别名：
 
 ```csharp
 using Anthropic.Models.Beta.Messages;
@@ -304,7 +304,7 @@ OutputConfig = new OutputConfig { Effort = Effort.High },
 
 ## 提示缓存
 
-`System` 接受 `MessageCreateParamsSystem?` —— `string` 或 `List<TextBlockParam>` 的联合类型。没有 `SystemTextBlockParam`；使用普通 `TextBlockParam`。隐式转换需要具体的 `List<TextBlockParam>` 类型（数组字面量不会转换）。
+`System` 接受 `MessageCreateParamsSystem?` —— `string` 或 `List<TextBlockParam>` 的联合类型。没有 `SystemTextBlockParam`；使用普通 `TextBlockParam`。隐式转换需要具体的 `List<TextBlockParam>` 类型（数组字面量不会转换）。有关放置模式和静默失效审查清单，请参阅 `shared/prompt-caching.md`。
 
 ```csharp
 System = new List<TextBlockParam> {
@@ -316,6 +316,8 @@ System = new List<TextBlockParam> {
 ```
 
 `CacheControlEphemeral` 上的可选 `Ttl`：`new() { Ttl = Ttl.Ttl1h }` 或 `Ttl.Ttl5m`。`CacheControl` 也存在于 `Tool.CacheControl` 和顶级 `MessageCreateParams.CacheControl`。
+
+通过 `response.Usage.CacheCreationInputTokens` / `response.Usage.CacheReadInputTokens` 验证命中情况。
 
 ---
 

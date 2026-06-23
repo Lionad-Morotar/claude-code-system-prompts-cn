@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — cURL'
 description: Raw API reference for Claude API for use with cURL or else Raw HTTP
-ccVersion: 2.1.78
+ccVersion: 2.1.83
 -->
 # Claude API — cURL / Raw HTTP
 
@@ -158,6 +158,29 @@ curl https://api.anthropic.com/v1/messages \
     ]
   }'
 ```
+
+---
+
+## 提示缓存
+
+在稳定前缀的最后一个块上设置 `cache_control`。有关放置模式和静默失效审查清单，请参阅 `shared/prompt-caching.md`。
+
+```bash
+curl https://api.anthropic.com/v1/messages \
+  -H "Content-Type: application/json" \
+  -H "x-api-key: $ANTHROPIC_API_KEY" \
+  -H "anthropic-version: 2023-06-01" \
+  -d '{
+    "model": "{{OPUS_ID}}",
+    "max_tokens": 16000,
+    "system": [
+      {"type": "text", "text": "<large shared prompt...>", "cache_control": {"type": "ephemeral"}}
+    ],
+    "messages": [{"role": "user", "content": "Summarize the key points"}]
+  }'
+```
+
+1 小时 TTL：`"cache_control": {"type": "ephemeral", "ttl": "1h"}`。请求体上的顶层 `"cache_control"` 会自动放置在最后一个可缓存块上。通过响应中的 `usage.cache_creation_input_tokens` / `usage.cache_read_input_tokens` 字段验证命中情况。
 
 ---
 

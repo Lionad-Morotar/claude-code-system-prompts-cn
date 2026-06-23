@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Java'
 description: Java SDK reference including installation, client initialization, basic requests, streaming, and beta tool use
-ccVersion: 2.1.78
+ccVersion: 2.1.83
 -->
 # Claude API — Java
 
@@ -15,14 +15,14 @@ Maven：
 <dependency>
     <groupId>com.anthropic</groupId>
     <artifactId>anthropic-java</artifactId>
-    <version>2.16.0</version>
+    <version>2.17.0</version>
 </dependency>
 ```
 
 Gradle：
 
 ```groovy
-implementation("com.anthropic:anthropic-java:2.16.0")
+implementation("com.anthropic:anthropic-java:2.17.0")
 ```
 
 ## 客户端初始化
@@ -259,7 +259,7 @@ import com.anthropic.models.messages.OutputConfig;
 
 ## 提示缓存
 
-系统消息作为带有 `CacheControlEphemeral` 的 `TextBlockParam` 列表。使用 `.systemOfTextBlockParams(...)` — 普通的 `.system(String)` 重载方法无法携带缓存控制。
+系统消息作为带有 `CacheControlEphemeral` 的 `TextBlockParam` 列表。使用 `.systemOfTextBlockParams(...)` — 普通的 `.system(String)` 重载方法无法携带缓存控制。有关放置模式和静默失效审查清单，请参阅 `shared/prompt-caching.md`。
 
 ```java
 import com.anthropic.models.messages.TextBlockParam;
@@ -275,6 +275,8 @@ import com.anthropic.models.messages.CacheControlEphemeral;
 ```
 
 `MessageCreateParams.Builder` 和 `Tool.builder()` 上还有顶级的 `.cacheControl(CacheControlEphemeral)` 方法。
+
+通过 `response.usage().cacheCreationInputTokens()` / `response.usage().cacheReadInputTokens()` 验证命中情况。
 
 ---
 

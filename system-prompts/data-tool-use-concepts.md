@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Tool use concepts'
 description: Conceptual foundations of tool use with the Claude API including tool definitions, tool choice, and best practices
-ccVersion: 2.1.77
+ccVersion: 2.1.83
 -->
 # 工具使用概念
 
@@ -11,7 +11,7 @@ ccVersion: 2.1.77
 
 ### 工具定义结构
 
-> **注意：** 使用工具运行器（beta）时，工具模式会自动从您的函数签名（Python）、Zod 模式（TypeScript）、注解类（Java）、`jsonschema` 结构标签（Go）或 `BaseTool` 子类（Ruby）生成。下面的原始 JSON 模式格式适用于手动方法或没有工具运行器支持的 SDK。
+> **注意：** 使用工具运行器（beta）时，工具模式会自动从您的函数签名（Python）、Zod 模式（TypeScript）、注解类（Java）、`jsonschema` 结构标签（Go）或 `BaseTool` 子类（Ruby）生成。下面的原始 JSON 模式格式适用于手动方法 —— 包括 PHP 的 `BetaRunnableTool`，它将运行闭包包裹在手写模式周围 —— 或没有工具运行器支持的 SDK。
 
 每个工具都需要名称、描述和输入的 JSON Schema：
 
@@ -64,7 +64,7 @@ ccVersion: 2.1.77
 
 ### 工具运行器与手动循环
 
-**工具运行器（推荐）：** SDK 的工具运行器自动处理代理循环 —— 它调用 API、检测工具使用请求、执行您的工具函数、将结果反馈给 Claude，并重复直到 Claude 停止调用工具。在 Python、TypeScript、Java、Go 和 Ruby SDK（beta）中可用。Python SDK 还提供 MCP 转换助手（`anthropic.lib.tools.mcp`）来转换 MCP 工具、提示和资源以供工具运行器使用 —— 详见 `python/claude-api/tool-use.md`。
+**工具运行器（推荐）：** SDK 的工具运行器自动处理代理循环 —— 它调用 API、检测工具使用请求、执行您的工具函数、将结果反馈给 Claude，并重复直到 Claude 停止调用工具。在 Python、TypeScript、Java、Go、Ruby 和 PHP SDK（beta）中可用。Python SDK 还提供 MCP 转换助手（`anthropic.lib.tools.mcp`）来转换 MCP 工具、提示和资源以供工具运行器使用 —— 详见 `python/claude-api/tool-use.md`。
 
 **手动代理循环：** 当您需要对循环进行细粒度控制时使用（例如自定义日志记录、条件工具执行、人机协作审批）。循环直到 `stop_reason == "end_turn"`，始终附加完整的 `response.content` 以保留 tool_use 块，并确保每个 `tool_result` 包含匹配的 `tool_use_id`。
 

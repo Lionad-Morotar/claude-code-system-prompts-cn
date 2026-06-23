@@ -34,7 +34,7 @@
 > [!important]
 > **新增（2026 年 1 月 23 日）：我们已在此列表中添加了所有 Claude Code 的约 40 个系统提醒——请参阅 [系统提醒](#system-reminders)。**
 
-此仓库包含截至 **[Claude Code v2.1.81](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.81)（2026 年 3 月 20 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 131 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
+此仓库包含截至 **[Claude Code v2.1.83](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.83)（2026 年 3 月 24 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 132 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
 
 **此仓库在每次 Claude Code 发布后的几分钟内更新。请查看 [更新日志](./CHANGELOG.md)，并在 X 上关注 [@PiebaldAI](https://x.com/PiebaldAI) 以获取每次发布中系统提示词变更的摘要。**
 
@@ -116,14 +116,37 @@
 - [代理提示词：用户情感分析](./system-prompts/agent-prompt-user-sentiment-analysis.md) (**205** tks) - 用于分析用户沮丧和 PR 创建请求的系统提示词。
 - [代理提示词：WebFetch 总结器](./system-prompts/agent-prompt-webfetch-summarizer.md) (**185** tks) - 用于为主模型总结 WebFetch 冗长输出的代理的提示词。
 
-<!--
 ### 数据
 
-其他大型字符串。
+嵌入在 Claude Code 中的各种模板文件的内容。
 
+- [数据：Agent SDK 模式 — Python](./system-prompts/data-agent-sdk-patterns-python.md) (**2656** tks) - Python Agent SDK 模式，包括自定义工具、hooks、子代理、MCP 集成和会话恢复。
+- [数据：Agent SDK 模式 — TypeScript](./system-prompts/data-agent-sdk-patterns-typescript.md) (**1529** tks) - TypeScript Agent SDK 模式，包括基础代理、hooks、子代理和 MCP 集成。
+- [数据：Agent SDK 参考 — Python](./system-prompts/data-agent-sdk-reference-python.md) (**3299** tks) - Python Agent SDK 参考，包括安装、快速入门、通过 MCP 的自定义工具和 hooks。
+- [数据：Agent SDK 参考 — TypeScript](./system-prompts/data-agent-sdk-reference-typescript.md) (**2943** tks) - TypeScript Agent SDK 参考，包括安装、快速入门、自定义工具和 hooks。
+- [数据：Claude API 参考 — C#](./system-prompts/data-claude-api-reference-c.md) (**4341** tks) - C# SDK 参考，包括安装、客户端初始化、基础请求、流式传输和工具使用。
+- [数据：Claude API 参考 — Go](./system-prompts/data-claude-api-reference-go.md) (**4294** tks) - Go SDK 参考。
+- [数据：Claude API 参考 — Java](./system-prompts/data-claude-api-reference-java.md) (**4506** tks) - Java SDK 参考，包括安装、客户端初始化、基础请求、流式传输和 beta 工具使用。
+- [数据：Claude API 参考 — PHP](./system-prompts/data-claude-api-reference-php.md) (**3486** tks) - PHP SDK 参考。
+- [数据：Claude API 参考 — Python](./system-prompts/data-claude-api-reference-python.md) (**3549** tks) - Python SDK 参考，包括安装、客户端初始化、基础请求、思考和多轮对话。
+- [数据：Claude API 参考 — Ruby](./system-prompts/data-claude-api-reference-ruby.md) (**923** tks) - Ruby SDK 参考，包括安装、客户端初始化、基础请求、流式传输和 beta 工具运行器。
+- [数据：Claude API 参考 — TypeScript](./system-prompts/data-claude-api-reference-typescript.md) (**2881** tks) - TypeScript SDK 参考，包括安装、客户端初始化、基础请求、思考和多轮对话。
+- [数据：Claude API 参考 — cURL](./system-prompts/data-claude-api-reference-curl.md) (**2174** tks) - Claude API 的原生 HTTP 参考，适用于 cURL。
+- [数据：Claude 模型目录](./system-prompts/data-claude-model-catalog.md) (**2295** tks) - 当前和遗留 Claude 模型目录，包含精确模型 ID、别名、上下文窗口和定价。
+- [数据：Files API 参考 — Python](./system-prompts/data-files-api-reference-python.md) (**1334** tks) - Python Files API 参考，包括文件上传、列表、删除和在消息中的使用。
+- [数据：Files API 参考 — TypeScript](./system-prompts/data-files-api-reference-typescript.md) (**797** tks) - TypeScript Files API 参考，包括文件上传、列表、删除和在消息中的使用。
 - [数据：用于 @claude 提及的 GitHub Actions 工作流](./system-prompts/data-github-actions-workflow-for-claude-mentions.md) (**527** tks) - 用于通过 @claude 提及触发 Claude Code 的 GitHub Actions 工作流模板。
 - [数据：GitHub App 安装 PR 描述](./system-prompts/data-github-app-installation-pr-description.md) (**424** tks) - 安装 Claude Code GitHub App 集成时的 PR 描述模板。
--->
+- [数据：HTTP 错误码参考](./system-prompts/data-http-error-codes-reference.md) (**1922** tks) - Claude API 返回的 HTTP 错误码参考，包含常见原因和处理策略。
+- [数据：实时文档源](./system-prompts/data-live-documentation-sources.md) (**2336** tks) - 用于从官方源获取最新 Claude API 和 Agent SDK 文档的 WebFetch URL。
+- [数据：Message Batches API 参考 — Python](./system-prompts/data-message-batches-api-reference-python.md) (**1544** tks) - Python Batches API 参考，包括批次创建、状态轮询和以 50% 成本获取结果。
+- [数据：提示缓存 — 设计与优化](./system-prompts/data-prompt-caching-design-optimization.md) (**1880** tks) - 关于如何设计提示构建代码以实现高效缓存的文档，包括放置模式和反模式。
+- [数据：会话记忆模板](./system-prompts/data-session-memory-template.md) (**292** tks) - 会话记忆 `summary.md` 文件的模板结构。
+- [数据：流式参考 — Python](./system-prompts/data-streaming-reference-python.md) (**1528** tks) - Python 流式参考，包括同步/异步流式传输和处理不同类型的内容块。
+- [数据：流式参考 — TypeScript](./system-prompts/data-streaming-reference-typescript.md) (**1703** tks) - TypeScript 流式参考，包括基础流式传输和处理不同类型的内容块。
+- [数据：工具使用概念](./system-prompts/data-tool-use-concepts.md) (**3721** tks) - 使用 Claude API 进行工具使用的概念基础，包括工具定义、工具选择和最佳实践。
+- [数据：工具使用参考 — Python](./system-prompts/data-tool-use-reference-python.md) (**5106** tks) - Python 工具使用参考，包括工具运行器、手动智能体循环、代码执行和结构化输出。
+- [数据：工具使用参考 — TypeScript](./system-prompts/data-tool-use-reference-typescript.md) (**5033** tks) - TypeScript 工具使用参考，包括工具运行器、手动智能体循环、代码执行和结构化输出。
 
 ### 系统提示词
 
@@ -131,6 +154,7 @@
 
 - [**系统提示词：主系统提示词**](./system-prompts/system-prompt-main-system-prompt.md) (**2896** tks) - Claude Code 的核心系统提示词，定义行为、语气和工具使用策略。
 - [系统提示词：审查恶意活动协助](./system-prompts/system-prompt-censoring-assistance-with-malicious-activities.md) (**98** tks) - 用于协助授权安全测试、防御性安全、CTF 挑战和教育背景的指导，同时审查恶意活动请求。
+- [系统提示词：Advisor 工具指令](./system-prompts/system-prompt-advisor-tool-instructions.md) (**415** tks) - 使用 Advisor 工具的指令。
 - [系统提示词：Chrome 浏览器 MCP 工具](./system-prompts/system-prompt-chrome-browser-mcp-tools.md) (**158** tks) - 在使用前通过 MCPSearch 加载 Chrome 浏览器 MCP 工具的说明。
 - [系统提示词：Chrome 浏览器自动化中的 Claude](./system-prompts/system-prompt-claude-in-chrome-browser-automation.md) (**761** tks) - 有效使用 Chrome 浏览器自动化工具中的 Claude 的说明。
 - [系统提示词：Git 状态](./system-prompts/system-prompt-git-status.md) (**95** tks) - 用于在对话开始时显示当前 git 状态的系统提示词。
@@ -179,10 +203,10 @@
 - [系统提醒：排队命令](./system-prompts/system-reminder-queued-command.md) (**31** tks) - 要处理的排队用户消息。
 - [系统提醒：会话继续](./system-prompts/system-reminder-session-continuation.md) (**37** tks) - 会话从另一台机器继续的通知。
 - [系统提醒：会话记忆](./system-prompts/system-reminder-session-memory.md) (**105** tks) - 可能相关的过去会话摘要。
-- [系统提醒：任务状态](./system-prompts/system-reminder-task-status.md) (**18** tks) - 带有 TaskOutput 工具引用的任务状态。
 - [系统提醒：任务工具提醒](./system-prompts/system-reminder-task-tools-reminder.md) (**123** tks) - 使用任务跟踪工具的提醒。
 - [系统提醒：团队协调](./system-prompts/system-reminder-team-coordination.md) (**247** tks) - 团队协调的系统提醒。
 - [系统提醒：团队关闭](./system-prompts/system-reminder-team-shutdown.md) (**136** tks) - 团队关闭的系统提醒。
+- [系统提醒：Ultraplan 模式](./system-prompts/system-reminder-ultraplan-mode.md) (**342** tks) - 使用 Ultraplan 模式创建详细实现计划，支持多代理探索和评审的系统提醒。
 - [系统提醒：待办事项列表已更改](./system-prompts/system-reminder-todo-list-changed.md) (**61** tks) - 待办事项列表已更改的通知。
 - [系统提醒：待办事项列表为空](./system-prompts/system-reminder-todo-list-empty.md) (**83** tks) - 待办事项列表为空的提醒。
 - [系统提醒：TodoWrite 提醒](./system-prompts/system-reminder-todowrite-reminder.md) (**98** tks) - 使用 TodoWrite 工具进行任务跟踪的提醒。
@@ -195,19 +219,27 @@
 - [工具描述：AskUserQuestion](./system-prompts/tool-description-askuserquestion.md) (**194** tks) - 用于向用户提问的工具描述。
 - [工具描述：Bash](./system-prompts/tool-description-bash.md) (**1067** tks) - Bash 工具的描述，允许 Claude 运行 shell 命令。
 - [工具描述：Computer](./system-prompts/tool-description-computer.md) (**161** tks) - Chrome 浏览器计算机自动化工具的主描述。
+- [工具描述：CronCreate](./system-prompts/tool-description-croncreate.md) (**948** tks) - 描述 CronCreate 工具，用于将一次性或定期 cron 任务加入队列，包含抖动和偏分钟调度指南。
 - [工具描述：Edit](./system-prompts/tool-description-edit.md) (**278** tks) - 用于在文件中执行精确字符串替换的工具描述。
 - [工具描述：EnterPlanMode](./system-prompts/tool-description-enterplanmode.md) (**970** tks) - 用于进入计划模式以探索和设计实现方法的工具描述。
+- [工具描述：EnterWorktree](./system-prompts/tool-description-enterworktree.md) (**359** tks) - EnterWorktree 工具的描述。
+- [工具描述：ExitPlanMode](./system-prompts/tool-description-exitplanmode.md) (**417** tks) - ExitPlanMode 工具的描述，它显示计划对话框供用户批准。
+- [工具描述：ExitWorktree](./system-prompts/tool-description-exitworktree.md) (**527** tks) - 大致是 ExitWorktree 的逆向操作。
+- [工具描述：Glob](./system-prompts/tool-description-glob.md) (**122** tks) - 用于文件模式匹配和按名称搜索的工具描述。
 - [工具描述：ExitPlanMode](./system-prompts/tool-description-exitplanmode.md) (**417** tks) - ExitPlanMode 工具的描述，它显示计划对话框供用户批准。
 - [工具描述：Glob](./system-prompts/tool-description-glob.md) (**122** tks) - 用于文件模式匹配和按名称搜索的工具描述。
 - [工具描述：Grep](./system-prompts/tool-description-grep.md) (**300** tks) - 使用 ripgrep 进行内容搜索的工具描述。
 - [工具描述：LSP](./system-prompts/tool-description-lsp.md) (**255** tks) - LSP 工具的描述。
 - [工具描述：NotebookEdit](./system-prompts/tool-description-notebookedit.md) (**121** tks) - 用于编辑 Jupyter notebook 单元格的工具描述。
 - [工具描述：ReadFile](./system-prompts/tool-description-readfile.md) (**439** tks) - 用于读取文件的工具描述。
+- [工具描述：SendMessageTool](./system-prompts/tool-description-sendmessagetool.md) (**362** tks) - Agent 团队版的 SendMessageTool。
 - [工具描述：Skill](./system-prompts/tool-description-skill.md) (**442** tks) - 用于在主对话中执行技能的工具描述。
+- [工具描述：Sleep](./system-prompts/tool-description-sleep.md) (**154** tks) - 等待/休眠工具，支持在用户输入时提前唤醒。
 - [工具描述：TaskCreate](./system-prompts/tool-description-taskcreate.md) (**558** tks) - TaskCreate 工具的工具描述。
 - [工具描述：Task](./system-prompts/tool-description-task.md) (**1311** tks) - 用于启动专门的子代理来处理复杂任务的工具描述。
+- [工具描述：TeamDelete](./system-prompts/tool-description-teamdelete.md) (**154** tks) - TeamDelete 工具的描述。
 - [工具描述：TeammateTool 的操作参数](./system-prompts/tool-description-teammatetools-operation-parameter.md) (**173** tks) - TeammateTool 操作参数的工具描述。
-- [工具描述：TeammateTool](./system-prompts/tool-description-teammatetool.md) (**3811** tks) - TeammateTool 的工具描述。
+- [工具描述：TeammateTool](./system-prompts/tool-description-teammatetool.md) (**3811** tks) - 用于管理团队和协调 swarm 中队友的工具。
 - [工具描述：TodoWrite](./system-prompts/tool-description-todowrite.md) (**2167** tks) - 用于创建和管理任务列表的工具描述。
 - [工具描述：ToolSearch](./system-prompts/tool-description-toolsearch.md) (**792** tks) - 用于在使用前加载和搜索延迟工具的工具描述。
 - [工具描述：WebFetch](./system-prompts/tool-description-webfetch.md) (**297** tks) - 用于 Web 获取功能的工具描述。
@@ -218,3 +250,21 @@
 
 - [工具描述：Bash（Git 提交和 PR 创建说明）](./system-prompts/tool-description-bash-git-commit-and-pr-creation-instructions.md) (**1557** tks) - 用于创建 git 提交和 GitHub 拉取请求的说明。
 - [工具描述：Bash（沙箱说明）](./system-prompts/tool-description-bash-sandbox-note.md) (**454** tks) - 关于 bash 命令沙箱的说明。
+
+### 内置技能
+
+面向特定任务的内置技能提示词。
+
+- [技能：/init CLAUDE.md 和技能设置（新版本）](./system-prompts/skill-init-claudemd-and-skill-setup-new-version.md) (**4618** tks) - 用于在当前仓库设置 CLAUDE.md 和相关技能/hooks 的全面入门流程，包括代码库探索、用户访谈和迭代方案完善。
+- [技能：/loop 斜杠命令](./system-prompts/skill-loop-slash-command.md) (**1040** tks) - 将用户输入解析为间隔和提示词，将间隔转换为 cron 表达式，并安排定期任务。
+- [技能：/stuck 斜杠命令](./system-prompts/skill-stuck-slash-command.md) (**964** tks) - 诊断冻结或缓慢的 Claude Code 会话。
+- [技能：使用 Claude API 构建（参考指南）](./system-prompts/skill-build-with-claude-api-reference-guide.md) (**468** tks) - 用于展示语言特定参考文档并支持快速任务导航的模板。
+- [技能：使用 Claude API 构建](./system-prompts/skill-build-with-claude-api.md) (**5420** tks) - 使用 Claude 构建 LLM 驱动应用的主要路由指南，包括语言检测、使用面选择和架构概述。
+- [技能：创建验证器技能](./system-prompts/skill-create-verifier-skills.md) (**2625** tks) - 为 Verify 代理创建验证器技能的提示词，用于自动验证代码更改。
+- [技能：调试](./system-prompts/skill-debugging.md) (**412** tks) - 用于调试用户在 Claude Code 会话中遇到的问题的说明。
+- [技能：简化](./system-prompts/skill-simplify.md) (**877** tks) - 简化代码的说明。
+- [技能：更新 Claude Code 配置](./system-prompts/skill-update-claude-code-config.md) (**1255** tks) - 用于修改 Claude Code 配置文件（settings.json）的技能。
+- [技能：验证 CLI 变更（Verify 技能示例）](./system-prompts/skill-verify-cli-changes-example-for-verify-skill.md) (**565** tks) - 验证 CLI 变更的示例工作流，作为 Verify 技能的一部分。
+- [技能：验证服务端/API 变更（Verify 技能示例）](./system-prompts/skill-verify-serverapi-changes-example-for-verify-skill.md) (**612** tks) - 验证服务端/API 变更的示例工作流，作为 Verify 技能的一部分。
+- [技能：Verify 技能](./system-prompts/skill-verify-skill.md) (**4888** tks) - 用于验证代码变更的意见化验证工作流技能。
+- [技能：update-config（7 步验证流程）](./system-prompts/skill-update-config-7-step-verification-flow.md) (**1160** tks) - 引导 Claude 通过 7 步流程构建和验证 Claude Code hooks 的技能，确保它们在用户特定项目环境中正确工作。

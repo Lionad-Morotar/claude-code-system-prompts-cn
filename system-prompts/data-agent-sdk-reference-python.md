@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Agent SDK reference — Python'
 description: Python Agent SDK reference including installation, quick start, custom tools via MCP, and hooks
-ccVersion: 2.1.78
+ccVersion: 2.1.83
 -->
 # Agent SDK — Python
 
@@ -218,6 +218,16 @@ async for message in query(
         print(f"停止原因: {message.stop_reason}")  # 例如 "end_turn", "max_turns"
     elif isinstance(message, SystemMessage) and message.subtype == "init":
         session_id = message.data.get("session_id")  # 捕获以供稍后恢复
+```
+
+`AssistantMessage` 包含每轮 `usage` 数据（一个匹配 Anthropic API usage 结构的字典），用于跟踪成本：
+
+```python
+from claude_agent_sdk import query, ClaudeAgentOptions, AssistantMessage
+
+async for message in query(prompt="...", options=ClaudeAgentOptions()):
+    if isinstance(message, AssistantMessage) and message.usage:
+        print(f"输入: {message.usage['input_tokens']}, 输出: {message.usage['output_tokens']}")
 ```
 
 处理子智能体任务事件时，可使用类型化的任务消息子类以获得更好的类型安全性：

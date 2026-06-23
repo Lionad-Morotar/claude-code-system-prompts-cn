@@ -1,11 +1,11 @@
 <!--
 name: 'Data: Claude API reference — PHP'
 description: PHP SDK reference
-ccVersion: 2.1.78
+ccVersion: 2.1.83
 -->
 # Claude API — PHP
 
-> **注意：** PHP SDK 是 Anthropic 官方的 PHP SDK。工具运行器和 Agent SDK 不可用。支持 Bedrock、Vertex AI 和 Foundry 客户端。
+> **注意：** PHP SDK 是 Anthropic 官方的 PHP SDK。可通过 `$client->beta->messages->toolRunner()` 使用 beta 版工具运行器。通过 `StructuredOutputModel` 类支持结构化输出辅助功能。Agent SDK 不可用。支持 Bedrock、Vertex AI 和 Foundry 客户端。
 
 ## 安装
 
@@ -94,7 +94,7 @@ foreach ($message->content as $block) {
 
 ## 流式传输
 
-> **需要 SDK v0.5.0+。** v0.4.0 及更早版本使用单个 `$params` 数组；使用命名参数调用会抛出 `Unknown named parameter $model`。升级：`composer require "anthropic-ai/sdk:^0.6"`
+> **需要 SDK v0.5.0+。** v0.4.0 及更早版本使用单个 `$params` 数组；使用命名参数调用会抛出 `Unknown named parameter $model`。升级：`composer require "anthropic-ai/sdk:^0.7"`
 
 ```php
 use Anthropic\Messages\RawContentBlockDeltaEvent;
@@ -117,7 +117,49 @@ foreach ($stream as $event) {
 
 ---
 
-## 工具使用（手动循环）
+## 工具使用
+
+### 工具运行器（Beta）
+
+**Beta 版：** PHP SDK 通过 `$client->beta->messages->toolRunner()` 提供工具运行器。使用 `BetaRunnableTool` 定义工具 —— 包含定义数组和一个 `run` 闭包：
+
+```php
+use Anthropic\Lib\Tools\BetaRunnableTool;
+
+$weatherTool = new BetaRunnableTool(
+    definition: [
+        'name' => 'get_weather',
+        'description' => 'Get the current weather for a location.',
+        'input_schema' => [
+            'type' => 'object',
+            'properties' => [
+                'location' => ['type' => 'string', 'description' => 'City and state'],
+            ],
+            'required' => ['location'],
+        ],
+    ],
+    run: function (array $input): string {
+        return "The weather in {$input['location']} is sunny and 72°F.";
+    },
+);
+
+$runner = $client->beta->messages->toolRunner(
+    maxTokens: 16000,
+    messages: [['role' => 'user', 'content' => 'What is the weather in Paris?']],
+    model: '{{OPUS_ID}}',
+    tools: [$weatherTool],
+);
+
+foreach ($runner as $message) {
+    foreach ($message->content as $block) {
+        if ($block->type === 'text') {
+            echo $block->text;
+        }
+    }
+}
+```
+
+### 手动循环
 
 工具以数组形式传递。**SDK 使用驼峰命名键**（`inputSchema`、`toolUseID`、`stopReason`）并在传输时自动映射为 API 的蛇形命名 — 自 v0.5.0 起。有关循环模式，请参阅[共享工具使用概念](../shared/tool-use-concepts.md)。
 
@@ -219,6 +261,98 @@ foreach ($message->content as $block) {
 > **已弃用：** `['type' => 'enabled', 'budgetTokens' => N]`（固定预算扩展思考）在 Claude 4.6 上仍然可用，但已弃用。请使用上面的自适应思考。
 
 `$block->type === 'thinking'` 也可以用于检查；`instanceof` 用于 PHPStan 类型收窄。
+
+---
+
+## 提示缓存
+
+`system:` 接受一个文本块数组；在最后一个块上设置 `cacheControl`。使用驼峰命名键的数组语法是惯用写法。有关放置模式和静默失效审查清单，请参阅 `shared/prompt-caching.md`。
+
+```php
+$message = $client->messages->create(
+    model: '{{OPUS_ID}}',
+    maxTokens: 16000,
+    system: [
+        ['type' => 'text', 'text' => $longSystemPrompt, 'cacheControl' => ['type' => 'ephemeral']],
+    ],
+    messages: [['role' => 'user', 'content' => 'Summarize the key points']],
+);
+```
+
+1 小时 TTL：`'cacheControl' => ['type' => 'ephemeral', 'ttl' => '1h']`。`messages->create(...)` 上还有一个顶层 `cacheControl:`，会自动放置在最后一个可缓存块上。
+
+通过 `$message->usage->cacheCreationInputTokens` / `$message->usage->cacheReadInputTokens` 验证命中情况。
+
+---
+
+## 结构化输出
+
+### 使用 StructuredOutputModel（推荐）
+
+定义一个实现 `StructuredOutputModel` 的 PHP 类，并作为 `outputConfig` 传入：
+
+```php
+use Anthropic\Lib\Contracts\StructuredOutputModel;
+use Anthropic\Lib\Concerns\StructuredOutputModelTrait;
+use Anthropic\Lib\Attributes\Constrained;
+
+class Person implements StructuredOutputModel
+{
+    use StructuredOutputModelTrait;
+
+    #[Constrained(description: 'Full name')]
+    public string $name;
+
+    public int $age;
+
+    public ?string $email = null;  // nullable = 可选字段
+}
+
+$message = $client->messages->create(
+    model: '{{OPUS_ID}}',
+    maxTokens: 16000,
+    messages: [['role' => 'user', 'content' => 'Generate a profile for Alice, age 30']],
+    outputConfig: ['format' => Person::class],
+);
+
+$person = $message->parsedOutput();  // Person 实例
+echo $person->name;
+```
+
+类型从 PHP 类型提示推断。使用 `#[Constrained(description: '...')]` 添加描述。可空属性（`?string`）成为可选字段。
+
+### 原生 Schema
+
+```php
+$message = $client->messages->create(
+    model: '{{OPUS_ID}}',
+    maxTokens: 16000,
+    messages: [['role' => 'user', 'content' => 'Extract: John (john@co.com), Enterprise plan']],
+    outputConfig: [
+        'format' => [
+            'type' => 'json_schema',
+            'schema' => [
+                'type' => 'object',
+                'properties' => [
+                    'name' => ['type' => 'string'],
+                    'email' => ['type' => 'string'],
+                    'plan' => ['type' => 'string'],
+                ],
+                'required' => ['name', 'email', 'plan'],
+                'additionalProperties' => false,
+            ],
+        ],
+    ],
+);
+
+// 第一个文本块包含有效的 JSON
+foreach ($message->content as $block) {
+    if ($block->type === 'text') {
+        $data = json_decode($block->text, true);
+        break;
+    }
+}
+```
 
 ---
 
