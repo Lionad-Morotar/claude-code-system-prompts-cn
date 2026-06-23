@@ -1,12 +1,13 @@
 <!--
 name: 'Tool Description: TaskCreate'
 description: Tool description for TaskCreate tool
-ccVersion: 2.1.19
+ccVersion: 2.1.84
 variables:
   - CONDTIONAL_TEAMMATES_NOTE
   - CONDITIONAL_TASK_NOTES
 -->
-使用此工具为当前编码会话创建结构化任务列表。这有助于你跟踪进度、组织复杂任务，并向用户展示你的全面性。它还有助于用户了解任务的进度和他们请求的整体进度。
+使用此工具为当前编码会话创建结构化任务列表。这有助于你跟踪进度、组织复杂任务，并向用户展示你的全面性。
+它还有助于用户了解任务的进度和他们请求的整体进度。
 
 ## 何时使用此工具
 
@@ -34,14 +35,13 @@ variables:
 ## 任务字段
 
 - **subject**：简短、可操作的标题，采用祈使形式（例如，"修复登录流程中的身份验证错误"）
-- **description**：详细描述需要做什么，包括上下文和验收标准
-- **activeForm**：当任务为 in_progress 时在旋转器中显示的现在进行时形式（例如，"正在修复身份验证错误"）。这是在你处理任务时向用户显示的。
+- **description**：需要做什么
+- **activeForm**（可选）：当任务为 in_progress 时在旋转器中显示的现在进行时形式（例如，"正在修复身份验证错误"）。如果省略，旋转器会显示 subject 代替。
 
-**重要**：创建任务时始终提供 activeForm。subject 应该是祈使形式（"运行测试"），而 activeForm 应该是现在进行时（"正在运行测试"）。所有任务都使用状态 `pending` 创建。
+所有任务创建时状态为 `pending`。
 
 ## 提示
 
 - 创建具有清晰、具体 subject 的任务，描述结果
-- 在 description 中包含足够的细节，以便另一个代理理解并完成任务
-- 创建任务后，如果需要，使用 TaskUpdate 设置依赖关系（blocks/blockedBy）${CONDITIONAL_TASK_NOTES}
-- 首先检查 TaskList 以避免创建重复任务
+- 创建任务后，如果需要，使用 TaskUpdate 设置依赖关系（blocks/blockedBy）
+${CONDITIONAL_TASK_NOTES}- 首先检查 TaskList 以避免创建重复任务

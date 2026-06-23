@@ -1,17 +1,17 @@
 <!--
 name: 'Tool Description: Agent (usage notes)'
 description: Usage notes and instructions for the Task/Agent tool, including guidance on launching subagents, background execution, resumption, and worktree isolation
-ccVersion: 2.1.77
+ccVersion: 2.1.178
 variables:
   - TOOL_BASE_DESCRIPTION
   - TOOL_PARAMETERS_DESCRIPTION
-  - GET_TIER_FN
-  - IS_TRUTHY_FN
-  - PROCESS_OBJECT
+  - ENVIRONMENT_CONFIG
   - IS_SUBAGENT_CONTEXT_FN
   - HAS_SUBAGENT_TYPES
   - SEND_MESSAGE_TOOL_NAME
-  - TOOL_OBJECT
+  - AGENT_TOOL_NAME
+  - CAN_FORK_CONTEXT
+  - IS_REMOTE_ISOLATION_AVAILABLE_FN
   - IS_TEAMMATE_CONTEXT_FN
   - ADDITIONAL_USAGE_NOTES
   - EXTRA_USAGE_NOTES
@@ -20,21 +20,19 @@ variables:
 -->
 ${TOOL_BASE_DESCRIPTION}
 ${TOOL_PARAMETERS_DESCRIPTION}
+## 使用说明
 
-Usage notes:
-- Always include a short description (3-5 words) summarizing what the agent will do${GET_TIER_FN()!=="pro"?`
-- Launch multiple agents concurrently whenever possible, to maximize performance; to do that, use a single message with multiple tool uses`:""}
-- When the agent is done, it will return a single message back to you. The result returned by the agent is not visible to the user. To show the user the result, you should send a text message back to the user with a concise summary of the result.${!IS_TRUTHY_FN(PROCESS_OBJECT.env.CLAUDE_CODE_DISABLE_BACKGROUND_TASKS)&&!IS_SUBAGENT_CONTEXT_FN()&&!HAS_SUBAGENT_TYPES?`
-- You can optionally run agents in the background using the run_in_background parameter. When an agent runs in the background, you will be automatically notified when it completes — do NOT sleep, poll, or proactively check on its progress. Continue with other work or respond to the user instead.
-- **Foreground vs background**: Use foreground (default) when you need the agent's results before you can proceed — e.g., research agents whose findings inform your next steps. Use background when you have genuinely independent work to do in parallel.`:""}
-- To continue a previously spawned agent, use ${SEND_MESSAGE_TOOL_NAME} with the agent's ID or name as the `to` field. The agent resumes with its full context preserved. ${HAS_SUBAGENT_TYPES?"Each fresh Agent invocation with a subagent_type starts without context — provide a complete task description.":"Each Agent invocation starts fresh — provide a complete task description."}
-${!HAS_SUBAGENT_TYPES?`- Provide clear, detailed prompts so the agent can work autonomously and return exactly the information you need.
-`:""}- The agent's outputs should generally be trusted
-- Clearly tell the agent whether you expect it to write code or just to do research (search, file reads, web fetches, etc.)${HAS_SUBAGENT_TYPES?"":", since it is not aware of the user's intent"}
-- If the agent description mentions that it should be used proactively, then you should try your best to use it without the user having to ask for it first. Use your judgement.
-- If the user specifies that they want you to run agents "in parallel", you MUST send a single message with multiple ${TOOL_OBJECT.name} tool use content blocks. For example, if you need to launch both a build-validator agent and a test-runner agent in parallel, send a single message with both tool calls.
-- You can optionally set `isolation: "worktree"` to run the agent in a temporary git worktree, giving it an isolated copy of the repository. The worktree is automatically cleaned up if the agent makes no changes; if changes are made, the worktree path and branch are returned in the result.${IS_SUBAGENT_CONTEXT_FN()?`
-- The run_in_background, name, team_name, and mode parameters are not available in this context. Only synchronous subagents are supported.`:IS_TEAMMATE_CONTEXT_FN()?`
-- The name, team_name, and mode parameters are not available in this context — teammates cannot spawn other teammates. Omit them to spawn a subagent.`:""}${ADDITIONAL_USAGE_NOTES}${EXTRA_USAGE_NOTES}
+- 始终包含一个简短的描述（3-5 个词），总结代理将要做什么
+- 当代理完成时，它会向你返回一条消息。代理返回的结果对用户不可见。要向用户显示结果，你应该向用户发送一条文本消息，包含结果的简洁摘要。
+- 信任但验证：代理的摘要描述的是它**意图**做什么，不一定是它实际做了什么。当代理编写或编辑代码时，在报告工作完成之前，检查实际的更改。${!ENVIRONMENT_CONFIG.CLAUDE_CODE_DISABLE_BACKGROUND_TASKS&&!IS_SUBAGENT_CONTEXT_FN()&&!HAS_SUBAGENT_TYPES?`
+- 你可以选择使用 run_in_background 参数在后台运行代理。当代理在后台运行时，你将在其完成时自动收到通知——不要 sleep、轮询或主动检查其进度。继续其他工作或响应用户。
+- **前台 vs 后台**：当你需要代理的结果才能继续时使用前台（默认）——例如，研究代理的发现会指导你的后续步骤。当你确实有独立的工作可以并行进行时使用后台。`:""}
+- 要继续之前生成的代理，使用 ${SEND_MESSAGE_TOOL_NAME}，将代理的 ID 或名称作为 `to` 字段——这将恢复其完整上下文。新的 ${AGENT_TOOL_NAME} 调用会启动一个没有先前运行记忆的全新代理${CAN_FORK_CONTEXT?'（subagent_type: "fork" 除外）':""}，因此提示词必须自包含。
+- 明确告知代理你期望它编写代码还是仅进行研究（搜索、文件读取、web 获取等），因为新代理不了解用户的意图
+- 如果代理描述中提到应主动使用，那么你应该尽力在用户未要求时也使用它。
+- 如果用户指定他们希望你"并行"运行代理，你必须发送一条包含多个 ${AGENT_TOOL_NAME} 工具使用内容块的单条消息。例如，如果你需要同时启动构建验证代理和测试运行代理，发送一条包含两个工具调用的消息。
+- 使用 `isolation: "worktree"` 时，如果代理未做任何更改，工作树会自动清理；否则路径和分支会包含在结果中。${IS_REMOTE_ISOLATION_AVAILABLE_FN()?'\n- 你可以设置 `isolation: "remote"` 在远程 CCR 环境中运行代理。这始终是一个后台任务；你会在其完成时收到通知。用于需要全新沙箱的长时间运行任务。':""}${IS_SUBAGENT_CONTEXT_FN()?`
+- 在此上下文中，run_in_background、name 和 mode 参数不可用。仅支持同步子代理。`:IS_TEAMMATE_CONTEXT_FN()?`
+- 在此上下文中，name 和 mode 参数不可用——队友无法生成其他队友。省略它们以生成子代理。`:""}${ADDITIONAL_USAGE_NOTES}${EXTRA_USAGE_NOTES}
 
-${HAS_SUBAGENT_TYPES?SUBAGENT_TYPE_DEFINITIONS:DEFAULT_AGENT_DESCRIPTION}
+${CAN_FORK_CONTEXT?SUBAGENT_TYPE_DEFINITIONS:DEFAULT_AGENT_DESCRIPTION}

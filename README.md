@@ -34,7 +34,7 @@
 > [!important]
 > **新增（2026 年 1 月 23 日）：我们已在此列表中添加了所有 Claude Code 的约 40 个系统提醒——请参阅 [系统提醒](#system-reminders)。**
 
-此仓库包含截至 **[Claude Code v2.1.83](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.83)（2026 年 3 月 24 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 132 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
+此仓库包含截至 **[Claude Code v2.1.84](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.84)（2026 年 3 月 25 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 133 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
 
 **此仓库在每次 Claude Code 发布后的几分钟内更新。请查看 [更新日志](./CHANGELOG.md)，并在 X 上关注 [@PiebaldAI](https://x.com/PiebaldAI) 以获取每次发布中系统提示词变更的摘要。**
 
@@ -72,8 +72,8 @@
 
 #### 子代理
 
-- [代理提示词：Explore](./system-prompts/agent-prompt-explore.md) (**516** tks) - Explore 子代理的系统提示词。
-- [代理提示词：Plan 模式（增强）](./system-prompts/agent-prompt-plan-mode-enhanced.md) (**633** tks) - Plan 子代理的增强提示词。
+- [代理提示词：Explore](./system-prompts/agent-prompt-explore.md) (**494** tks) - Explore 子代理的系统提示词。
+- [代理提示词：Plan 模式（增强）](./system-prompts/agent-prompt-plan-mode-enhanced.md) (**636** tks) - Plan 子代理的增强提示词。
 - [代理提示词：Task 工具（额外说明）](./system-prompts/agent-prompt-task-tool-extra-notes.md) (**129** tks) - Task 工具使用的额外说明（绝对路径、无表情符号、工具调用前无冒号）。
 - [代理提示词：Task 工具](./system-prompts/agent-prompt-task-tool.md) (**294** tks) - 通过 Task 工具生成的子代理的系统提示词。
 
@@ -87,7 +87,6 @@
 
 - [代理提示词：/batch 斜杠命令](./system-prompts/agent-prompt-batch-slash-command.md) (**1106** tks) - 用于在代码库中协调大规模、可并行化更改的说明。
 - [代理提示词：/pr-comments 斜杠命令](./system-prompts/agent-prompt-pr-comments-slash-command.md) (**402** tks) - 用于获取和显示 GitHub PR 注释的系统提示词。
-- [代理提示词：/review 斜杠命令（远程）](./system-prompts/agent-prompt-review-slash-command-remote.md) (**238** tks) - /review 斜杠命令的远程版本。
 - [代理提示词：/review-pr 斜杠命令](./system-prompts/agent-prompt-review-pr-slash-command.md) (**211** tks) - 用于通过代码分析审查 GitHub 拉取请求的系统提示词。
 - [代理提示词：/schedule 斜杠命令](./system-prompts/agent-prompt-schedule-slash-command.md) (**2468** tks) - 引导用户通过 Anthropic 云 API 在 cron 触发器上调度、更新、列出或运行远程 Claude Code 代理。
 - [代理提示词：/security-review 斜杠命令](./system-prompts/agent-prompt-security-review-slash-command.md) (**2610** tks) - 综合安全审查提示词，用于分析代码更改，重点关注可利用的漏洞。
@@ -99,10 +98,11 @@
 - [代理提示词：Bash 命令描述编写器](./system-prompts/agent-prompt-bash-command-description-writer.md) (**207** tks) - 用于以主动语气为 bash 命令生成清晰、简洁命令描述的说明。
 - [代理提示词：Bash 命令文件路径提取](./system-prompts/agent-prompt-bash-command-file-path-extraction.md) (**286** tks) - 用于从 bash 命令输出中提取文件路径的系统提示词。
 - [代理提示词：Bash 命令前缀检测](./system-prompts/agent-prompt-bash-command-prefix-detection.md) (**835** tks) - 用于检测命令前缀和命令注入的系统提示词。
-- [代理提示词：Claude 指南代理](./system-prompts/agent-prompt-claude-guide-agent.md) (**761** tks) - 用于 claude-guide 代理的系统提示词，该代理帮助用户有效地理解和使用 Claude Code、Claude Agent SDK 和 Claude API。
+- [代理提示词：Claude 指南代理](./system-prompts/agent-prompt-claude-guide-agent.md) (**734** tks) - 用于 claude-guide 代理的系统提示词，该代理帮助用户有效地理解和使用 Claude Code、Claude Agent SDK 和 Claude API。
 - [代理提示词：命令执行专家](./system-prompts/agent-prompt-command-execution-specialist.md) (**109** tks) - 专注于 bash 命令的命令执行代理的系统提示词。
 - [代理提示词：带有附加说明的对话总结](./system-prompts/agent-prompt-conversation-summarization-with-additional-instructions.md) (**1133** tks) - 支持自定义附加说明的扩展总结提示词。
 - [代理提示词：对话总结](./system-prompts/agent-prompt-conversation-summarization.md) (**1121** tks) - 用于创建详细对话摘要的系统提示词。
+- [代理提示词：最近消息总结](./system-prompts/agent-prompt-recent-message-summarization.md) (**724** tks) - 用于总结最近消息的代理提示词。
 - [代理提示词：通过 Swarm 退出计划模式](./system-prompts/agent-prompt-exit-plan-mode-with-swarm.md) (**440** tks) - 当调用 ExitPlanMode 并将 `isSwarm` 设置为 true 时的系统提醒。
 - [代理提示词：提示词 Hook 执行](./system-prompts/agent-prompt-prompt-hook-execution.md) (**134** tks) - 在评估是传递还是失败提示词 hook 时给予 Claude 的提示词。
 - [代理提示词：提示词建议生成器（明确意图）](./system-prompts/agent-prompt-prompt-suggestion-generator-stated-intent.md) (**166** tks) - 用于根据用户明确说明的下一步生成提示词建议的说明。
@@ -115,6 +115,7 @@
 - [代理提示词：更新 Magic Docs](./system-prompts/agent-prompt-update-magic-docs.md) (**718** tks) - 用于 magic-docs 代理的提示词。
 - [代理提示词：用户情感分析](./system-prompts/agent-prompt-user-sentiment-analysis.md) (**205** tks) - 用于分析用户沮丧和 PR 创建请求的系统提示词。
 - [代理提示词：WebFetch 总结器](./system-prompts/agent-prompt-webfetch-summarizer.md) (**185** tks) - 用于为主模型总结 WebFetch 冗长输出的代理的提示词。
+- [代理提示词：通用目的](./system-prompts/agent-prompt-general-purpose.md) (**277** tks) - 通用子代理的系统提示词，用于搜索、分析和编辑代码，同时向调用者简洁报告发现。
 
 ### 数据
 
@@ -154,7 +155,7 @@
 
 - [**系统提示词：主系统提示词**](./system-prompts/system-prompt-main-system-prompt.md) (**2896** tks) - Claude Code 的核心系统提示词，定义行为、语气和工具使用策略。
 - [系统提示词：审查恶意活动协助](./system-prompts/system-prompt-censoring-assistance-with-malicious-activities.md) (**98** tks) - 用于协助授权安全测试、防御性安全、CTF 挑战和教育背景的指导，同时审查恶意活动请求。
-- [系统提示词：Advisor 工具指令](./system-prompts/system-prompt-advisor-tool-instructions.md) (**415** tks) - 使用 Advisor 工具的指令。
+- [系统提示词：Advisor 工具指令](./system-prompts/system-prompt-advisor-tool-instructions.md) (**443** tks) - 使用 Advisor 工具的指令。
 - [系统提示词：Chrome 浏览器 MCP 工具](./system-prompts/system-prompt-chrome-browser-mcp-tools.md) (**158** tks) - 在使用前通过 MCPSearch 加载 Chrome 浏览器 MCP 工具的说明。
 - [系统提示词：Chrome 浏览器自动化中的 Claude](./system-prompts/system-prompt-claude-in-chrome-browser-automation.md) (**761** tks) - 有效使用 Chrome 浏览器自动化工具中的 Claude 的说明。
 - [系统提示词：Git 状态](./system-prompts/system-prompt-git-status.md) (**95** tks) - 用于在对话开始时显示当前 git 状态的系统提示词。
@@ -165,6 +166,9 @@
 - [系统提示词：临时目录](./system-prompts/system-prompt-scratchpad-directory.md) (**172** tks) - 使用专用临时目录存储临时文件的说明。
 - [系统提示词：队友通信](./system-prompts/system-prompt-teammate-communication.md) (**138** tks) - 用于 swarm 中队友通信的系统提示词。
 - [系统提示词：工具执行被拒绝](./system-prompts/system-prompt-tool-execution-denied.md) (**157** tks) - 工具执行被拒绝时的系统提示词。
+- [系统提示词：避免 PowerShell 中不必要的 Sleep 命令](./system-prompts/system-prompt-avoiding-unnecessary-sleep-commands-part-of-powershell-tool-description.md) (**182** tks) - 关于避免在 PowerShell 脚本中使用不必要 sleep 命令的指南，包括等待和通知的替代方案。
+- [系统提示词：智能体线程说明](./system-prompts/system-prompt-agent-thread-notes.md) (**156** tks) - 智能体线程的行为指南，涵盖绝对路径、响应格式、避免使用表情符号以及工具调用标点符号。
+- [系统提示词：自动模式](./system-prompts/system-prompt-auto-mode.md) (**255** tks) - 连续任务执行，类似于后台智能体。
 
 ### 系统提醒
 
@@ -231,24 +235,28 @@
 - [工具描述：Grep](./system-prompts/tool-description-grep.md) (**300** tks) - 使用 ripgrep 进行内容搜索的工具描述。
 - [工具描述：LSP](./system-prompts/tool-description-lsp.md) (**255** tks) - LSP 工具的描述。
 - [工具描述：NotebookEdit](./system-prompts/tool-description-notebookedit.md) (**121** tks) - 用于编辑 Jupyter notebook 单元格的工具描述。
-- [工具描述：ReadFile](./system-prompts/tool-description-readfile.md) (**439** tks) - 用于读取文件的工具描述。
+- [工具描述：PowerShell](./system-prompts/tool-description-powershell.md) (**978** tks) - 描述 PowerShell 命令执行工具，包含语法指南、超时设置和优先使用专用工具而非 PowerShell 进行文件操作的说明。
+- [工具描述：ReadFile](./system-prompts/tool-description-readfile.md) (**412** tks) - 用于读取文件的工具描述。
 - [工具描述：SendMessageTool](./system-prompts/tool-description-sendmessagetool.md) (**362** tks) - Agent 团队版的 SendMessageTool。
 - [工具描述：Skill](./system-prompts/tool-description-skill.md) (**442** tks) - 用于在主对话中执行技能的工具描述。
 - [工具描述：Sleep](./system-prompts/tool-description-sleep.md) (**154** tks) - 等待/休眠工具，支持在用户输入时提前唤醒。
-- [工具描述：TaskCreate](./system-prompts/tool-description-taskcreate.md) (**558** tks) - TaskCreate 工具的工具描述。
+- [工具描述：TaskCreate](./system-prompts/tool-description-taskcreate.md) (**499** tks) - TaskCreate 工具的工具描述。
 - [工具描述：Task](./system-prompts/tool-description-task.md) (**1311** tks) - 用于启动专门的子代理来处理复杂任务的工具描述。
 - [工具描述：TeamDelete](./system-prompts/tool-description-teamdelete.md) (**154** tks) - TeamDelete 工具的描述。
 - [工具描述：TeammateTool 的操作参数](./system-prompts/tool-description-teammatetools-operation-parameter.md) (**173** tks) - TeammateTool 操作参数的工具描述。
 - [工具描述：TeammateTool](./system-prompts/tool-description-teammatetool.md) (**3811** tks) - 用于管理团队和协调 swarm 中队友的工具。
-- [工具描述：TodoWrite](./system-prompts/tool-description-todowrite.md) (**2167** tks) - 用于创建和管理任务列表的工具描述。
+- [工具描述：request_teach_access（教学模式的一部分）](./system-prompts/tool-description-request_teach_access-part-of-teach-mode.md) (**139** tks) - 描述一个工具，该工具请求权限以使用全屏工具提示覆盖层逐步引导用户完成任务，而不是直接访问。
+- [工具描述：TodoWrite](./system-prompts/tool-description-todowrite.md) (**2037** tks) - 用于创建和管理任务列表的工具描述。
 - [工具描述：ToolSearch](./system-prompts/tool-description-toolsearch.md) (**792** tks) - 用于在使用前加载和搜索延迟工具的工具描述。
+- [工具描述：Agent（使用说明）](./system-prompts/tool-description-agent-usage-notes.md) (**838** tks) - Task/Agent 工具的使用说明和指南，包括启动子代理、后台执行、恢复和工作树隔离。
+- [工具描述：Agent（何时启动子代理）](./system-prompts/tool-description-agent-when-to-launch-subagents.md) (**174** tks) - 描述何时使用 Agent 工具 - 用于启动专门的子代理子进程以自主处理复杂的多步骤任务。
 - [工具描述：WebFetch](./system-prompts/tool-description-webfetch.md) (**297** tks) - 用于 Web 获取功能的工具描述。
 - [工具描述：WebSearch](./system-prompts/tool-description-websearch.md) (**329** tks) - 用于 Web 搜索功能的工具描述。
 - [工具描述：Write](./system-prompts/tool-description-write.md) (**159** tks) - 用于创建和覆盖单个文件的工具描述。
 
 **某些工具描述的额外说明**
 
-- [工具描述：Bash（Git 提交和 PR 创建说明）](./system-prompts/tool-description-bash-git-commit-and-pr-creation-instructions.md) (**1557** tks) - 用于创建 git 提交和 GitHub 拉取请求的说明。
+- [工具描述：Bash（Git 提交和 PR 创建说明）](./system-prompts/tool-description-bash-git-commit-and-pr-creation-instructions.md) (**1611** tks) - 用于创建 git 提交和 GitHub 拉取请求的说明。
 - [工具描述：Bash（沙箱说明）](./system-prompts/tool-description-bash-sandbox-note.md) (**454** tks) - 关于 bash 命令沙箱的说明。
 
 ### 内置技能
