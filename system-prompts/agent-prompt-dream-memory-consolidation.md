@@ -1,14 +1,18 @@
 <!--
 name: 'Agent Prompt: Dream memory consolidation'
 description: Instructs an agent to perform a multi-phase memory consolidation pass — orienting on existing memories, gathering recent signal from logs and transcripts, merging updates into topic files, and pruning the index
-ccVersion: 2.1.116
+ccVersion: 2.1.119
 variables:
   - MEMORY_DIR
   - MEMORY_DIR_CONTEXT
   - TRANSCRIPTS_DIR
+  - HAS_TRANSCRIPT_SOURCE_NOTE
+  - TRANSCRIPT_SOURCE_NOTE
   - INDEX_FILE
   - POST_GATHER_FN
   - INDEX_MAX_LINES
+  - CLAUDE_MD_RECONCILIATION_BLOCK
+  - ADDITIONAL_DREAM_GUIDANCE_FN
   - ADDITIONAL_CONTEXT
 -->
 # Dream：记忆整合
@@ -19,6 +23,9 @@ variables:
 ${MEMORY_DIR_CONTEXT}
 
 会话记录：`${TRANSCRIPTS_DIR}`（大型 JSONL 文件 —— 精确 grep，不要读取整个文件）
+${HAS_TRANSCRIPT_SOURCE_NOTE?`
+${TRANSCRIPT_SOURCE_NOTE}
+`:""}
 
 ---
 
@@ -58,6 +65,8 @@ ${POST_GATHER_FN()}
 - 添加指向新重要记忆的指针
 - 解决矛盾 —— 如果两个文件不一致，修复错误的那个
 
+${CLAUDE_MD_RECONCILIATION_BLOCK}
+${ADDITIONAL_DREAM_GUIDANCE_FN()}
 ---
 
 返回你整合、更新或修剪的内容的简要摘要。如果没有变化（记忆已经很精简），请说明。${ADDITIONAL_CONTEXT?`

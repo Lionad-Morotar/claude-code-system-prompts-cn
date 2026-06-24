@@ -1,6 +1,6 @@
 # Claude Code 系统提示词（中文翻译）
 
-> **当前版本：** v2.1.118（2026 年 4 月 23 日）—— 161 个版本
+> **当前版本：** v2.1.119（2026 年 4 月 23 日）—— 162 个版本
 
 从 [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) npm 包中提取的系统提示词。由社区维护，非 Anthropic 官方出品。
 
@@ -19,6 +19,8 @@
 | [system-prompt-user-facing-communication-style.md](./system-prompts/system-prompt-user-facing-communication-style.md) | 1,800+ | 用户沟通指南：清晰、简洁、可读的写作风格 |
 | [system-prompt-exploratory-questions-analyze-before-implementing.md](./system-prompts/system-prompt-exploratory-questions-analyze-before-implementing.md) | 700+ | 探索性问题：分析后再实现 |
 | [system-prompt-dream-team-memory-handling.md](./system-prompts/system-prompt-dream-team-memory-handling.md) | 1,000+ | Dream 团队记忆处理：共享记忆的合并与保守修剪规则 |
+| [system-prompt-dream-claudemd-memory-reconciliation.md](./system-prompts/system-prompt-dream-claudemd-memory-reconciliation.md) | 200+ | Dream CLAUDE.md 记忆调校：对照 CLAUDE.md 调校反馈和项目记忆 |
+| [system-prompt-background-session-instructions.md](./system-prompts/system-prompt-background-session-instructions.md) | 100+ | 后台会话指令：后台作业使用作业专用临时目录并遵循工作树隔离指南 |
 | [system-prompt-remote-plan-mode-ultraplan.md](./system-prompts/system-prompt-remote-plan-mode-ultraplan.md) | 7,200+ | 远程规划模式：云辅助规划 |
 | [system-prompt-writing-subagent-prompts.md](./system-prompts/system-prompt-writing-subagent-prompts.md) | 1,700+ | 编写子代理提示词：结构化子代理指令 |
 
@@ -26,6 +28,7 @@
 
 | 文件 | Tokens | 描述 |
 |------|-------|------|
+| [agent-prompt-background-agent-state-classifier.md](./system-prompts/agent-prompt-background-agent-state-classifier.md) | 800+ | 后台代理状态分类器：将后台代理记录尾部分类为工作中/阻塞/完成/失败 |
 | [agent-prompt-dream-memory-consolidation.md](./system-prompts/agent-prompt-dream-memory-consolidation.md) | 5,100+ | 记忆整合：后台内存处理 |
 | [agent-prompt-memory-synthesis.md](./system-prompts/agent-prompt-memory-synthesis.md) | 2,500+ | 记忆合成：将观察结果编译为持久记忆 |
 | [agent-prompt-onboarding-guide-generator.md](./system-prompts/agent-prompt-onboarding-guide-generator.md) | 4,300+ | 入手指南生成：为新用户创建指南 |
@@ -47,6 +50,10 @@
 
 | 文件 | Tokens | 描述 |
 |------|-------|------|
+| [skill-catch-up-periodic-heartbeat.md](./system-prompts/skill-catch-up-periodic-heartbeat.md) | 1,500+ | 周期性跟进心跳：扫描当前优先级、分类可操作变更、报告简短摘要并更新跟进状态 |
+| [skill-dream-memory-consolidation.md](./system-prompts/skill-dream-memory-consolidation.md) | 500+ | Dream 记忆整合：夜间整理任务，将最近日志和记录整合为持久记忆主题 |
+| [skill-morning-checkin-daily-brief.md](./system-prompts/skill-morning-checkin-daily-brief.md) | 1,500+ | 每日晨间简报：准备日历和收件箱摘要、安排会前检查并记录当天首要任务 |
+| [skill-pre-meeting-checkin-event-brief.md](./system-prompts/skill-pre-meeting-checkin-event-brief.md) | 400+ | 会前检查事件简报：收集事件材料、最近线索上下文、待解决问题和简洁会议简报 |
 | [skill-agent-design-patterns.md](./system-prompts/skill-agent-design-patterns.md) | 5,600+ | 代理设计模式：多代理架构 |
 | [skill-team-onboarding-guide.md](./system-prompts/skill-team-onboarding-guide.md) | 1,000+ | 团队入手指南：协作设置 |
 | [skill-dream-nightly-schedule.md](./system-prompts/skill-dream-nightly-schedule.md) | 800+ | Dream 夜间调度：设置周期性记忆整合任务 |
@@ -65,12 +72,16 @@
 | [data-claude-api-reference-ruby.md](./system-prompts/data-claude-api-reference-ruby.md) | 8,900+ | Ruby SDK API 参考 |
 | [data-claude-api-reference-php.md](./system-prompts/data-claude-api-reference-php.md) | 9,200+ | PHP SDK API 参考 |
 | [data-tool-use-concepts.md](./system-prompts/data-tool-use-concepts.md) | 6,800+ | 工具使用概念指南 |
+| [data-assistant-voice-and-values-template.md](./system-prompts/data-assistant-voice-and-values-template.md) | 400+ | 助手声音与价值观模板：描述 Claude 的声音、价值观和沟通风格 |
+| [data-managed-agents-memory-stores-reference.md](./system-prompts/data-managed-agents-memory-stores-reference.md) | 2,700+ | 托管智能体记忆存储参考：存储创建、会话挂载、FUSE 挂载、记忆 CRUD、并发、版本、编辑及端点路径 |
+| [data-user-profile-memory-template.md](./system-prompts/data-user-profile-memory-template.md) | 200+ | 用户画像记忆模板：涵盖个人信息、工作上下文、日程和沟通偏好 |
 | [data-prompt-caching-design-optimization.md](./system-prompts/data-prompt-caching-design-optimization.md) | 4,400+ | 提示缓存设计优化 |
 
 ## 版本历史
 
 | 版本 | 日期 | 变更摘要 |
 |-------|------|-------------|
+| v2.1.119 | 2026-04-23 | 新增后台代理状态分类器、用户画像模板、助手声音与价值观模板、记忆存储参考；新增 4 个技能（周期性跟进、Dream 记忆整合、每日晨间简报、会前检查）；新增后台会话指令、Dream CLAUDE.md 记忆调校；更新安全监控 BLOCK/ALLOW 规则、状态行设置、托管智能体文档；删除 invoked-skills，替换为 previously-invoked-skills |
 | v2.1.98 | 2026-04-09 | 新增沟通风格提示词、用户沟通指南、探索性问题提示词、Dream 团队记忆处理；更新 Dream 记忆整合/修剪、Advisor 工具指令；新增 Dream 夜间调度技能 |
 | v2.1.97 | 2026-04-08 | 新增托管智能体文档、Dream 夜间调度、Worker fork agentMetadata、Bash 替代通信工具、多个提示词更新 |
 | v2.1.96 | 2026-04-09 | 核心提示词大量更新（25.8k→26.5k tokens）、新增记忆过期验证提示词、更新工具描述、多个代理提示词更新 |

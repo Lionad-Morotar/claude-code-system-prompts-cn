@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Managed Agents environments and resources'
 description: Reference documentation covering Managed Agents environments, file resources, GitHub repository mounting, and the Files API with SDK examples
-ccVersion: 2.1.105
+ccVersion: 2.1.119
 -->
 # Managed Agents — Environments 与 Resources
 
@@ -58,7 +58,7 @@ const env = await client.beta.environments.create({
 
 ## Resources
 
-将文件和 GitHub 仓库附加到 session。**Session 创建会阻塞直到所有资源挂载完成**——容器在所有文件和仓库就位之前不会进入 `running` 状态。每个 session 最多 **999 个 file 资源**。支持每个 session 挂载多个 GitHub 仓库。
+将文件、GitHub 仓库和记忆存储附加到 session。**Session 创建会阻塞直到所有资源挂载完成**——容器在所有文件和仓库就位之前不会进入 `running` 状态。每个 session 最多 **999 个 file 资源**。支持每个 session 挂载多个 GitHub 仓库。关于 `type: "memory_store"` 资源（持久跨 session 记忆——每个 session 最多 8 个），参见 `shared/managed-agents-memory.md`。
 
 ### 文件上传（输入——宿主机 → agent）
 

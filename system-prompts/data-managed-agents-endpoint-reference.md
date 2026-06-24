@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Managed Agents endpoint reference'
 description: Comprehensive reference for Managed Agents API endpoints, SDK methods, request/response schemas, error handling, and rate limits
-ccVersion: 2.1.111
+ccVersion: 2.1.119
 -->
 # Managed Agents — 接口参考
 
@@ -13,7 +13,7 @@ ccVersion: 2.1.111
 anthropic-beta: managed-agents-2026-04-01
 ```
 
-SDK 会为所有 `client.beta.{agents,environments,sessions,vaults}.*` 调用自动添加此请求头。Skills 接口使用 `skills-2025-10-02`；Files 接口使用 `files-api-2025-04-14`。
+SDK 会为所有 `client.beta.{agents,environments,sessions,vaults,memory_stores}.*` 调用自动添加此请求头。Skills 接口使用 `skills-2025-10-02`；Files 接口使用 `files-api-2025-04-14`。
 
 ---
 
@@ -31,9 +31,12 @@ SDK 会为所有 `client.beta.{agents,environments,sessions,vaults}.*` 调用自
 | Session Resources | `sessions.resources.add` / `retrieve` / `update` / `list` / `delete` | `Sessions.Resources.Add` / `Get` / `Update` / `List` / `Delete` |
 | Vaults | `vaults.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `Vaults.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
 | Credentials | `vaults.credentials.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `Vaults.Credentials.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
+| Memory Stores | `memory_stores.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `MemoryStores.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
+| Memories | `memory_stores.memories.create` / `retrieve` / `update` / `list` / `delete` | `MemoryStores.Memories.New` / `Get` / `Update` / `List` / `Delete` |
+| Memory Versions | `memory_stores.memory_versions.list` / `retrieve` / `redact` | `MemoryStores.MemoryVersions.List` / `Get` / `Redact` |
 
 **需要注意的命名差异：**
-- Agents **没有 delete**——只有 `archive`。Archive 是**不可逆的**：agent 变为只读，新 session 无法引用它，且没有 unarchive 操作。归档生产环境 agent 之前请与用户确认。Environments、Sessions、Vaults 和 Credentials 同时有 `delete` 和 `archive`；Session Resources、Files 和 Skills 只有 `delete`。
+- Agents **没有 delete**——只有 `archive`。Archive 是**不可逆的**：agent 变为只读，新 session 无法引用它，且没有 unarchive 操作。归档生产环境 agent 之前请与用户确认。Environments、Sessions、Vaults、Credentials 和 Memory Stores 同时有 `delete` 和 `archive`；Session Resources、Files、Skills 和 Memories 只有 `delete`；Memory Versions 两者都没有——只有 `redact`。
 - Session resources 使用 `add`（而非 `create`）。
 - Go 的事件流方法是 `StreamEvents`（而非 `Stream`）。
 
@@ -80,7 +83,7 @@ SDK 会为所有 `client.beta.{agents,environments,sessions,vaults}.*` 调用自
 | 方法   | 路径                                                    | 操作            | 描述                              |
 | -------- | ------------------------------------------------------- | ---------------- | ---------------------------------------- |
 | `GET` | `/v1/sessions/{session_id}/resources` | ListResources | 列出附加到 session 的资源 |
-| `POST` | `/v1/sessions/{session_id}/resources` | AddResource | 挂载 file 或 github_repository（SDK 方法：`add`，而非 `create`） |
+| `POST` | `/v1/sessions/{session_id}/resources` | AddResource | 挂载 `file` 或 `github_repository` 资源（SDK 方法：`add`，而非 `create`）。`memory_store` 资源只能在 session 创建时挂载。 |
 | `GET` | `/v1/sessions/{session_id}/resources/{resource_id}` | GetResource | 获取单个资源 |
 | `POST` | `/v1/sessions/{session_id}/resources/{resource_id}` | UpdateResource | 更新资源 |
 | `DELETE` | `/v1/sessions/{session_id}/resources/{resource_id}` | DeleteResource | 从 session 中移除资源 |
@@ -121,6 +124,41 @@ Credentials 是存储在 vault 内部的单个密钥。
 | `POST`   | `/v1/vaults/{vault_id}/credentials/{credential_id}`               | UpdateCredential   | 更新 credential            |
 | `DELETE` | `/v1/vaults/{vault_id}/credentials/{credential_id}`               | DeleteCredential   | 删除 credential            |
 | `POST`   | `/v1/vaults/{vault_id}/credentials/{credential_id}/archive`       | ArchiveCredential  | 归档 credential           |
+
+## Memory Stores
+
+工作空间级别的持久化记忆，可跨 session 保留。通过 session 创建时在 `resources[]` 中添加 `{"type": "memory_store", "memory_store_id": ...}` 条目来挂载到 session。概念指南、FUSE 挂载的 agent 接口、前提条件和版本管理参见 `shared/managed-agents-memory.md`。
+
+| 方法   | 路径                                             | 操作              | 描述                              |
+| -------- | ------------------------------------------------ | ------------------ | ---------------------------------------- |
+| `POST`   | `/v1/memory_stores`                              | CreateMemoryStore  | 创建 store（`name`、`description`、`metadata`） |
+| `GET`    | `/v1/memory_stores`                              | ListMemoryStores   | 列出 stores（`include_archived`、`created_at_{gte,lte}`） |
+| `GET`    | `/v1/memory_stores/{memory_store_id}`            | GetMemoryStore     | 获取 store 详情                        |
+| `POST`   | `/v1/memory_stores/{memory_store_id}`            | UpdateMemoryStore  | 更新 store                             |
+| `DELETE` | `/v1/memory_stores/{memory_store_id}`            | DeleteMemoryStore  | 删除 store                             |
+| `POST`   | `/v1/memory_stores/{memory_store_id}/archive`    | ArchiveMemoryStore | 归档 store。使其**只读**；已有 session 继续运行，新 session 无法引用它。不可 unarchive。 |
+
+## Memories
+
+Store 中的单个文本文档（每个 ≤ 100KB）。`create` 在指定 `path` 创建，若路径已被占用则返回 `409`（`memory_path_conflict_error`，附带 `conflicting_memory_id`）；`update` 通过 `mem_...` ID 进行变更（重命名和/或内容）。只有 `update` 接受 `precondition`（`{"type": "content_sha256", "content_sha256": ...}`）——不匹配时返回 `409`（`memory_precondition_failed_error`）。List 接口接受 `view: "basic"|"full"`（控制是否填充 `content`；`retrieve` 默认为 `full`）。
+
+| 方法   | 路径                                                              | 操作          | 描述                              |
+| -------- | ----------------------------------------------------------------- | -------------- | ---------------------------------------- |
+| `GET`    | `/v1/memory_stores/{memory_store_id}/memories`                    | ListMemories   | 返回 `Memory \| MemoryPrefix`；可按 `path_prefix`、`depth`、`order_by`/`order` 过滤 |
+| `POST`   | `/v1/memory_stores/{memory_store_id}/memories`                    | CreateMemory   | 在 `path` 创建（SDK：`memories.create`）；路径被占用时返回 `409 memory_path_conflict_error` |
+| `GET`    | `/v1/memory_stores/{memory_store_id}/memories/{memory_id}`        | GetMemory      | 读取一条 memory（默认 `view="full"`） |
+| `PATCH`  | `/v1/memory_stores/{memory_store_id}/memories/{memory_id}`        | UpdateMemory   | 通过 ID 修改 `content`、`path` 或两者；可选的 `precondition` |
+| `DELETE` | `/v1/memory_stores/{memory_store_id}/memories/{memory_id}`        | DeleteMemory   | 删除（可选的 `expected_content_sha256`） |
+
+## Memory Versions
+
+不可变的每次变更快照（`memver_...`）——审计和回滚的载体。`operation` ∈ `created` / `modified` / `deleted`。
+
+| 方法   | 路径                                                                          | 操作                 | 描述                              |
+| -------- | ----------------------------------------------------------------------------- | --------------------- | ---------------------------------------- |
+| `GET`    | `/v1/memory_stores/{memory_store_id}/memory_versions`                         | ListMemoryVersions    | 最新优先；可按 `memory_id`、`operation`、`session_id`、`api_key_id`、`created_at_{gte,lte}` 过滤 |
+| `GET`    | `/v1/memory_stores/{memory_store_id}/memory_versions/{version_id}`            | GetMemoryVersion      | 列表字段 + 完整 `content`             |
+| `POST`   | `/v1/memory_stores/{memory_store_id}/memory_versions/{version_id}/redact`     | RedactMemoryVersion   | 清除 `content`/`content_sha256`/`content_size_bytes`/`path`；保留操作者和时间戳 |
 
 ## Files
 

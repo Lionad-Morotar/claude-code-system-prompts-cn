@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Building LLM-powered applications with Claude'
 description: 指导 Claude 使用 Anthropic SDK 构建 LLM 驱动的应用程序，涵盖语言检测、API 接口选择（Claude API vs Managed Agents）、模型默认值、thinking/effort 配置以及语言特定文档阅读
-ccVersion: 2.1.118
+ccVersion: 2.1.119
 -->
 # 使用 Claude 构建 LLM 驱动的应用程序
 
@@ -33,6 +33,10 @@ ccVersion: 2.1.118
 ## 子命令
 
 如果本提示底部的用户请求是一个裸子命令字符串（无散文），则搜索本文档中的每个 **Subcommands** 表格 —— 包括下面追加的任何章节中的表格 —— 并直接按照匹配的 Action 列执行。这允许用户通过 `/claude-api <subcommand>` 调用特定流程。如果文档中没有表格匹配，则将请求视为普通散文。
+
+| Subcommand | Action |
+|---|---|
+| `migrate` | 将现有 Claude API 代码迁移到更新的模型。**立即阅读 `shared/model-migration.md`** 并按顺序执行：第 0 步（确认范围 —— 在任何编辑之前询问哪些文件/目录），第 1 步（分类每个文件），然后是每个目标的破坏性变更部分。不要摘要指南 —— 执行它。如果用户没有指定目标模型，在询问范围问题的同一轮次中询问要迁移到哪个模型。 |
 
 <!-- 子命令表格在每个章节中单独定义；此标题块仅包含调度规则，以便特性门控的章节可以添加自己的表格，而不会将字符串泄漏到未门控的构建中。 -->
 
@@ -226,7 +230,7 @@ ccVersion: 2.1.118
 
 **强制流程：** Agent（一次）→ Session（每次运行）。`model`/`system`/`tools` 在 agent 上，绝不在 session 上。参见 `shared/managed-agents-overview.md` 了解完整的阅读指南、beta 头和陷阱。
 
-**Beta 头：** `managed-agents-2026-04-01` —— SDK 自动为所有 `client.beta.{agents,environments,sessions,vaults}.*` 调用设置此项。Skills API 使用 `skills-2025-10-02`，Files API 使用 `files-api-2025-04-14`，但除了 `/v1/skills` 和 `/v1/files` 之外的端点你不需要显式传递它们。
+**Beta 头：** `managed-agents-2026-04-01` —— SDK 自动为所有 `client.beta.{agents,environments,sessions,vaults,memory_stores}.*` 调用设置此项。Skills API 使用 `skills-2025-10-02`，Files API 使用 `files-api-2025-04-14`，但除了 `/v1/skills` 和 `/v1/files` 之外的端点你不需要显式传递它们。
 
 **子命令** —— 通过 `/claude-api <subcommand>` 直接调用：
 
@@ -234,7 +238,7 @@ ccVersion: 2.1.118
 |---|---|
 | `managed-agents-onboard` | 引导用户从零开始设置 Managed Agent。**立即阅读 `shared/managed-agents-onboarding.md`** 并遵循其访谈脚本：心智模型 → 了解或探索分支 → 模板配置 → 会话设置 → 生成代码。不要摘要 —— 执行访谈。 |
 
-**阅读指南：** 从 `shared/managed-agents-overview.md` 开始，然后是主题性的 `shared/managed-agents-*.md` 文件（core、environments、tools、events、client-patterns、onboarding、api-reference）。对于 Python、TypeScript、Go、Ruby、PHP 和 Java，阅读 `{lang}/managed-agents/README.md` 获取代码示例。对于 cURL，阅读 `curl/managed-agents.md`。**Agent 是持久化的 —— 创建一次，通过 ID 引用。** 存储 `agents.create` 返回的 agent ID，并将其传递给每个后续的 `sessions.create`；不要在请求路径中调用 `agents.create`。Anthropic CLI（`ant`）是从版本控制的 YAML 创建 agent 和环境的一种便捷方式 —— 参见 `shared/anthropic-cli.md`。如果你需要的绑定在语言 README 中没有显示，请从 `shared/live-sources.md` WebFetch 相关条目，而不是猜测。C# 目前不支持 Managed Agents；使用 `curl/managed-agents.md` 中的原始 HTTP 作为参考。
+**阅读指南：** 从 `shared/managed-agents-overview.md` 开始，然后是主题性的 `shared/managed-agents-*.md` 文件（core、environments、tools、events、memory、client-patterns、onboarding、api-reference）。对于 Python、TypeScript、Go、Ruby、PHP 和 Java，阅读 `{lang}/managed-agents/README.md` 获取代码示例。对于 cURL，阅读 `curl/managed-agents.md`。**Agent 是持久化的 —— 创建一次，通过 ID 引用。** 存储 `agents.create` 返回的 agent ID，并将其传递给每个后续的 `sessions.create`；不要在请求路径中调用 `agents.create`。Anthropic CLI（`ant`）是从版本控制的 YAML 创建 agent 和环境的一种便捷方式 —— 参见 `shared/anthropic-cli.md`。如果你需要的绑定在语言 README 中没有显示，请从 `shared/live-sources.md` WebFetch 相关条目，而不是猜测。C# 目前不支持 Managed Agents；使用 `curl/managed-agents.md` 中的原始 HTTP 作为参考。
 
 **当用户想要从零开始设置 Managed Agent 时**（例如"我该如何开始"、"引导我创建一个"、"设置一个新 agent"）：阅读 `shared/managed-agents-onboarding.md` 并执行其访谈 —— 与 `managed-agents-onboard` 子命令相同的流程。
 

@@ -1,11 +1,14 @@
 <!--
 name: 'Tool Description: Background monitor (streaming events)'
 description: 描述后台监控工具，将长时间运行脚本的 stdout 事件流式推送为聊天通知，包含脚本质量、输出量和选择性过滤的指导
-ccVersion: 2.1.105
+ccVersion: 2.1.119
 -->
 启动一个后台监控器，将长时间运行脚本的事件流式推送。stdout 的每一行都是一个事件 —— 你可以继续工作，通知会出现在聊天中。事件按自己的时间表到达，并非来自用户的回复，即使某条事件在你等待用户回答问题时到达。
 
-Monitor 适用于**流式**场景："每当 X 发生时通知我。"对于"等待 X 完成"的一次性场景，改用 Bash 配合 `run_in_background` —— 退出时你会收到完成通知。
+根据你需要多少通知来选择：
+- **一次**（"服务器就绪时告诉我 / 构建完成时告诉我"）→ 使用 **Bash 配合 `run_in_background`**，以及一个在条件为真时退出的命令，例如 `until grep -q "Ready in" dev.log; do sleep 0.5; done`。退出时你会收到一条完成通知。
+- **每次发生，无限期**（"每当出现 ERROR 行时告诉我"）→ Monitor 配合无界命令（`tail -f`、`inotifywait -m`、`while true`）。
+- **每次发生，直到已知的结束点**（"输出每个 CI 步骤的结果，运行完成时停止"）→ Monitor 配合一个输出行然后退出的命令。
 
 你的脚本的 stdout 就是事件流。每一行都会成为一条通知。退出即结束监听。
 
@@ -25,6 +28,19 @@ Monitor 适用于**流式**场景："每当 X 发生时通知我。"对于"等�
 
   # Node 脚本，在事件到达时立即输出（例如 WebSocket 监听器）
   node watch-for-events.js
+
+  # 每次发生，有自然结束点：在每个 CI 检查到达时输出，运行完成时退出
+  prev=""
+  while true; do
+    s=$(gh pr checks 123 --json name,bucket)
+    cur=$(jq -r '.[] | select(.bucket!="pending") | "\(.name): \(.bucket)"' <<<"$s" | sort)
+    comm -13 <(echo "$prev") <(echo "$cur")
+    prev=$cur
+    jq -e 'all(.bucket!="pending")' <<<"$s" >/dev/null && break
+    sleep 30
+  done
+
+**不要为单次通知使用无界命令。** `tail -f`、`inotifywait -m` 和 `while true` 不会自行退出，因此即使事件已经触发，监控器也会保持就绪状态直到超时。对于"当 X 就绪时告诉我"，改用 Bash `run_in_background` 配合 `until` 循环（一次通知，几秒内结束）。注意，`tail -f log | grep -m 1 ...` *不会*解决这个问题：如果日志在匹配后安静下来，`tail` 永远不会收到 SIGPIPE，管道仍会挂起。
 
 **脚本质量：**
 - 管道中始终使用 `grep --line-buffered` —— 否则管道缓冲会将事件延迟数分钟。
