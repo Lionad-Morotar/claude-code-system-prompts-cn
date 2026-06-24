@@ -1,7 +1,7 @@
 <!--
 name: 'Tool Description: TeammateTool'
 description: Tool description for the TeammateTool
-ccVersion: 2.1.16
+ccVersion: 2.1.88
 -->
 
 # TeammateTool
@@ -23,7 +23,7 @@ ccVersion: 2.1.16
 ```
 
 这将创建：
-- 位于 `~/.claude/teams/{team-name}.json` 的团队文件
+- 位于 `~/.claude/teams/{team-name}/config.json` 的团队文件
 - 位于 `~/.claude/tasks/{team-name}/` 的相应任务列表目录
 
 ### approvePlan - 批准队友的计划

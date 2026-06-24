@@ -8,10 +8,10 @@
 - [x] `36c8679` Update changelog for v2.1.84
 - [x] `6368c71` v2.1.85 (+172 tokens)
 - [x] `a9dd967` Update changelog for v2.1.85
-- [ ] `f7141ee` v2.1.86 (-157 tokens)
-- [ ] `24b5c59` Update changelog for v2.1.86
-- [ ] `115c568` v2.1.87 (+0 tokens)
-- [ ] `0cb6a72` Update changelog for v2.1.87
+- [x] `f7141ee` v2.1.86 (-157 tokens)
+- [x] `24b5c59` Update changelog for v2.1.86
+- [x] `115c568` v2.1.87 (+0 tokens)
+- [x] `0cb6a72` Update changelog for v2.1.87
 - [ ] `7d7c728` v2.1.88 (-1,627 tokens)
 - [ ] `733baee` Update changelog for v2.1.88
 - [ ] `0e24543` v2.1.89 (+3,986 tokens)

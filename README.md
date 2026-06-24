@@ -34,7 +34,7 @@
 > [!important]
 > **新增（2026 年 1 月 23 日）：我们已在此列表中添加了所有 Claude Code 的约 40 个系统提醒——请参阅 [系统提醒](#system-reminders)。**
 
-此仓库包含截至 **[Claude Code v2.1.87](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.87)（2026 年 3 月 28 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 136 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
+此仓库包含截至 **[Claude Code v2.1.88](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.88)（2026 年 3 月 30 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 137 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
 
 **此仓库在每次 Claude Code 发布后的几分钟内更新。请查看 [更新日志](./CHANGELOG.md)，并在 X 上关注 [@PiebaldAI](https://x.com/PiebaldAI) 以获取每次发布中系统提示词变更的摘要。**
 
@@ -158,12 +158,14 @@
 - [系统提示词：Advisor 工具指令](./system-prompts/system-prompt-advisor-tool-instructions.md) (**443** tks) - 使用 Advisor 工具的指令。
 - [系统提示词：Chrome 浏览器 MCP 工具](./system-prompts/system-prompt-chrome-browser-mcp-tools.md) (**158** tks) - 在使用前通过 MCPSearch 加载 Chrome 浏览器 MCP 工具的说明。
 - [系统提示词：Chrome 浏览器自动化中的 Claude](./system-prompts/system-prompt-claude-in-chrome-browser-automation.md) (**761** tks) - 有效使用 Chrome 浏览器自动化工具中的 Claude 的说明。
-- [系统提示词：Git 状态](./system-prompts/system-prompt-git-status.md) (**95** tks) - 用于在对话开始时显示当前 git 状态的系统提示词。
+- [系统提示词：Git 状态](./system-prompts/system-prompt-git-status.md) (**37** tks) - 用于在对话开始时显示当前 git 状态的系统提示词。
 - [系统提示词：Hooks 配置](./system-prompts/system-prompt-hooks-configuration.md) (**1268** tks) - hooks 配置的系统提示词。用于上述 Claude Code 配置技能。
 - [系统提示词：学习模式（见解）](./system-prompts/system-prompt-learning-mode-insights.md) (**142** tks) - 在学习模式处于活动状态时提供教育见解的说明。
 - [系统提示词：学习模式](./system-prompts/system-prompt-learning-mode.md) (**1042** tks) - 带有人类协作说明的学习模式的主系统提示词。
 - [系统提示词：MCP CLI](./system-prompts/system-prompt-mcp-cli.md) (**1335** tks) - 使用 mcp-cli 与模型上下文协议服务器交互的说明。
 - [系统提示词：临时目录](./system-prompts/system-prompt-scratchpad-directory.md) (**172** tks) - 使用专用临时目录存储临时文件的说明。
+- [系统提示词：部分压缩说明](./system-prompts/system-prompt-partial-compaction-instructions.md) (**725** tks) - 当用户决定仅压缩部分对话时的压缩方式说明，包含结构化摘要格式和分析流程。
+- [系统提示词：PowerShell 5.1 版本](./system-prompts/system-prompt-powershell-edition-for-51.md) (**285** tks) - 提供 Windows PowerShell 5.1 相关信息的系统提示词。
 - [系统提示词：队友通信](./system-prompts/system-prompt-teammate-communication.md) (**138** tks) - 用于 swarm 中队友通信的系统提示词。
 - [系统提示词：工具执行被拒绝](./system-prompts/system-prompt-tool-execution-denied.md) (**157** tks) - 工具执行被拒绝时的系统提示词。
 - [系统提示词：避免 PowerShell 中不必要的 Sleep 命令](./system-prompts/system-prompt-avoiding-unnecessary-sleep-commands-part-of-powershell-tool-description.md) (**182** tks) - 关于避免在 PowerShell 脚本中使用不必要 sleep 命令的指南，包括等待和通知的替代方案。
@@ -200,7 +202,7 @@
 - [系统提醒：输出 token 限制超出](./system-prompts/system-reminder-output-token-limit-exceeded.md) (**35** tks) - 响应超出输出 token 限制时的警告。
 - [系统提醒：计划文件引用](./system-prompts/system-reminder-plan-file-reference.md) (**62** tks) - 对现有计划文件的引用。
 - [系统提醒：计划模式处于活动状态（5 阶段）](./system-prompts/system-reminder-plan-mode-is-active-5-phase.md) (**1348** tks) - 增强的计划模式系统提醒，支持并行探索和多代理规划。
-- [系统提醒：计划模式处于活动状态（迭代）](./system-prompts/system-reminder-plan-mode-is-active-iterative.md) (**923** tks) - 带有用户访谈工作流的主代理的迭代计划模式系统提醒。
+- [系统提醒：计划模式处于活动状态（迭代）](./system-prompts/system-reminder-plan-mode-is-active-iterative.md) (**936** tks) - 带有用户访谈工作流的主代理的迭代计划模式系统提醒。
 - [系统提醒：计划模式处于活动状态（子代理）](./system-prompts/system-reminder-plan-mode-is-active-subagent.md) (**310** tks) - 子代理的简化计划模式系统提醒。
 - [系统提醒：计划模式重新进入](./system-prompts/system-reminder-plan-mode-re-entry.md) (**236** tks) - 当用户在通过 shift+tab 或批准 Claude 的计划退出计划模式后再次进入计划模式时发送的系统提醒。
 - [系统提醒：排队命令（提示词）](./system-prompts/system-reminder-queued-command-prompt.md) (**35** tks) - 要处理的排队用户消息（提示词变体）。
@@ -210,7 +212,7 @@
 - [系统提醒：任务工具提醒](./system-prompts/system-reminder-task-tools-reminder.md) (**123** tks) - 使用任务跟踪工具的提醒。
 - [系统提醒：团队协调](./system-prompts/system-reminder-team-coordination.md) (**247** tks) - 团队协调的系统提醒。
 - [系统提醒：团队关闭](./system-prompts/system-reminder-team-shutdown.md) (**136** tks) - 团队关闭的系统提醒。
-- [系统提醒：Ultraplan 模式](./system-prompts/system-reminder-ultraplan-mode.md) (**342** tks) - 使用 Ultraplan 模式创建详细实现计划，支持多代理探索和评审的系统提醒。
+- [系统提醒：Ultraplan 模式](./system-prompts/system-reminder-ultraplan-mode.md) (**437** tks) - 使用 Ultraplan 模式创建详细实现计划，支持多代理探索和评审的系统提醒。
 - [系统提醒：待办事项列表已更改](./system-prompts/system-reminder-todo-list-changed.md) (**61** tks) - 待办事项列表已更改的通知。
 - [系统提醒：待办事项列表为空](./system-prompts/system-reminder-todo-list-empty.md) (**83** tks) - 待办事项列表为空的提醒。
 - [系统提醒：TodoWrite 提醒](./system-prompts/system-reminder-todowrite-reminder.md) (**98** tks) - 使用 TodoWrite 工具进行任务跟踪的提醒。
@@ -223,6 +225,7 @@
 - [工具描述：AskUserQuestion](./system-prompts/tool-description-askuserquestion.md) (**194** tks) - 用于向用户提问的工具描述。
 - [工具描述：Bash](./system-prompts/tool-description-bash.md) (**1067** tks) - Bash 工具的描述，允许 Claude 运行 shell 命令。
 - [工具描述：Computer](./system-prompts/tool-description-computer.md) (**161** tks) - Chrome 浏览器计算机自动化工具的主描述。
+- [工具描述：Config](./system-prompts/tool-description-config.md) (**275** tks) - 用于获取或设置 Claude Code 配置设置的工具，包含使用说明和可配置设置列表。
 - [工具描述：CronCreate](./system-prompts/tool-description-croncreate.md) (**948** tks) - 描述 CronCreate 工具，用于将一次性或定期 cron 任务加入队列，包含抖动和偏分钟调度指南。
 - [工具描述：Edit](./system-prompts/tool-description-edit.md) (**278** tks) - 用于在文件中执行精确字符串替换的工具描述。
 - [工具描述：EnterPlanMode](./system-prompts/tool-description-enterplanmode.md) (**970** tks) - 用于进入计划模式以探索和设计实现方法的工具描述。
@@ -235,7 +238,7 @@
 - [工具描述：Grep](./system-prompts/tool-description-grep.md) (**300** tks) - 使用 ripgrep 进行内容搜索的工具描述。
 - [工具描述：LSP](./system-prompts/tool-description-lsp.md) (**255** tks) - LSP 工具的描述。
 - [工具描述：NotebookEdit](./system-prompts/tool-description-notebookedit.md) (**121** tks) - 用于编辑 Jupyter notebook 单元格的工具描述。
-- [工具描述：PowerShell](./system-prompts/tool-description-powershell.md) (**978** tks) - 描述 PowerShell 命令执行工具，包含语法指南、超时设置和优先使用专用工具而非 PowerShell 进行文件操作的说明。
+- [工具描述：PowerShell](./system-prompts/tool-description-powershell.md) (**1455** tks) - 描述 PowerShell 命令执行工具，包含语法指南、超时设置和优先使用专用工具而非 PowerShell 进行文件操作的说明。
 - [工具描述：ReadFile](./system-prompts/tool-description-readfile.md) (**412** tks) - 用于读取文件的工具描述。
 - [工具描述：SendMessageTool](./system-prompts/tool-description-sendmessagetool.md) (**362** tks) - Agent 团队版的 SendMessageTool。
 - [工具描述：Skill](./system-prompts/tool-description-skill.md) (**442** tks) - 用于在主对话中执行技能的工具描述。
@@ -244,11 +247,11 @@
 - [工具描述：Task](./system-prompts/tool-description-task.md) (**1311** tks) - 用于启动专门的子代理来处理复杂任务的工具描述。
 - [工具描述：TeamDelete](./system-prompts/tool-description-teamdelete.md) (**154** tks) - TeamDelete 工具的描述。
 - [工具描述：TeammateTool 的操作参数](./system-prompts/tool-description-teammatetools-operation-parameter.md) (**173** tks) - TeammateTool 操作参数的工具描述。
-- [工具描述：TeammateTool](./system-prompts/tool-description-teammatetool.md) (**3811** tks) - 用于管理团队和协调 swarm 中队友的工具。
+- [工具描述：TeammateTool](./system-prompts/tool-description-teammatetool.md) (**1585** tks) - 用于管理团队和协调 swarm 中队友的工具。
 - [工具描述：request_teach_access（教学模式的一部分）](./system-prompts/tool-description-request_teach_access-part-of-teach-mode.md) (**139** tks) - 描述一个工具，该工具请求权限以使用全屏工具提示覆盖层逐步引导用户完成任务，而不是直接访问。
 - [工具描述：TodoWrite](./system-prompts/tool-description-todowrite.md) (**2037** tks) - 用于创建和管理任务列表的工具描述。
 - [工具描述：ToolSearch](./system-prompts/tool-description-toolsearch.md) (**792** tks) - 用于在使用前加载和搜索延迟工具的工具描述。
-- [工具描述：Agent（使用说明）](./system-prompts/tool-description-agent-usage-notes.md) (**838** tks) - Task/Agent 工具的使用说明和指南，包括启动子代理、后台执行、恢复和工作树隔离。
+- [工具描述：Agent（使用说明）](./system-prompts/tool-description-agent-usage-notes.md) (**798** tks) - Task/Agent 工具的使用说明和指南，包括启动子代理、后台执行、恢复和工作树隔离。
 - [工具描述：Agent（何时启动子代理）](./system-prompts/tool-description-agent-when-to-launch-subagents.md) (**174** tks) - 描述何时使用 Agent 工具 - 用于启动专门的子代理子进程以自主处理复杂的多步骤任务。
 - [工具描述：WebFetch](./system-prompts/tool-description-webfetch.md) (**297** tks) - 用于 Web 获取功能的工具描述。
 - [工具描述：WebSearch](./system-prompts/tool-description-websearch.md) (**329** tks) - 用于 Web 搜索功能的工具描述。
@@ -274,5 +277,5 @@
 - [技能：更新 Claude Code 配置](./system-prompts/skill-update-claude-code-config.md) (**1255** tks) - 用于修改 Claude Code 配置文件（settings.json）的技能。
 - [技能：验证 CLI 变更（Verify 技能示例）](./system-prompts/skill-verify-cli-changes-example-for-verify-skill.md) (**565** tks) - 验证 CLI 变更的示例工作流，作为 Verify 技能的一部分。
 - [技能：验证服务端/API 变更（Verify 技能示例）](./system-prompts/skill-verify-serverapi-changes-example-for-verify-skill.md) (**612** tks) - 验证服务端/API 变更的示例工作流，作为 Verify 技能的一部分。
-- [技能：Verify 技能](./system-prompts/skill-verify-skill.md) (**4888** tks) - 用于验证代码变更的意见化验证工作流技能。
+- [技能：Verify 技能](./system-prompts/skill-verify-skill.md) (**1779** tks) - 用于验证代码变更的意见化验证工作流技能。
 - [技能：update-config（7 步验证流程）](./system-prompts/skill-update-config-7-step-verification-flow.md) (**1160** tks) - 引导 Claude 通过 7 步流程构建和验证 Claude Code hooks 的技能，确保它们在用户特定项目环境中正确工作。

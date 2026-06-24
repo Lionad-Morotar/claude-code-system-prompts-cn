@@ -1,6 +1,6 @@
 <!--
 name: 'Tool Description: PowerShell'
-description: 描述 PowerShell 命令执行工具，包括语法指南、超时设置以及优先使用专用工具而非 PowerShell 进行文件操作的说明
+description: Describes the PowerShell command execution tool with syntax guidance, timeout settings, and instructions to prefer specialized tools over PowerShell for file operations
 ccVersion: 2.1.139
 variables:
   - RENDER_COMMAND_NOTES_FN
@@ -25,14 +25,14 @@ ${RENDER_COMMAND_NOTES_FN(COMMAND_NOTES)}
 
 在执行命令之前，请遵循以下步骤：
 
-1. 目录验证：
+1. **目录验证：**
    - 如果命令将创建新目录或文件，首先使用 `Get-ChildItem`（或 `ls`）验证父目录存在且位置正确
 
-2. 命令执行：
+2. **命令执行：**
    - 始终使用双引号引用包含空格的文件路径
    - 捕获命令的输出。
 
-PowerShell 语法说明：
+**PowerShell 语法说明：**
    - 变量使用 $ 前缀：`$myVar = "value"`
    - 转义字符是反引号（`），而不是反斜杠
    - 使用 Verb-Noun cmdlet 命名：Get-ChildItem、Set-Location、New-Item、Remove-Item
@@ -44,10 +44,10 @@ PowerShell 语法说明：
    - 环境变量：使用 `$env:NAME` 读取，使用 `$env:NAME = "value"` 设置（而不是 `Set-Variable` 或 bash 的 `export`）
    - 通过调用运算符调用路径带空格的本地 exe：`& "C:\Program Files\App\app.exe" arg1 arg2`
 
-PowerShell 中不存在的 Unix 命令——请使用等效命令：
+**PowerShell 中不存在的 Unix 命令**——请使用等效命令：
    - head / tail → `Get-Content file -TotalCount N` / `-Tail N`；管道：`| Select-Object -First N` / `-Last N`
    - which → `(Get-Command name).Source`
-   - touch → `if (-not (Test-Path path)) { New-Item -ItemType File path }`（NEVER 对文件使用 `New-Item -Force`——它会截断现有内容）
+   - touch → `if (-not (Test-Path path)) { New-Item -ItemType File path }`（**永远不要**对文件使用 `New-Item -Force`——它会截断现有内容）
    - wc -l → `(Get-Content file | Measure-Object -Line).Lines`
    - mkdir -p → `New-Item -ItemType Directory -Force path`（`-p` 不是 PowerShell 标志）
    - rm -rf → `Remove-Item -Recurse -Force path`
@@ -57,14 +57,14 @@ PowerShell 中不存在的 Unix 命令——请使用等效命令：
    - VAR=x cmd → `$env:VAR = 'x'; cmd`（PowerShell 没有内联环境变量前缀）
    - Bash 控制流（`if [ -f x ]`、`for x in *`、反引号 ``cmd`` 替换）是解析错误——使用 `if (Test-Path x)`、`foreach ($x in ...)`、`$(cmd)`
 
-退出码说明：`-ErrorAction SilentlyContinue` 会抑制错误输出，但 cmdlet 失败仍会导致此工具报告退出码 1。要使 cmdlet 失败真正非致命，将其提升为终止错误并吞掉：`try { Cmdlet ... -ErrorAction Stop } catch {}`（没有 `-ErrorAction Stop`，非终止错误会跳过 `catch` 并仍然退出码 1）。
+**退出码说明：** `-ErrorAction SilentlyContinue` 会抑制错误输出，但 cmdlet 失败仍会导致此工具报告退出码 1。要使 cmdlet 失败真正非致命，将其提升为终止错误并吞掉：`try { Cmdlet ... -ErrorAction Stop } catch {}`（没有 `-ErrorAction Stop`，非终止错误会跳过 `catch` 并仍然退出码 1）。
 
-交互式和阻塞命令（会挂起——此工具以 -NonInteractive 运行）：
-   - NEVER 使用 `Read-Host`、`Get-Credential`、`Out-GridView`、`$Host.UI.PromptForChoice` 或 `pause`
+**交互式和阻塞命令**（会挂起——此工具以 -NonInteractive 运行）：
+   - **永远不要**使用 `Read-Host`、`Get-Credential`、`Out-GridView`、`$Host.UI.PromptForChoice` 或 `pause`
    - 破坏性 cmdlet（`Remove-Item`、`Stop-Process`、`Clear-Content` 等）可能会提示确认。当你打算继续操作时，添加 `-Confirm:$false`。对于只读/隐藏项目使用 `-Force`。
    - 永远不要使用 `git rebase -i`、`git add -i` 或其他打开交互式编辑器的命令
 
-向本地可执行文件传递多行字符串（提交消息、文件内容）：
+**向本地可执行文件传递多行字符串**（提交消息、文件内容）：
    - 使用单引号 here-string，这样 PowerShell 不会展开内部的 `$` 或反引号。关闭的 `'@` 必须位于第 0 列（无前导空格）且独占一行——缩进会导致解析错误：
 <example>
 git commit -m @'
@@ -75,7 +75,7 @@ git commit -m @'
    - 使用 `@'...'@`（单引号，字面量）而不是 `@"..."@`（双引号，插值），除非你需要变量展开
    - 对于包含 `-`、`@` 或其他 PowerShell 解析为运算符的字符的参数，使用停止解析标记：`git log --% --format=%H`
 
-使用说明：
+**使用说明：**
   - command 参数是必需的。
   - 你可以指定可选的超时时间（毫秒，最大 ${MAX_TIMEOUT_MS_FN()}ms / ${MAX_TIMEOUT_MS_FN()/60000} 分钟）。如果未指定，命令将在 ${DEFAULT_TIMEOUT_MS_FN()}ms（${DEFAULT_TIMEOUT_MS_FN()/60000} 分钟）后超时。
   - 编写清晰、简洁的命令描述非常有帮助。

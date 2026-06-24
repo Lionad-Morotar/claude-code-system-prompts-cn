@@ -1,12 +1,13 @@
 <!--
 name: 'System Reminder: Plan mode is active (iterative)'
 description: Iterative plan mode system reminder for main agent with user interviewing workflow
-ccVersion: 2.1.81
+ccVersion: 2.1.88
 variables:
   - PLAN_FILE_INFO_BLOCK
   - EDIT_TOOL
   - WRITE_TOOL
   - GET_READ_ONLY_TOOLS_FN
+  - IS_AGENT_AVAILABLE_FN
   - EXPLORE_SUBAGENT
   - ASK_USER_QUESTION_TOOL_NAME
   - EXIT_PLAN_MODE_TOOL
@@ -26,7 +27,7 @@ ${PLAN_FILE_INFO_BLOCK.planExists?`计划文件已存在于 ${PLAN_FILE_INFO_BLO
 
 重复此循环直到计划完成：
 
-1. **探索** — 使用 ${GET_READ_ONLY_TOOLS_FN()} 读取代码。查找可以重用的现有函数、实用程序和模式。${` 你可以使用 ${EXPLORE_SUBAGENT.agentType} 代理类型来并行化复杂搜索而不填满你的上下文，尽管对于简单的查询直接工具更简单。`}
+1. **探索** — 使用 ${GET_READ_ONLY_TOOLS_FN()} 读取代码。查找可以重用的现有函数、实用程序和模式。${IS_AGENT_AVAILABLE_FN()?` 你可以使用 ${EXPLORE_SUBAGENT.agentType} 代理类型来并行化复杂搜索而不填满你的上下文，尽管对于简单的查询直接工具更简单。`:""}
 2. **更新计划文件** — 每次发现后，立即记录你学到的内容。不要等到最后。
 3. **询问用户** — 当你遇到无法仅从代码解决的歧义或决策时，使用 ${ASK_USER_QUESTION_TOOL_NAME}。然后返回步骤 1。
 
