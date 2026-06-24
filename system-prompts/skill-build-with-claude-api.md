@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Build with Claude API'
 description: Main routing guide for building LLM-powered applications with Claude, including language detection, surface selection, and architecture overview
-ccVersion: 2.1.91
+ccVersion: 2.1.94
 -->
 # 使用 Claude 构建大语言模型驱动的应用程序
 
@@ -12,6 +12,14 @@ ccVersion: 2.1.91
 除非用户另有要求：
 
 对于 Claude 模型版本，请使用 {{OPUS_NAME}}，你可以通过确切的模型字符串 `{{OPUS_ID}}` 访问它。对于任何稍微复杂的任务，请默认使用自适应思考 (`thinking: {type: "adaptive"}`)。最后，对于任何可能涉及长输入、长输出或高 `max_tokens` 的请求，请默认使用流式传输 —— 这可以防止请求超时。如果你不需要处理单独的流事件，可以使用 SDK 的 `.get_final_message()` / `.finalMessage()` 辅助方法来获取完整响应
+
+---
+
+## 子命令
+
+如果此提示词底部的用户请求是裸子命令字符串（无散文），则搜索本文档中的所有 **子命令** 表 —— 包括下面追加的任何部分 —— 并直接遵循匹配的 Action 列。这允许用户通过 `/claude-api <subcommand>` 调用特定流程。如果文档中没有表匹配，则将请求视为普通散文。
+
+<!-- 子命令表在每个部分下方定义；此标头块仅包含调度规则，以便功能门控的部分可以添加自己的表，而不会将字符串泄漏到未门控的构建中。 -->
 
 ---
 

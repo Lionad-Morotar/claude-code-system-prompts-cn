@@ -34,7 +34,7 @@
 > [!important]
 > **新增（2026 年 1 月 23 日）：我们已在此列表中添加了所有 Claude Code 的约 40 个系统提醒——请参阅 [系统提醒](#system-reminders)。**
 
-此仓库包含截至 **[Claude Code v2.1.92](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.92)（2026 年 4 月 3 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 141 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
+此仓库包含截至 **[Claude Code v2.1.94](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.94)（2026 年 4 月 7 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 142 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
 
 **此仓库在每次 Claude Code 发布后的几分钟内更新。请查看 [更新日志](./CHANGELOG.md)，并在 X 上关注 [@PiebaldAI](https://x.com/PiebaldAI) 以获取每次发布中系统提示词变更的摘要。**
 
@@ -98,23 +98,37 @@
 - [代理提示词：Bash 命令文件路径提取](./system-prompts/agent-prompt-bash-command-file-path-extraction.md) (**286** tks) - 用于从 bash 命令输出中提取文件路径的系统提示词。
 - [代理提示词：Bash 命令前缀检测](./system-prompts/agent-prompt-bash-command-prefix-detection.md) (**835** tks) - 用于检测命令前缀和命令注入的系统提示词。
 - [代理提示词：Claude 指南代理](./system-prompts/agent-prompt-claude-guide-agent.md) (**734** tks) - 用于 claude-guide 代理的系统提示词，该代理帮助用户有效地理解和使用 Claude Code、Claude Agent SDK 和 Claude API。
+- [代理提示词：编码会话标题生成器](./system-prompts/agent-prompt-coding-session-title-generator.md) (**181** tks) - 生成编码会话的标题。
 - [代理提示词：命令执行专家](./system-prompts/agent-prompt-command-execution-specialist.md) (**109** tks) - 专注于 bash 命令的命令执行代理的系统提示词。
 - [代理提示词：带有附加说明的对话总结](./system-prompts/agent-prompt-conversation-summarization-with-additional-instructions.md) (**1133** tks) - 支持自定义附加说明的扩展总结提示词。
 - [代理提示词：对话总结](./system-prompts/agent-prompt-conversation-summarization.md) (**1121** tks) - 用于创建详细对话摘要的系统提示词。
+- [代理提示词：确定要附加的记忆文件](./system-prompts/agent-prompt-determine-which-memory-files-to-attach.md) (**265** tks) - 用于确定为主代理附加哪些记忆文件的代理。
+- [代理提示词：Dream 记忆整合](./system-prompts/agent-prompt-dream-memory-consolidation.md) (**737** tks) - 指导智能体执行多阶段记忆整合遍历 —— 定位现有记忆、从日志和记录中收集近期信号、将更新合并到主题文件中、修剪索引。
+- [代理提示词：Dream 记忆修剪](./system-prompts/agent-prompt-dream-memory-pruning.md) (**346** tks) - 指导智能体执行记忆修剪遍历，通过删除过时或无效的记忆文件并合并重复项，在记忆目录中进行整理。
 - [代理提示词：最近消息总结](./system-prompts/agent-prompt-recent-message-summarization.md) (**724** tks) - 用于总结最近消息的代理提示词。
+- [代理提示词：自主智能体动作安全监控（第一部分）](./system-prompts/agent-prompt-security-monitor-for-autonomous-agent-actions-first-part.md) (**3101** tks) - 指导 Claude 作为安全监控，评估自主编码智能体动作是否符合阻止/允许规则，以防止提示注入、范围蔓延和意外损害。
+- [代理提示词：自主智能体动作安全监控（第二部分）](./system-prompts/agent-prompt-security-monitor-for-autonomous-agent-actions-second-part.md) (**3325** tks) - 定义控制智能体可执行或不可执行哪些工具动作的环境上下文、阻止规则和允许例外。
 - [代理提示词：通过 Swarm 退出计划模式](./system-prompts/agent-prompt-exit-plan-mode-with-swarm.md) (**440** tks) - 当调用 ExitPlanMode 并将 `isSwarm` 设置为 true 时的系统提醒。
 - [代理提示词：提示词 Hook 执行](./system-prompts/agent-prompt-prompt-hook-execution.md) (**134** tks) - 在评估是传递还是失败提示词 hook 时给予 Claude 的提示词。
 - [代理提示词：提示词建议生成器（明确意图）](./system-prompts/agent-prompt-prompt-suggestion-generator-stated-intent.md) (**166** tks) - 用于根据用户明确说明的下一步生成提示词建议的说明。
 - [代理提示词：提示词建议生成器 v2](./system-prompts/agent-prompt-prompt-suggestion-generator-v2.md) (**296** tks) - 用于为 Claude Code 生成提示词建议的 v2 说明。
+- [代理提示词：快速 PR 创建](./system-prompts/agent-prompt-quick-pr-creation.md) (**806** tks) - 使用预填充上下文创建提交和拉取请求的简化提示词。
+- [代理提示词：快速 git 提交](./system-prompts/agent-prompt-quick-git-commit.md) (**510** tks) - 使用预填充上下文创建单个 git 提交的简化提示词。
 - [代理提示词：Remember 技能](./system-prompts/agent-prompt-remember-skill.md) (**1048** tks) - /remember 技能的系统提示词，该技能审查会话记忆并使用重复模式和学习更新 CLAUDE.local.md。
-- [代理提示词：会话搜索助手](./system-prompts/agent-prompt-session-search-assistant.md) (**439** tks) - 用于会话搜索助手的代理提示词，该助手根据用户查询和元数据查找相关会话。
+- [代理提示词：会话搜索](./system-prompts/agent-prompt-session-search.md) (**158** tks) - 子代理提示词，用于通过扫描 .jsonl 记录文件搜索过去的 Claude Code 对话会话，并返回匹配的会话 ID。
+- [代理提示词：会话记忆更新说明](./system-prompts/agent-prompt-session-memory-update-instructions.md) (**756** tks) - 用于在对话期间更新会话记忆文件的说明。
 - [代理提示词：会话记录模板](./system-prompts/agent-prompt-session-notes-template.md) (**292** tks) - 用于跟踪编码工作和决策的会话记录的模板结构。
 - [代理提示词：会话记录更新说明](./system-prompts/agent-prompt-session-notes-update-instructions.md) (**756** tks) - 用于在对话期间更新会话记录文件的说明。
 - [代理提示词：会话标题和分支生成](./system-prompts/agent-prompt-session-title-and-branch-generation.md) (**355** tks) - 用于为编码会话生成简洁标题和 git 分支名称的系统提示词。
 - [代理提示词：更新 Magic Docs](./system-prompts/agent-prompt-update-magic-docs.md) (**718** tks) - 用于 magic-docs 代理的提示词。
 - [代理提示词：用户情感分析](./system-prompts/agent-prompt-user-sentiment-analysis.md) (**205** tks) - 用于分析用户沮丧和 PR 创建请求的系统提示词。
+- [代理提示词：验证专家](./system-prompts/agent-prompt-verification-specialist.md) (**2938** tks) - 验证子代理的系统提示词，通过运行构建、测试套件、linter 和对抗性探测来对抗性测试实现，然后发布 PASS/FAIL/PARTIAL 判定。
 - [代理提示词：WebFetch 总结器](./system-prompts/agent-prompt-webfetch-summarizer.md) (**185** tks) - 用于为主模型总结 WebFetch 冗长输出的代理的提示词。
 - [代理提示词：通用目的](./system-prompts/agent-prompt-general-purpose.md) (**277** tks) - 通用子代理的系统提示词，用于搜索、分析和编辑代码，同时向调用者简洁报告发现。
+- [代理提示词：Hook 条件评估器（停止）](./system-prompts/agent-prompt-hook-condition-evaluator-stop.md) (**145** tks) - 用于评估 hook 条件（特别是停止条件）的系统提示词。
+- [代理提示词：记忆合成](./system-prompts/agent-prompt-memory-synthesis.md) (**226** tks) - 子代理，读取持久记忆文件并返回仅与每个查询相关的信息的 JSON 综合结果，附带引用的文件名。
+- [代理提示词：Onboarding 指南生成器](./system-prompts/agent-prompt-onboarding-guide-generator.md) (**1135** tks) - 通过分析创建者的使用数据、分类会话类型并协作迭代草稿，共同编写面向 Claude Code 新用户的团队 onboarding 指南（ONBOARDING.md）。
+- [代理提示词：工作分叉](./system-prompts/agent-prompt-worker-fork.md) (**258** tks) - 分叉工作子智能体的系统提示词，执行来自父智能体的单一指令并简洁地报告结果。
 
 ### 数据
 
@@ -162,6 +176,10 @@
 - [系统提示词：学习模式（见解）](./system-prompts/system-prompt-learning-mode-insights.md) (**142** tks) - 在学习模式处于活动状态时提供教育见解的说明。
 - [系统提示词：学习模式](./system-prompts/system-prompt-learning-mode.md) (**1042** tks) - 带有人类协作说明的学习模式的主系统提示词。
 - [系统提示词：MCP CLI](./system-prompts/system-prompt-mcp-cli.md) (**1335** tks) - 使用 mcp-cli 与模型上下文协议服务器交互的说明。
+- [系统提示词：MCP 工具结果截断](./system-prompts/system-prompt-mcp-tool-result-truncation.md) (**164** tks) - 处理 MCP 工具长输出的指南，包括何时使用直接文件查询与子代理进行分析。
+- [系统提示词：用户详情记忆描述](./system-prompts/system-prompt-memory-description-of-user-details.md) (**122** tks) - 描述每个用户记忆文件的用途和指南，这些文件跨会话累积关于用户角色、目标、知识和偏好的详细信息。
+- [系统提示词：用户反馈记忆描述](./system-prompts/system-prompt-memory-description-of-user-feedback.md) (**139** tks) - 描述用户反馈记忆类型，该类型存储关于工作方法的指导，强调记录成功和失败，并检查与团队记忆的矛盾。
+- [系统提示词：记忆过时验证](./system-prompts/system-prompt-memory-staleness-verification.md) (**112** tks) - 指导智能体对照当前文件/资源状态验证记忆记录，并删除与观察到的现实冲突的过时记忆。
 - [系统提示词：临时目录](./system-prompts/system-prompt-scratchpad-directory.md) (**172** tks) - 使用专用临时目录存储临时文件的说明。
 - [系统提示词：部分压缩说明](./system-prompts/system-prompt-partial-compaction-instructions.md) (**725** tks) - 当用户决定仅压缩部分对话时的压缩方式说明，包含结构化摘要格式和分析流程。
 - [系统提示词：PowerShell 5.1 版本](./system-prompts/system-prompt-powershell-edition-for-51.md) (**285** tks) - 提供 Windows PowerShell 5.1 相关信息的系统提示词。
@@ -250,8 +268,7 @@
 - [工具描述：request_teach_access（教学模式的一部分）](./system-prompts/tool-description-request_teach_access-part-of-teach-mode.md) (**139** tks) - 描述一个工具，该工具请求权限以使用全屏工具提示覆盖层逐步引导用户完成任务，而不是直接访问。
 - [工具描述：TodoWrite](./system-prompts/tool-description-todowrite.md) (**2037** tks) - 用于创建和管理任务列表的工具描述。
 - [工具描述：ToolSearch](./system-prompts/tool-description-toolsearch.md) (**792** tks) - 用于在使用前加载和搜索延迟工具的工具描述。
-- [工具描述：Agent（使用说明）](./system-prompts/tool-description-agent-usage-notes.md) (**798** tks) - Task/Agent 工具的使用说明和指南，包括启动子代理、后台执行、恢复和工作树隔离。
-- [工具描述：Agent（何时启动子代理）](./system-prompts/tool-description-agent-when-to-launch-subagents.md) (**174** tks) - 描述何时使用 Agent 工具 - 用于启动专门的子代理子进程以自主处理复杂的多步骤任务。
+- [工具描述：Agent（使用说明）](./system-prompts/tool-description-agent-usage-notes.md) (**748** tks) - Task/Agent 工具的使用说明和指南，包括启动子代理、后台执行、恢复和工作树隔离。
 - [工具描述：WebFetch](./system-prompts/tool-description-webfetch.md) (**297** tks) - 用于 Web 获取功能的工具描述。
 - [工具描述：WebSearch](./system-prompts/tool-description-websearch.md) (**329** tks) - 用于 Web 搜索功能的工具描述。
 - [工具描述：Write](./system-prompts/tool-description-write.md) (**159** tks) - 用于创建和覆盖单个文件的工具描述。
@@ -269,12 +286,13 @@
 - [技能：/loop 斜杠命令](./system-prompts/skill-loop-slash-command.md) (**1040** tks) - 将用户输入解析为间隔和提示词，将间隔转换为 cron 表达式，并安排定期任务。
 - [技能：/stuck 斜杠命令](./system-prompts/skill-stuck-slash-command.md) (**964** tks) - 诊断冻结或缓慢的 Claude Code 会话。
 - [技能：使用 Claude API 构建（参考指南）](./system-prompts/skill-build-with-claude-api-reference-guide.md) (**468** tks) - 用于展示语言特定参考文档并支持快速任务导航的模板。
-- [技能：使用 Claude API 构建](./system-prompts/skill-build-with-claude-api.md) (**5420** tks) - 使用 Claude 构建 LLM 驱动应用的主要路由指南，包括语言检测、使用面选择和架构概述。
+- [技能：使用 Claude API 构建](./system-prompts/skill-build-with-claude-api.md) (**5676** tks) - 使用 Claude 构建 LLM 驱动应用的主要路由指南，包括语言检测、使用面选择和架构概述。
 - [技能：创建验证器技能](./system-prompts/skill-create-verifier-skills.md) (**2625** tks) - 为 Verify 代理创建验证器技能的提示词，用于自动验证代码更改。
 - [技能：调试](./system-prompts/skill-debugging.md) (**412** tks) - 用于调试用户在 Claude Code 会话中遇到的问题的说明。
 - [技能：简化](./system-prompts/skill-simplify.md) (**877** tks) - 简化代码的说明。
+- [技能：团队 Onboarding 指南](./system-prompts/skill-team-onboarding-guide.md) (**521** tks) - 用于让新队友熟悉团队 Claude Code 设置的模板，以温暖的对话风格引导他们了解使用统计、设置清单、MCP 服务器、技能和团队小贴士。
 - [技能：更新 Claude Code 配置](./system-prompts/skill-update-claude-code-config.md) (**1255** tks) - 用于修改 Claude Code 配置文件（settings.json）的技能。
 - [技能：验证 CLI 变更（Verify 技能示例）](./system-prompts/skill-verify-cli-changes-example-for-verify-skill.md) (**565** tks) - 验证 CLI 变更的示例工作流，作为 Verify 技能的一部分。
 - [技能：验证服务端/API 变更（Verify 技能示例）](./system-prompts/skill-verify-serverapi-changes-example-for-verify-skill.md) (**612** tks) - 验证服务端/API 变更的示例工作流，作为 Verify 技能的一部分。
-- [技能：Verify 技能](./system-prompts/skill-verify-skill.md) (**1779** tks) - 用于验证代码变更的意见化验证工作流技能。
+- [技能：Verify 技能](./system-prompts/skill-verify-skill.md) (**2201** tks) - 用于验证代码变更的意见化验证工作流技能。
 - [技能：update-config（7 步验证流程）](./system-prompts/skill-update-config-7-step-verification-flow.md) (**1160** tks) - 引导 Claude 通过 7 步流程构建和验证 Claude Code hooks 的技能，确保它们在用户特定项目环境中正确工作。
