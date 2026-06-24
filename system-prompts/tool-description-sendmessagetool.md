@@ -1,9 +1,7 @@
 <!--
 name: 'Tool Description: SendMessageTool'
-description: Agent teams version of SendMessageTool.
-ccVersion: 2.1.186
-variables:
-  - SHOULD_INCLUDE_LEGACY_PROTOCOL_RESPONSES
+description: 团队代理版的 SendMessage 工具描述
+ccVersion: 2.1.118
 -->
 
 # SendMessage
@@ -16,7 +14,7 @@ variables:
 
 | `to` | |
 |---|---|
-| `"researcher"` | Teammate by name |
-| `"main"` | The main conversation (background subagents only) |${""}
+| `"researcher"` | 按名称指定队友 |${""}
+| `"main"` | 主对话（仅限后台子代理） |${""}
 
-Your plain text output is NOT visible to other agents — to communicate, you MUST call this tool. Messages from teammates are delivered automatically; you don't check an inbox. Refer to active teammates by name; to resume a completed background agent, use the `agentId` (format `a...-...`) from its spawn result. When relaying, don't quote the original — it's already rendered to the user.${""}${SHOULD_INCLUDE_LEGACY_PROTOCOL_RESPONSES?'\n\n## Protocol responses (legacy)\n\nIf you receive a JSON message with `type: "shutdown_request"` or `type: "plan_approval_request"`, respond with the matching `_response` type — echo the `request_id`, set `approve` true/false:\n\n```json\n{"to": "team-lead", "message": {"type": "shutdown_response", "request_id": "...", "approve": true}}\n{"to": "researcher", "message": {"type": "plan_approval_response", "request_id": "...", "approve": false, "feedback": "add error handling"}}\n```\n\nApproving shutdown terminates your process. Rejecting plan sends the teammate back to revise. Don't originate `shutdown_request` unless asked. Don't send structured JSON status messages — use TaskUpdate.':""}
+你的纯文本输出对其他代理不可见 —— 要进行通信，你**必须**调用此工具。来自队友的消息会自动送达；你无需检查收件箱。按名称引用活跃队友；要恢复已完成的后台代理，请使用其生成结果中的 `agentId`（格式为 `a...-...`）。转发消息时，不要引用原文 —— 原文已经渲染给用户了。${""}

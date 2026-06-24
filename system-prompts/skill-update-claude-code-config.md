@@ -1,7 +1,7 @@
 <!--
 name: '技能：更新 Claude Code 配置'
 description: 用于修改 Claude Code 配置文件（settings.json）的技能。
-ccVersion: 2.1.108
+ccVersion: 2.1.118
 variables:
   - SETTINGS_FILE_LOCATION_PROMPT
   - HOOKS_CONFIGURATION_PROMPT
@@ -35,9 +35,9 @@ variables:
 - 是添加到现有数组还是替换它们
 - 存在多个选项时的具体取值
 
-## 决策：Config 工具 vs 直接编辑
+## 决策：`/config` 命令 vs 直接编辑
 
-**使用 Config 工具**处理以下简单设置：
+**建议使用 `/config` 斜杠命令**处理以下简单设置：
 - `theme`、`editorMode`、`verbose`、`model`
 - `language`、`alwaysThinkingEnabled`
 - `permissions.defaultMode`

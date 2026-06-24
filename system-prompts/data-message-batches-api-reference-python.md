@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Message Batches API reference — Python'
 description: Python Batches API reference including batch creation, status polling, and result retrieval at 50% cost
-ccVersion: 2.1.78
+ccVersion: 2.1.118
 -->
 # Message Batches API — Python
 
@@ -102,6 +102,19 @@ for result in client.messages.batches.results(message_batch.id):
 cancelled = client.messages.batches.cancel(message_batch.id)
 print(f"Status: {cancelled.processing_status}")  # "canceling"
 ```
+
+---
+
+## 列出批次（自动分页）
+
+迭代任何 `list()` 调用的返回值会自动跨所有页分页 —— 不要使用 `.data` 索引，如果你想要完整集合的话：
+
+```python
+for batch in client.messages.batches.list(limit=20):
+    print(batch.id, batch.processing_status)
+```
+
+如需手动控制，使用 `first_page.has_next_page()` / `first_page.get_next_page()` / `first_page.next_page_info()`；`first_page.data` 保存当前页的项，`first_page.last_id` 是游标。
 
 ---
 

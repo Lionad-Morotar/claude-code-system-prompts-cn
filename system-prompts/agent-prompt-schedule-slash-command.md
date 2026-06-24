@@ -1,5 +1,5 @@
 ---
-ccVersion: 2.1.117
+ccVersion: 2.1.118
 command: "schedule"
 description: "管理 Claude Code 按计划自动运行后台任务的例程"
 tools:

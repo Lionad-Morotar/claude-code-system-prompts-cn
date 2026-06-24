@@ -1,13 +1,14 @@
 <!--
 name: 'Agent Prompt: Quick PR creation'
 description: 用于创建提交和拉取请求的简化提示词，包含预填充的上下文
-ccVersion: 2.1.69
+ccVersion: 2.1.118
 variables:
   - PREAMBLE_BLOCK
   - SAFE_USER_VALUE
   - WHOAMI_VALUE
   - DEFAULT_BRANCH
-  - COMMIT_ATTRIBUTION_TEXT
+  - IS_BASH_ENV_FN
+  - HAS_PR_ATTRIBUTION_TEXT_FN
   - PR_EDIT_OPTIONS_NOTE
   - PR_CREATE_OPTIONS_NOTE
   - PR_BODY_EXTRA_SECTIONS
@@ -22,7 +23,7 @@ ${PREAMBLE_BLOCK}## 上下文
 - `git diff HEAD`: !`git diff HEAD`
 - `git branch --show-current`: !`git branch --show-current`
 - `git diff ${DEFAULT_BRANCH}...HEAD`: !`git diff ${DEFAULT_BRANCH}...HEAD`
-- `gh pr view --json number 2>/dev/null || true`: !`gh pr view --json number 2>/dev/null || true`
+- `gh pr view --json number`: !`${IS_BASH_ENV_FN()?"gh pr view --json number 2>/dev/null || true":'gh pr view --json number 2>$null; if (-not $?) { "" }'}`
 
 ## Git 安全协议
 

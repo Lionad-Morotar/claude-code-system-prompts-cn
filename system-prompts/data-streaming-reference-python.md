@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Streaming reference — Python'
 description: Python streaming reference including sync/async streaming and handling different content types
-ccVersion: 2.1.111
+ccVersion: 2.1.118
 -->
 # 流式传输 — Python
 
@@ -28,6 +28,22 @@ async with async_client.messages.stream(
     async for text in stream.text_stream:
         print(text, end="", flush=True)
 ```
+
+### 低层级：`stream=True`
+
+`messages.stream()`（上述）是推荐的辅助方法 —— 它会累积状态并暴露 `text_stream` / `get_final_message()`。如果你只需要原始事件迭代器并希望更低的内存使用，请改为向 `messages.create()` 传入 `stream=True`：
+
+```python
+for event in client.messages.create(
+    model="{{OPUS_ID}}",
+    max_tokens=64000,
+    messages=[{"role": "user", "content": "Write a story"}],
+    stream=True,
+):
+    print(event.type)
+```
+
+此模式下不会为你进行最终消息累积。
 
 ---
 
@@ -165,3 +181,4 @@ except anthropic.APIStatusError as e:
 3. **跟踪令牌使用量** — `message_delta` 事件包含使用量信息
 4. **使用超时** — 为您的应用程序设置适当的超时
 5. **默认使用流式传输** — 使用 `.get_final_message()` 即使在流式传输时也能获取完整响应，这样可以在不需要处理单个事件的情况下获得超时保护
+6. **不使用流式传输的大 `max_tokens` 会抛出 `ValueError`** — SDK 会拒绝它估计将超过约 10 分钟的非流式请求（空闲连接会断开）。传入 `stream=True` / 使用 `messages.stream()`，或显式覆盖 `timeout` 来抑制此防护。

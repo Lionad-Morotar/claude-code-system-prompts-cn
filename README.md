@@ -1,6 +1,6 @@
 # Claude Code 系统提示词（中文翻译）
 
-> **当前版本：** v2.1.117（2026 年 6 月 23 日）—— 160 个版本
+> **当前版本：** v2.1.118（2026 年 4 月 23 日）—— 161 个版本
 
 从 [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) npm 包中提取的系统提示词。由社区维护，非 Anthropic 官方出品。
 

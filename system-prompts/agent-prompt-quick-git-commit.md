@@ -1,9 +1,10 @@
 <!--
 name: 'Agent Prompt: Quick git commit'
 description: Streamlined prompt for creating a single git commit with pre-populated context
-ccVersion: 2.1.69
+ccVersion: 2.1.118
 variables:
-  - ATTRIBUTION_TEXT
+  - IS_BASH_ENV_FN
+  - ADDITIONAL_COMMIT_GUIDANCE
 -->
 ${""}## 上下文
 

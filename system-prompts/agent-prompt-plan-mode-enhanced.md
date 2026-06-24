@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Plan mode (enhanced)'
 description: Enhanced prompt for the Plan subagent
-ccVersion: 2.1.105
+ccVersion: 2.1.118
 variables:
   - USE_EMBEDDED_TOOLS_FN
   - READ_TOOL_NAME

@@ -1,9 +1,11 @@
 <!--
 name: 'Tool Description: REPL'
 description: 描述 REPL 工具，一个 JavaScript 编程接口，用于循环、分支和组合 Claude Code 工具调用（以异步函数形式）
-ccVersion: 2.1.110
+ccVersion: 2.1.118
 variables:
-  - GH_COMMAND
+  - SHELL_TOOL_NAME
+  - IS_BASH_ENV_FN
+  - TEMP_FILE_HEREDOC_COMMAND_EXAMPLE
 -->
 
 REPL 是你访问 Claude Code 工具的编程接口。用它来循环、分支和用代码组合工具调用。
@@ -25,21 +27,21 @@ for (const f of filenames) {
 
 ## 可用工具
 
-所有工具作为异步函数工作：`Read`、`Write`、`Edit`、`Glob`、`Grep`、`Bash` 等。MCP 工具通过其完整名称调用（例如 `await mcp__slack__slack_send_message({...})`）。
+所有工具作为异步函数工作：`Read`、`Write`、`Edit`、`Glob`、`Grep`、`${SHELL_TOOL_NAME}` 等。MCP 工具通过其完整名称调用（例如 `await mcp__slack__slack_send_message({...})`）。
 
 ```javascript
 const { filenames } = await Glob({ pattern: '*.ts' })
 const { file } = await Read({ file_path: 'config.json' })
 await Edit({ file_path: 'foo.ts', old_string: 'old', new_string: 'new' })
-const { stdout } = await Bash({ command: 'git status' })
+const { stdout } = await ${SHELL_TOOL_NAME}({ command: 'git status' })
 ```
 
 ## 提示
-- `import`/`require` 在此处不可用 —— VM 上下文是封闭的。如需文件系统访问，使用 `Read`/`Write`/`Glob`；如需 shell，使用 `Bash`。
+- `import`/`require` 在此处不可用 —— VM 上下文是封闭的。如需文件系统访问，使用 `Read`/`Write`/`Glob`；如需 shell，使用 `${SHELL_TOOL_NAME}`。
 - 使用 `Promise.all()` 进行并行操作
 - 变量在 REPL 调用之间持久化
 - 最后一个表达式作为结果返回
 - `haiku(prompt, schema?)` — 单轮模型采样。不带 schema 返回文本；带 JSON schema 返回解析后的对象。
 - `registerTool(name, desc, schema, handler)` 定义一个新工具；`unregisterTool(name)`、`listTools()`、`getTool(name)` 管理它们
-- `shQuote(s)` 为 Bash 引用字符串 —— 请使用它而不是 `JSON.stringify`（双引号不能保护反引号或 `$`）
-- 不要写临时文件只是为了喂给 shell 命令 —— 通过 heredoc 管道：`await Bash({command: "${GH_COMMAND}"})`。通用临时路径会被并行代理覆盖。
+- ${IS_BASH_ENV_FN?``shQuote(s)` 为 Bash 引用字符串 —— 请使用它而不是 `JSON.stringify`（双引号不能保护反引号或 `$`）
+- 不要写临时文件只是为了喂给 shell 命令 —— 通过 heredoc 管道：`await ${SHELL_TOOL_NAME}({command: "${TEMP_FILE_HEREDOC_COMMAND_EXAMPLE}"})`。通用临时路径会被并行代理覆盖。`:"`shQuote(s)` 仅适用于 POSIX —— 对于 PowerShell，将单引号加倍：`"'"+s.replaceAll("'", "''")+"'"`。对于多行输入，使用 here-string `@'\n...\n'@`（闭合的 `'@` 必须在第 0 列）。"}

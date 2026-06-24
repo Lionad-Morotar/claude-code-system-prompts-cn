@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Managed Agents onboarding flow'
 description: Interactive interview script that walks users through configuring a Managed Agent from scratch — selecting tools, skills, files, environment settings — and emits setup and runtime code
-ccVersion: 2.1.105
+ccVersion: 2.1.118
 -->
 # Managed Agents — 引导流程
 
@@ -101,15 +101,23 @@ Claude Managed Agents 是一个托管式智能体（hosted agent）：Anthropic 
 
 ## 3. 生成代码
 
-从最后一个访谈问题的答案直接跳转到代码 —— 不需要铺垫"配置 vs 运行时的区别"，不需要"你需要内化的关键点是……"，不需要讲解 `agents.create()` 是一次性操作。下面的两段式结构已经展示了这些，不要复述。按检测到的语言（Python/TypeScript/cURL —— 参见 SKILL.md → Language Detection）生成**两个明确分隔的代码块**：
+从最后一个访谈问题的答案直接跳转到代码 —— 不需要铺垫"配置 vs 运行时的区别"，不需要"你需要内化的关键点是……"，不需要讲解 `agents.create()` 是一次性操作。下面的两段式结构已经展示了这些，不要复述。生成**两个明确分隔的代码块**：
 
-**代码块 1 — 设置（运行一次，保存 ID）：**
-1. `environments.create()` → 保存 `env_id`
-2. `agents.create()` 包含第一轮到第三轮的所有配置 → 保存 `agent_id` 和 `agent_version`
+**代码块 1 — 设置（运行一次，保存 ID）。** 优先以 **YAML 文件 + `ant` CLI 命令**的形式输出 —— 智能体和环境是受版本控制的定义，CLI 流程才是用户应当签入仓库并通过 CI 运行的方式。仅当用户明确要求用编程语言进行设置或 `ant` CLI 不可用时，才回退到 SDK 代码。
 
-标签：`# ONE-TIME SETUP — 运行一次，将 ID 保存到 config/.env`
+输出：
+1. `<name>.agent.yaml`，包含第 A–C 轮的所有配置（扁平结构：`name`、`model`、`system`、`tools`、`mcp_servers`、`skills`）
+2. `<name>.environment.yaml`，包含第 C 轮的网络配置
+3. apply 命令：
+   ```sh
+   AGENT_ID=$(ant beta:agents create < <name>.agent.yaml --transform id -r)
+   ENV_ID=$(ant beta:environments create < <name>.environment.yaml --transform id -r)
+   # CI 同步：ant beta:agents update --agent-id "$AGENT_ID" --version N < <name>.agent.yaml
+   ```
 
-**代码块 2 — 运行时（每次调用都运行）：**
+完整 CLI 参考参见 `shared/anthropic-cli.md`。如果改用 SDK 代码输出，则标注 `# ONE-TIME SETUP — 运行一次，将 ID 保存到 config/.env`，并调用 `environments.create()` → `agents.create()`。
+
+**代码块 2 — 运行时（每次调用都运行）。** 此部分使用检测到的语言（Python/TypeScript/cURL —— 参见 SKILL.md → Language Detection）的 SDK 代码。运行时路径需要以编程方式响应事件（工具确认、自定义工具结果、重连），这属于 SDK 范畴 —— 不要在这里输出 shell 循环。
 1. 从 config/env 加载 `env_id` + `agent_id`
 2. `sessions.create(agent=AGENT_ID, environment_id=ENV_ID, resources=[...], vault_ids=[...])`
 3. 打开流，`events.send()` 发送启动消息，循环直到 `session.status_terminated` 或 `session.status_idle && stop_reason.type !== 'requires_action'`（完整退出条件参见 `shared/managed-agents-client-patterns.md` 模式 5 —— 不要在仅 `session.status_idle` 时就退出）

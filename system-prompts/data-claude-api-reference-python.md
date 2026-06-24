@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Python'
 description: Python SDK reference including installation, client initialization, basic requests, thinking, and multi-turn conversation
-ccVersion: 2.1.111
+ccVersion: 2.1.118
 -->
 # Claude API — Python
 
@@ -25,6 +25,67 @@ client = anthropic.Anthropic(api_key="your-api-key")
 # 异步客户端
 async_client = anthropic.AsyncAnthropic()
 ```
+
+---
+
+## 客户端配置
+
+### 按请求覆盖
+
+使用 `with_options()` 为单次调用覆盖客户端设置，而不改变客户端本身：
+
+```python
+client.with_options(timeout=5.0, max_retries=5).messages.create(
+    model="{{OPUS_ID}}",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello"}],
+)
+```
+
+### 超时
+
+默认请求超时为 10 分钟。传入浮点数（秒）或 `httpx.Timeout` 以进行精细控制。超时时 SDK 抛出 `anthropic.APITimeoutError`（并根据 `max_retries` 重试）。
+
+```python
+import httpx
+
+client = anthropic.Anthropic(timeout=20.0)
+client = anthropic.Anthropic(
+    timeout=httpx.Timeout(60.0, read=5.0, write=10.0, connect=2.0),
+)
+```
+
+### 重试
+
+SDK 自动对连接错误、408、409、429 和 500+ 错误进行指数退避重试（默认 2 次重试）。在客户端上或通过 `with_options()` 设置 `max_retries`；`max_retries=0` 禁用重试。
+
+### 异步性能（aiohttp 后端）
+
+对于高并发异步工作负载，安装 `anthropic[aiohttp]` 并传入 `DefaultAioHttpClient`，替代默认的 httpx 后端：
+
+```python
+from anthropic import AsyncAnthropic, DefaultAioHttpClient
+
+async with AsyncAnthropic(http_client=DefaultAioHttpClient()) as client:
+    ...
+```
+
+### 自定义 HTTP 客户端（代理、基础 URL）
+
+使用 `DefaultHttpxClient` / `DefaultAsyncHttpxClient` —— 而非原始的 `httpx.Client` —— 以便保留 SDK 的默认超时和连接限制：
+
+```python
+from anthropic import Anthropic, DefaultHttpxClient
+
+client = Anthropic(
+    base_url="http://my.test.server.example.com:8083",  # 或 ANTHROPIC_BASE_URL 环境变量
+    http_client=DefaultHttpxClient(proxy="http://my.test.proxy.example.com"),
+)
+```
+
+### 日志
+
+设置 `ANTHROPIC_LOG=debug`（或 `info`）以通过标准 `logging` 模块启用 SDK 日志。
 
 ---
 
@@ -223,6 +284,31 @@ except anthropic.APIStatusError as e:
         print(f"API error: {e.message}")
 except anthropic.APIConnectionError:
     print("Network error. Check internet connection.")
+```
+
+---
+
+## 响应辅助方法
+
+每个响应对象都暴露 `_request_id`（从 `request-id` 头填充）—— 向 Anthropic 报告故障时记下它。尽管有下划线前缀，此属性是公开的。
+
+```python
+message = client.messages.create(...)
+print(message._request_id)       # req_018EeWyXxfu5pfWkrYcMdjWG
+print(message.to_json())          # 序列化 Pydantic 模型
+print(message.to_dict())          # 普通字典
+```
+
+要访问原始头或其他响应元数据，使用 `.with_raw_response`：
+
+```python
+raw = client.messages.with_raw_response.create(
+    model="{{OPUS_ID}}",
+    max_tokens=1024,
+    messages=[{"role": "user", "content": "Hello"}],
+)
+print(raw.headers.get("request-id"))
+message = raw.parse()  # messages.create() 本应返回的 Message 对象
 ```
 
 ---

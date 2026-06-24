@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Managed Agents overview'
 description: Provides the agent with a comprehensive overview of the Managed Agents API architecture, mandatory agent-then-session flow, beta headers, documentation reading guide, and common pitfalls
-ccVersion: 2.1.105
+ccVersion: 2.1.118
 -->
 # Managed Agents — 概览
 
@@ -51,6 +51,7 @@ Managed Agents 处于 beta 阶段。SDK 会自动设置所需的 beta 请求头�
 | 流式接收事件 / 处理 tool_use                  | `shared/managed-agents-events.md` + 语言文件                  |
 | 设置 environment                            | `shared/managed-agents-environments.md` + 语言文件            |
 | 上传文件 / 挂载仓库                          | `shared/managed-agents-environments.md`（Resources）          |
+| 将 agent/environment 定义为版本控制的 YAML；从 shell 驱动 API | `shared/anthropic-cli.md` —— `ant beta:agents create < agent.yaml`、`--transform`、`@file` 内联 |
 | 存储 MCP 凭证                                | `shared/managed-agents-tools.md`（Vaults 部分）               |
 | 调用需要密钥的非 MCP API / CLI                | `shared/managed-agents-client-patterns.md` Pattern 9 — 容器内无环境变量；vault 仅限 MCP；通过自定义工具将密钥保留在主机侧 |
 

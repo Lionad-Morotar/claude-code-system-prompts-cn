@@ -1,11 +1,13 @@
 <!--
 name: 'Tool Description: Config'
-description: Tool for getting and setting Claude Code configuration settings, with usage instructions and a list of configurable settings
+description: 用于获取和设置 Claude Code 配置设置的工具，包含使用说明和可配置设置列表
+category: tool-description
 ccVersion: 2.1.88
 variables:
   - GLOBAL_SETTINGS_LIST
   - PROJECT_SETTINGS_LIST
   - ADDITIONAL_SETTINGS_NOTE
+  - PERMISSION_RULES_TOOL_NAME
 -->
 获取或设置 Claude Code 配置设置。
 
@@ -35,3 +37,6 @@ ${ADDITIONAL_SETTINGS_NOTE}
 - 启用详细模式：{ "setting": "verbose", "value": true }
 - 更改模型：{ "setting": "model", "value": "opus" }
 - 更改权限模式：{ "setting": "permissions.defaultMode", "value": "plan" }
+- 自定义斜杠命令
+
+此工具还可以管理 MCP 工具的允许/拒绝权限规则，但不能管理内置工具。使用 `${PERMISSION_RULES_TOOL_NAME}` 来管理内置工具的允许/拒绝权限规则。

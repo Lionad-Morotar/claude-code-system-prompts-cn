@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Files API reference — Python'
 description: Python Files API reference including file upload, listing, deletion, and usage in messages
-ccVersion: 2.1.78
+ccVersion: 2.1.118
 -->
 # Files API — Python
 
@@ -21,14 +21,18 @@ Files API 用于上传文件，以便在 Messages API 请求中使用。通过�
 
 ## 上传文件
 
+`file` 参数接受 `(filename, content, content_type)` 元组、`pathlib.Path`（或任何 `PathLike` —— 自动为你读取，对 `AsyncAnthropic` 是异步安全的）或打开的二进制文件对象。
+
 ```python
 import anthropic
+from pathlib import Path
 
 client = anthropic.Anthropic()
 
 uploaded = client.beta.files.upload(
     file=("report.pdf", open("report.pdf", "rb"), "application/pdf"),
 )
+# 或：client.beta.files.upload(file=Path("report.pdf"))
 print(f"File ID: {uploaded.id}")
 print(f"Size: {uploaded.size_bytes} bytes")
 ```
@@ -92,9 +96,10 @@ response = client.beta.messages.create(
 
 ### 列出文件
 
+直接迭代列表结果 —— SDK 会自动跨所有页分页。仅在只需要第一页时使用 `.data`。
+
 ```python
-files = client.beta.files.list()
-for f in files.data:
+for f in client.beta.files.list():
     print(f"{f.id}: {f.filename} ({f.size_bytes} bytes)")
 ```
 

@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Managed Agents core concepts'
 description: Reference documentation for the Managed Agents API covering core concepts (Agents, Sessions, Environments, Containers), lifecycle, versioning, endpoints, and usage patterns
-ccVersion: 2.1.105
+ccVersion: 2.1.118
 -->
 # Managed Agents — 核心概念
 
@@ -66,6 +66,16 @@ rescheduling → running ↔ idle → terminated
 | 更新       | 仅 `title` 可更新                                    |
 | 归档       | Session 变为**只读**。不可逆。                         |
 | 删除       | 永久删除 session、事件历史、容器和检查点。              |
+
+这些是运维/排查调用 —— 通常从终端执行，而非应用程序代码。从 shell 执行（参见 `shared/anthropic-cli.md`）：
+
+```sh
+ant beta:sessions list --transform '{id,title,status,created_at}' --format jsonl
+ant beta:sessions retrieve --session-id "$SID"
+ant beta:sessions:events stream --session-id "$SID"   # 实时观察事件
+ant beta:sessions archive  --session-id "$SID"
+ant beta:sessions delete   --session-id "$SID"
+```
 
 ---
 
@@ -175,6 +185,8 @@ Agent 是一个**持久化资源**，而非每次运行的参数。预期模式�
 ```
 
 **反模式：** 在每次脚本运行顶部调用 `agents.create()`。这会积累孤立的 agent 对象，每次调用都付出创建延迟，并破坏版本控制模型。如果你在每次请求或每次 cron 触发时调用的函数中看到 `agents.create()`，那是错误的——将其提升到一次性设置并持久化 ID。
+
+> **推荐 —— 将 agent 和 environment 定义为 YAML，通过 `ant` CLI 应用。** 这种分离是 **CLI 负责控制平面（control plane），SDK 负责数据平面（data plane）**：agent 和 environment 是相对静态的资源，你用 `ant` 管理（版本控制的 YAML，从 CI 应用）；session 是动态的，由你的应用程序通过 SDK 驱动。参见 `shared/anthropic-cli.md` → *版本控制的 Managed Agents 资源*，了解 `ant beta:agents create < agent.yaml` / `update --version N` 流程。本文档中其他地方展示的 SDK `agents.create()` 调用是代码内等价方式 —— 当你需要以编程方式供应（provision）时使用，但对于人工维护的内容，优先使用 YAML 流程。
 
 ### 版本控制
 
