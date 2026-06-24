@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Dream memory consolidation'
 description: Instructs an agent to perform a multi-phase memory consolidation pass — orienting on existing memories, gathering recent signal from logs and transcripts, merging updates into topic files, and pruning the index
-ccVersion: 2.1.119
+ccVersion: 2.1.120
 variables:
   - MEMORY_DIR
   - MEMORY_DIR_CONTEXT
@@ -34,13 +34,13 @@ ${TRANSCRIPT_SOURCE_NOTE}
 - `ls` 记忆目录以查看已存在的内容
 - 阅读 `${INDEX_FILE}` 以了解当前索引
 - 浏览现有的主题文件，以便改进它们而不是创建重复项
-- `ls logs/` — 最近的日常活动日志（每天一个文件）。如果存在 `sessions/` 子目录，也查看那里的最近条目。
+- `ls -R logs/` — 最近的活动日志（每个会话一个文件，位于 `YYYY/MM/DD/` 下）。如果存在 `sessions/` 子目录，也查看那里的最近条目。
 
 ## 阶段 2 —— 收集近期信号
 
 寻找值得持久化的新信息。按大致优先级排序的来源：
 
-1. **每日日志**（`logs/YYYY/MM/YYYY-MM-DD.md`）—— 追加式活动流。读取最近 1-3 天；每行都有前缀编码（`>` 用户、`<` 助手、`.` 工具调用）
+1. **会话日志**（`logs/YYYY/MM/DD/<id>-<title>.md`）—— 追加式活动流，每个会话一个文件。读取最近 1-3 天的会话（文件名标题告诉你每个会话是关于什么的）；每行都有前缀编码（`>` 用户、`<` 助手、`.` 工具调用）
 2. **已漂移的现有记忆** —— 与你现在在代码库中看到的内容相矛盾的事实
 3. **记录搜索** —— 如果你需要特定上下文（例如，"昨天构建失败的错误消息是什么？"），使用精确术语 grep JSONL 记录：
    `grep -rn "<精确术语>" ${TRANSCRIPTS_DIR}/ --include="*.jsonl" | tail -50`

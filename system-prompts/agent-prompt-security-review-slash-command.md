@@ -1,10 +1,12 @@
 <!--
 name: 'Agent Prompt: /security-review 斜杠命令'
 description: 综合安全审查提示词，用于分析代码变更，重点关注可利用漏洞
-ccVersion: 2.1.108
+ccVersion: 2.1.120
+variables:
+  - ALLOWED_TOOLS
 -->
 ---
-allowed-tools: Bash(git diff *), Bash(git status *), Bash(git log *), Bash(git show *), Bash(git remote show *), Read, Glob, Grep, LS, Task
+allowed-tools: ${ALLOWED_TOOLS}, Read, Glob, Grep, LS, Task
 description: 完成对当前分支待处理变更的安全审查
 ---
 
