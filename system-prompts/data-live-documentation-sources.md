@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Live documentation sources'
 description: WebFetch URLs for fetching current Claude API and Agent SDK documentation from official sources
-ccVersion: 2.1.97
+ccVersion: 2.1.108
 -->
 # 实时文档源
 
@@ -104,3 +104,33 @@ ccVersion: 2.1.97
 ### Anthropic CLI
 
 `ant` CLI 提供对 Claude API 的终端访问。每个 API 资源都作为一个子命令暴露。它是创建代理、环境、会话和其他资源的一种便捷方式，可以从版本控制的 YAML 创建，并以交互方式检查响应。
+
+| 主题         | URL                                                     | 提取提示                                                                                  |
+| ------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| Anthropic CLI | `https://platform.claude.com/docs/en/api/sdks/cli.md`   | "提取 CLI 安装、身份验证、命令结构以及 beta:agents/environments/sessions 命令" |
+
+---
+
+## Claude API SDK 仓库
+
+当缓存的 `{lang}/` skill 文件或上方托管代理文档中未涵盖某个绑定（类、方法、命名空间、字段）时，通过 WebFetch 获取以下内容。SDK 包含对 `/v1/agents`、`/v1/sessions`、`/v1/environments` 及相关资源的 beta 托管代理支持 —— 在仓库中搜索 `BetaManagedAgents`、`beta.agents`、`beta.sessions` 或该语言的等效命名空间。
+
+| SDK        | URL                                                      | 提取提示                                                                                                       |
+| ---------- | -------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------- |
+| Python     | `https://github.com/anthropics/anthropic-sdk-python`     | "提取 beta 托管代理命名空间、类和方法签名（`client.beta.agents`、`client.beta.sessions`）" |
+| TypeScript | `https://github.com/anthropics/anthropic-sdk-typescript` | "提取 beta 托管代理命名空间、类和方法签名（`client.beta.agents`、`client.beta.sessions`）" |
+| Java       | `https://github.com/anthropics/anthropic-sdk-java`       | "提取 beta 托管代理类、构建器和方法签名（`client.beta().agents()`、`BetaManagedAgents*`）" |
+| Go         | `https://github.com/anthropics/anthropic-sdk-go`         | "提取 beta 托管代理类型和方法签名（`client.Beta.Agents`、`BetaManagedAgents*` 事件类型）"      |
+| Ruby       | `https://github.com/anthropics/anthropic-sdk-ruby`       | "提取 beta 托管代理方法和参数形状（`client.beta.agents`、`client.beta.sessions`）"               |
+| C#         | `https://github.com/anthropics/anthropic-sdk-csharp`     | "提取 beta 托管代理类和方法签名（NuGet 包、`BetaManagedAgents*` 类型）"                 |
+| PHP        | `https://github.com/anthropics/anthropic-sdk-php`        | "提取 beta 托管代理类和方法签名（`$client->beta->agents`、`BetaManagedAgents*` 参数）"      |
+
+---
+
+## 回退策略
+
+如果 WebFetch 失败（网络问题、URL 变更）：
+
+1. 使用语言特定文件中的缓存内容（注明缓存日期）
+2. 告知用户数据可能已过时
+3. 建议他们直接查看 platform.claude.com 或 GitHub 仓库

@@ -7,6 +7,7 @@ variables:
   - SCHEDULE_WAKEUP_TOOL_NAME
   - TASK_LIST_TOOL_NAME
   - TASK_STOP_TOOL_NAME
+  - ADDITIONAL_INFO_FN
 -->
 用户希望你自定节奏。决定什么因素使下一次迭代值得运行 —— 一段时间后，或某个可观察的事件。
 
@@ -17,5 +18,5 @@ variables:
    - `reason`：一句话说明为什么选择这个延迟。
    - `prompt`：完整的原始 /loop 输入原样，前缀为 `/loop `，以便下次触发时重新进入此技能并继续循环。例如，如果用户输入了 `/loop check the deploy`，则将 `/loop check the deploy` 作为 prompt 传递。
 4. **如果你是被 `<task-notification>` 唤醒的**而非此提示词：在循环任务的上下文中处理事件，然后使用步骤 3 中相同的 `prompt` 和相同的 1200–1800s `delaySeconds` 再次调用 ${SCHEDULE_WAKEUP_TOOL_NAME} —— ${MONITOR_TOOL_NAME} 仍然是唤醒信号；这只是重置安全网。
-5. **停止循环**：省略 ${SCHEDULE_WAKEUP_TOOL_NAME} 调用，并使用 ${TASK_STOP_TOOL_NAME} 停止你启动的任何 ${MONITOR_TOOL_NAME}（如果任务 ID 已不在上下文中，使用 ${TASK_LIST_TOOL_NAME} 查找）。
+5. **停止循环**：省略 ${SCHEDULE_WAKEUP_TOOL_NAME} 调用，并使用 ${TASK_STOP_TOOL_NAME} 停止你启动的任何 ${MONITOR_TOOL_NAME}（如果任务 ID 已不在上下文中，使用 ${TASK_LIST_TOOL_NAME} 查找）。${ADDITIONAL_INFO_FN()}
 6. 简要确认：你正在自定节奏、${MONITOR_TOOL_NAME} 是否为主唤醒信号、你已立即运行任务、以及你选择的后备延迟。

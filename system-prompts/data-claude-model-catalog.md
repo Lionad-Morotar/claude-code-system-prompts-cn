@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude model catalog'
 description: Catalog of current and legacy Claude models with exact model IDs, aliases, context windows, and pricing
-ccVersion: 2.1.79
+ccVersion: 2.1.108
 -->
 # Claude 模型目录
 

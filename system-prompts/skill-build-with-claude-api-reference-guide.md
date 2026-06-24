@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Build with Claude API (reference guide)'
 description: Template for presenting language-specific reference documentation with quick task navigation
-ccVersion: 2.1.97
+ccVersion: 2.1.108
 -->
 ## 参考文档
 
@@ -32,9 +32,6 @@ ccVersion: 2.1.97
 
 **Agent 设计（工具面、上下文管理、缓存策略）：**
 → 参考 `shared/agent-design.md`
-
-**内置工具的智能体（文件/网页/终端）（仅限 Python 和 TypeScript）：**
-→ 参考 `{lang}/agent-sdk/README.md` + `{lang}/agent-sdk/patterns.md`
 
 **托管智能体（服务端管理的状态化智能体）：**
 → 参考 `shared/managed-agents-overview.md` 和其余 `shared/managed-agents-*.md` 文件。对于 Python、TypeScript 和 cURL，语言特定代码示例位于 `{lang}/managed-agents/README.md`。Java、Go、Ruby 和 PHP 也支持该 API —— 使用 `{lang}/claude-api.md` 中的 SDK 模式转换调用。C# 目前不支持托管智能体；使用 `curl/managed-agents.md` 中的原始 HTTP 作为参考。

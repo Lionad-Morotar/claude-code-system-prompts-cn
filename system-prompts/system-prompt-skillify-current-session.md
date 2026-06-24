@@ -1,7 +1,7 @@
 <!--
-name: 'System Prompt: Skillify Current Session'
-description: System prompt for converting the current session in to a skill.
-ccVersion: 2.1.41
+name: '系统提示词：将当前会话转化为 Skill'
+description: 将会话转化为 skill 的系统提示词。
+ccVersion: 2.1.108
 -->
 # 将 {{userDescriptionBlock}} 转化为 Skill
 
@@ -124,7 +124,7 @@ Skill 描述
 - 保持简单 skill 简单——一个 2 步 skill 不需要在每个步骤上都有注释
 
 **前置元数据规则：**
-- `allowed-tools`：所需的最小权限（使用如 `Bash(gh:*)` 的模式，而不是 `Bash`）
+- `allowed-tools`：所需的最小权限（使用如 `Bash(gh *)` 的模式，而不是 `Bash`）
 - `context`：仅对不需要过程中用户输入的独立 skill 设置 `context: fork`。
 - `when_to_use` 至关重要——告诉模型何时自动调用。以"Use when..."开头并包含触发短语。示例："Use when the user wants to cherry-pick a PR to a release branch. Examples: 'cherry-pick to release', 'CP this PR', 'hotfix'."
 - `arguments` 和 `argument-hint`：仅在 skill 接受参数时包含。在正文中使用 `$name` 进行替换。
