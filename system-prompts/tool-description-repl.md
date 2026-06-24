@@ -1,7 +1,9 @@
 <!--
 name: 'Tool Description: REPL'
 description: 描述 REPL 工具，一个 JavaScript 编程接口，用于循环、分支和组合 Claude Code 工具调用（以异步函数形式）
-ccVersion: 2.1.108
+ccVersion: 2.1.110
+variables:
+  - GH_COMMAND
 -->
 
 REPL 是你访问 Claude Code 工具的编程接口。用它来循环、分支和用代码组合工具调用。
@@ -40,3 +42,4 @@ const { stdout } = await Bash({ command: 'git status' })
 - `haiku(prompt, schema?)` — 单轮模型采样。不带 schema 返回文本；带 JSON schema 返回解析后的对象。
 - `registerTool(name, desc, schema, handler)` 定义一个新工具；`unregisterTool(name)`、`listTools()`、`getTool(name)` 管理它们
 - `shQuote(s)` 为 Bash 引用字符串 —— 请使用它而不是 `JSON.stringify`（双引号不能保护反引号或 `$`）
+- 不要写临时文件只是为了喂给 shell 命令 —— 通过 heredoc 管道：`await Bash({command: "${GH_COMMAND}"})`。通用临时路径会被并行代理覆盖。
