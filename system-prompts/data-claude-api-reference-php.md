@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — PHP'
 description: PHP SDK reference
-ccVersion: 2.1.83
+ccVersion: 2.1.128
 -->
 # Claude API — PHP
 
@@ -378,3 +378,30 @@ $response = $client->beta->messages->create(
 ```
 
 **服务器端工具**（bash、web_search、text_editor、code_execution）已 GA，在两条路径上都可用 — 非 beta 使用 `Anthropic\Messages\ToolBash20250124` / `WebSearchTool20260209` / `ToolTextEditor20250728` / `CodeExecutionTool20260120`，beta 使用 `Anthropic\Beta\Messages\BetaToolBash20250124` / `BetaWebSearchTool20260209` / `BetaToolTextEditor20250728` / `BetaCodeExecutionTool20260120`。这些工具不需要 `betas:` 标头。
+
+---
+
+## 停止详情
+
+当 `stopReason` 为 `'refusal'` 时，响应包含结构化的 `stopDetails`：
+
+```php
+if ($message->stopReason === 'refusal' && $message->stopDetails !== null) {
+    echo "Category: " . $message->stopDetails->category . "\n";     // "cyber" | "bio" | null
+    echo "Explanation: " . $message->stopDetails->explanation . "\n";
+}
+```
+
+---
+
+## 错误类型
+
+`APIStatusException` 暴露 `->type` 属性用于程序化错误分类：
+
+```php
+try {
+    $client->messages->create(...);
+} catch (\Anthropic\Core\Exceptions\APIStatusException $e) {
+    echo $e->type?->value;  // "rate_limit_error", "overloaded_error", etc.
+}
+```

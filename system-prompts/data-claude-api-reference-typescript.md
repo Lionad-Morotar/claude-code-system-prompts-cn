@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — TypeScript'
 description: TypeScript SDK reference including installation, client initialization, basic requests, thinking, and multi-turn conversation
-ccVersion: 2.1.111
+ccVersion: 2.1.128
 -->
 # Claude API — TypeScript
 
@@ -303,7 +303,18 @@ console.log(await chat("Now add rate limiting and error handling"));
 | `stop_sequence` | 触发了自定义停止序列                                            |
 | `tool_use`      | Claude 想要调用工具 —— 执行它并继续                             |
 | `pause_turn`    | 模型已暂停，可以恢复（代理流程）                                |
-| `refusal`       | Claude 因安全原因拒绝 —— 输出可能不符合模式                     |
+| `refusal`       | Claude 因安全原因拒绝 —— 请检查 `stop_details`                 |
+
+### 结构化停止详情
+
+当 `stop_reason` 为 `"refusal"` 时，响应包含一个 `stop_details` 对象，其中包含有关拒绝的结构化信息：
+
+```typescript
+if (response.stop_reason === "refusal" && response.stop_details) {
+  console.log(`Category: ${response.stop_details.category}`); // "cyber" | "bio" | null
+  console.log(`Explanation: ${response.stop_details.explanation}`);
+}
+```
 
 ---
 

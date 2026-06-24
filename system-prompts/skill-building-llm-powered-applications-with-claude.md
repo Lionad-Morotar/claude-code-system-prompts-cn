@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Building LLM-powered applications with Claude'
 description: 指导 Claude 使用 Anthropic SDK 构建 LLM 驱动的应用程序，涵盖语言检测、API 接口选择（Claude API vs Managed Agents）、模型默认值、thinking/effort 配置以及语言特定文档阅读
-ccVersion: 2.1.119
+ccVersion: 2.1.128
 -->
 # 使用 Claude 构建 LLM 驱动的应用程序
 
@@ -38,7 +38,6 @@ ccVersion: 2.1.119
 |---|---|
 | `migrate` | 将现有 Claude API 代码迁移到更新的模型。**立即阅读 `shared/model-migration.md`** 并按顺序执行：第 0 步（确认范围 —— 在任何编辑之前询问哪些文件/目录），第 1 步（分类每个文件），然后是每个目标的破坏性变更部分。不要摘要指南 —— 执行它。如果用户没有指定目标模型，在询问范围问题的同一轮次中询问要迁移到哪个模型。 |
 
-<!-- 子命令表格在每个章节中单独定义；此标题块仅包含调度规则，以便特性门控的章节可以添加自己的表格，而不会将字符串泄漏到未门控的构建中。 -->
 
 ---
 
@@ -85,11 +84,11 @@ ccVersion: 2.1.119
 | Java       | 是（beta）  | 是（beta）     | Beta 工具使用，带注解类                |
 | Go         | 是（beta）  | 是（beta）     | `toolrunner` 包中的 `BetaToolRunner`  |
 | Ruby       | 是（beta）  | 是（beta）     | beta 中的 `BaseTool` + `tool_runner`  |
-| C#         | 否          | 否             | 官方 SDK                              |
+| C#         | 是（beta）  | 是（beta）     | `BetaToolRunner` + raw JSON schema    |
 | PHP        | 是（beta）  | 是（beta）     | `BetaRunnableTool` + `toolRunner()`   |
 | cURL       | N/A         | 是（beta）     | 原始 HTTP，无 SDK 特性                |
 
-> **Managed Agents 代码示例**：为 Python、TypeScript、Go、Ruby、PHP、Java 和 cURL 提供了专用的语言特定 README（`{lang}/managed-agents/README.md`、`curl/managed-agents.md`）。阅读你语言的 README 以及语言无关的 `shared/managed-agents-*.md` 概念文件。**Agent 是持久化的 —— 创建一次，通过 ID 引用。** 存储 `agents.create` 返回的 agent ID，并将其传递给每个后续的 `sessions.create`；不要在请求路径中调用 `agents.create`。Anthropic CLI（`ant`）是从版本控制的 YAML 创建 agent 和环境的一种便捷方式 —— 参见 `shared/anthropic-cli.md`。如果你需要的绑定在 README 中没有显示，请从 `shared/live-sources.md` WebFetch 相关条目，而不是猜测。C# 目前不支持 Managed Agents；使用 cURL 风格的原始 HTTP 请求调用 API。
+> **Managed Agents 代码示例**：为 Python、TypeScript、Go、Ruby、PHP、Java 和 cURL 提供了专用的语言特定 README（`{lang}/managed-agents/README.md`、`curl/managed-agents.md`）。阅读你语言的 README 以及语言无关的 `shared/managed-agents-*.md` 概念文件。**Agent 是持久化的 —— 创建一次，通过 ID 引用。** 存储 `agents.create` 返回的 agent ID，并将其传递给每个后续的 `sessions.create`；不要在请求路径中调用 `agents.create`。Anthropic CLI（`ant`）是从版本控制的 YAML 创建 agent 和环境的一种便捷方式 —— 参见 `shared/anthropic-cli.md`。如果你需要的绑定在 README 中没有显示，请从 `shared/live-sources.md` WebFetch 相关条目，而不是猜测。C# 通过 `client.Beta.Agents` 及相关命名空间拥有 beta Managed Agents 支持。
 
 ---
 
@@ -165,7 +164,7 @@ ccVersion: 2.1.119
 
 ---
 
-## 当前模型（缓存日期：2026-04-15）
+## 当前模型（缓存日期：2026-04-29）
 
 | 模型              | 模型 ID             | 上下文         | 输入 $/1M | 输出 $/1M |
 | ----------------- | ------------------- | -------------- | --------- | --------- |
@@ -238,7 +237,7 @@ ccVersion: 2.1.119
 |---|---|
 | `managed-agents-onboard` | 引导用户从零开始设置 Managed Agent。**立即阅读 `shared/managed-agents-onboarding.md`** 并遵循其访谈脚本：心智模型 → 了解或探索分支 → 模板配置 → 会话设置 → 生成代码。不要摘要 —— 执行访谈。 |
 
-**阅读指南：** 从 `shared/managed-agents-overview.md` 开始，然后是主题性的 `shared/managed-agents-*.md` 文件（core、environments、tools、events、memory、client-patterns、onboarding、api-reference）。对于 Python、TypeScript、Go、Ruby、PHP 和 Java，阅读 `{lang}/managed-agents/README.md` 获取代码示例。对于 cURL，阅读 `curl/managed-agents.md`。**Agent 是持久化的 —— 创建一次，通过 ID 引用。** 存储 `agents.create` 返回的 agent ID，并将其传递给每个后续的 `sessions.create`；不要在请求路径中调用 `agents.create`。Anthropic CLI（`ant`）是从版本控制的 YAML 创建 agent 和环境的一种便捷方式 —— 参见 `shared/anthropic-cli.md`。如果你需要的绑定在语言 README 中没有显示，请从 `shared/live-sources.md` WebFetch 相关条目，而不是猜测。C# 目前不支持 Managed Agents；使用 `curl/managed-agents.md` 中的原始 HTTP 作为参考。
+**阅读指南：** 从 `shared/managed-agents-overview.md` 开始，然后是主题性的 `shared/managed-agents-*.md` 文件（core、environments、tools、events、memory、client-patterns、onboarding、api-reference）。对于 Python、TypeScript、Go、Ruby、PHP 和 Java，阅读 `{lang}/managed-agents/README.md` 获取代码示例。对于 cURL，阅读 `curl/managed-agents.md`。**Agent 是持久化的 —— 创建一次，通过 ID 引用。** 存储 `agents.create` 返回的 agent ID，并将其传递给每个后续的 `sessions.create`；不要在请求路径中调用 `agents.create`。Anthropic CLI（`ant`）是从版本控制的 YAML 创建 agent 和环境的一种便捷方式 —— 参见 `shared/anthropic-cli.md`。如果你需要的绑定在语言 README 中没有显示，请从 `shared/live-sources.md` WebFetch 相关条目，而不是猜测。C# 通过 `client.Beta.Agents` 及相关命名空间拥有 beta Managed Agents 支持。
 
 **当用户想要从零开始设置 Managed Agent 时**（例如"我该如何开始"、"引导我创建一个"、"设置一个新 agent"）：阅读 `shared/managed-agents-onboarding.md` 并执行其访谈 —— 与 `managed-agents-onboard` 子命令相同的流程。
 
@@ -278,7 +277,7 @@ ccVersion: 2.1.119
 → 阅读 `{lang}/claude-api/README.md` + `{lang}/claude-api/files-api.md`
 
 **Managed Agents（带工作区的服务器管理有状态 agent）：**
-→ 阅读 `shared/managed-agents-overview.md` + 其余 `shared/managed-agents-*.md` 文件。对于 Python、TypeScript、Go、Ruby、PHP 和 Java，阅读 `{lang}/managed-agents/README.md` 获取代码示例。对于 cURL，阅读 `curl/managed-agents.md`。**Agent 是持久化的 —— 创建一次，通过 ID 引用。** 存储 `agents.create` 返回的 agent ID，并将其传递给每个后续的 `sessions.create`；不要在请求路径中调用 `agents.create`。Anthropic CLI（`ant`）是从版本控制的 YAML 创建 agent 和环境的一种便捷方式 —— 参见 `shared/anthropic-cli.md`。如果你需要的绑定在语言 README 中没有显示，请从 `shared/live-sources.md` WebFetch 相关条目，而不是猜测。C# 目前不支持 Managed Agents —— 使用 `curl/managed-agents.md` 中的原始 HTTP 作为参考。
+→ 阅读 `shared/managed-agents-overview.md` + 其余 `shared/managed-agents-*.md` 文件。对于 Python、TypeScript、Go、Ruby、PHP 和 Java，阅读 `{lang}/managed-agents/README.md` 获取代码示例。对于 cURL，阅读 `curl/managed-agents.md`。**Agent 是持久化的 —— 创建一次，通过 ID 引用。** 存储 `agents.create` 返回的 agent ID，并将其传递给每个后续的 `sessions.create`；不要在请求路径中调用 `agents.create`。Anthropic CLI（`ant`）是从版本控制的 YAML 创建 agent 和环境的一种便捷方式 —— 参见 `shared/anthropic-cli.md`。如果你需要的绑定在语言 README 中没有显示，请从 `shared/live-sources.md` WebFetch 相关条目，而不是猜测。C# 拥有 beta Managed Agents 支持 —— 详见 `csharp/claude-api.md`，或参考 `curl/managed-agents.md` 了解原始 HTTP。
 
 ### Claude API（完整文件参考）
 

@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Python'
 description: Python SDK reference including installation, client initialization, basic requests, thinking, and multi-turn conversation
-ccVersion: 2.1.118
+ccVersion: 2.1.128
 -->
 # Claude API — Python
 
@@ -411,7 +411,17 @@ print(chat("Now add rate limiting and error handling"))
 | `stop_sequence` | 触发了自定义停止序列 |
 | `tool_use` | Claude 想要调用工具——执行它并继续 |
 | `pause_turn` | 模型暂停，可以继续（代理流程） |
-| `refusal` | Claude 因安全原因拒绝——输出可能不符合你的模式 |
+| `refusal` | Claude 因安全原因拒绝——请检查 `stop_details` |
+
+### 结构化停止详情
+
+当 `stop_reason` 为 `"refusal"` 时，响应包含一个 `stop_details` 对象，其中包含有关拒绝的结构化信息：
+
+```python
+if response.stop_reason == "refusal" and response.stop_details:
+    print(f"Category: {response.stop_details.category}")   # "cyber" | "bio" | None
+    print(f"Explanation: {response.stop_details.explanation}")
+```
 
 ---
 

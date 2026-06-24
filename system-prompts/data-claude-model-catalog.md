@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude model catalog'
 description: Catalog of current and legacy Claude models with exact model IDs, aliases, context windows, and pricing
-ccVersion: 2.1.111
+ccVersion: 2.1.128
 -->
 # Claude 模型目录
 
@@ -81,13 +81,13 @@ curl https://api.anthropic.com/v1/models/claude-opus-4-7 \
 | Claude Opus 4.5   | `claude-opus-4-5`   | `claude-opus-4-5-20251101`    | 活跃 |
 | Claude Opus 4.1   | `claude-opus-4-1`   | `claude-opus-4-1-20250805`    | 活跃 |
 | Claude Sonnet 4.5 | `claude-sonnet-4-5` | `claude-sonnet-4-5-20250929`  | 活跃 |
-| Claude Sonnet 4   | `claude-sonnet-4-0` | `claude-sonnet-4-20250514`    | 活跃 |
-| Claude Opus 4     | `claude-opus-4-0`   | `claude-opus-4-20250514`      | 活跃 |
 
 ## 已弃用模型（即将停用）
 
 | 友好名称 | 别名（请使用） | 完整 ID | 状态 | 停用日期 |
 |-------------------|---------------------|-------------------------------|------------|--------------|
+| Claude Sonnet 4   | `claude-sonnet-4-0` | `claude-sonnet-4-20250514`    | 已弃用 | 待定          |
+| Claude Opus 4     | `claude-opus-4-0`   | `claude-opus-4-20250514`      | 已弃用 | 待定          |
 | Claude Haiku 3    | —                   | `claude-3-haiku-20240307`     | 已弃用 | 2026年4月19日 |
 
 ## 已退役模型（不再可用）
@@ -114,13 +114,13 @@ curl https://api.anthropic.com/v1/models/claude-opus-4-7 \
 | "opus 4.6"                                | `claude-opus-4-6`              |
 | "opus 4.5"                                | `claude-opus-4-5`              |
 | "opus 4.1"                                | `claude-opus-4-1`              |
-| "opus 4", "opus 4.0"                      | `claude-opus-4-0`              |
+| "opus 4", "opus 4.0"                      | `claude-opus-4-0`（已弃用 — 建议使用 `claude-opus-4-7`） |
 | "sonnet", "balanced"                      | `claude-sonnet-4-6`            |
 | "sonnet 4.6"                              | `claude-sonnet-4-6`            |
 | "sonnet 4.5"                              | `claude-sonnet-4-5`            |
-| "sonnet 4", "sonnet 4.0"                  | `claude-sonnet-4-0`            |
-| "sonnet 3.7"                              | 已退役 — 建议使用 `claude-sonnet-4-5` |
-| "sonnet 3.5"                              | 已退役 — 建议使用 `claude-sonnet-4-5` |
+| "sonnet 4", "sonnet 4.0"                  | `claude-sonnet-4-0`（已弃用 — 建议使用 `claude-sonnet-4-6`） |
+| "sonnet 3.7"                              | 已退役 — 建议使用 `claude-sonnet-4-6` |
+| "sonnet 3.5"                              | 已退役 — 建议使用 `claude-sonnet-4-6` |
 | "haiku", "fast", "cheap"                  | `claude-haiku-4-5`             |
 | "haiku 4.5"                               | `claude-haiku-4-5`             |
 | "haiku 3.5"                               | 已退役 — 建议使用 `claude-haiku-4-5` |

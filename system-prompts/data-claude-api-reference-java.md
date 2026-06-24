@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Java'
 description: Java SDK reference including installation, client initialization, basic requests, streaming, and beta tool use
-ccVersion: 2.1.83
+ccVersion: 2.1.128
 -->
 # Claude API — Java
 
@@ -364,7 +364,7 @@ import com.anthropic.models.messages.CodeExecutionTool20260120;
 .addTool(CodeExecutionTool20260120.builder().build())
 ```
 
-还有：`WebFetchTool20260209`、`MemoryTool20250818`、`ToolSearchToolBm25_20251119`。
+还有：`WebFetchTool20260209`、`MemoryTool20250818`、`ToolSearchToolBm25_20251119`、`ToolSearchToolRegex20251119`。对于顾问工具，使用 beta 命名空间中的 `BetaAdvisorTool20260301`。
 
 ### Beta 命名空间（MCP、压缩）
 
@@ -435,3 +435,32 @@ BetaRequestDocumentBlock doc = BetaRequestDocumentBlock.builder()
 ```
 
 其他方法：`.list()`、`.delete(String fileId)`、`.download(String fileId)`、`.retrieveMetadata(String fileId)`。
+
+---
+
+## 停止详情
+
+当 `stopReason()` 为 `"refusal"` 时，响应包含结构化的 `stopDetails()`：
+
+```java
+response.stopDetails().ifPresent(details -> {
+    System.out.println("Category: " + details.category());
+    System.out.println("Explanation: " + details.explanation());
+});
+```
+
+---
+
+## 错误类型
+
+`AnthropicServiceException` 暴露 `.errorType()` 返回 `Optional<ErrorType>` 用于程序化错误分类：
+
+```java
+try {
+    client.messages().create(params);
+} catch (AnthropicServiceException e) {
+    e.errorType().ifPresent(type ->
+        System.out.println("Error type: " + type)  // RATE_LIMIT_ERROR, OVERLOADED_ERROR, etc.
+    );
+}
+```

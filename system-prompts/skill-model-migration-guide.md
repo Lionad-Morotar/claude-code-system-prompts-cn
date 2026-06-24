@@ -1,9 +1,11 @@
 <!--
 name: '技能：模型迁移指南'
 description: 将现有代码迁移到新版 Claude 模型的分步说明，涵盖破坏性变更、已弃用参数、各 SDK 语法、提示行为变化及迁移检查清单
-ccVersion: 2.1.111
+ccVersion: 2.1.128
 -->
 # 模型迁移指南
+
+> **如果你通过 `/claude-api migrate` 到达此处：** 这就是正确的文件。按顺序执行以下步骤 —— 不要将其总结后返回给用户。在触碰任何文件之前，从第 0 步（确认范围）开始。
 
 如何将现有代码迁移到新版 Claude 模型。涵盖破坏性变更、已弃用参数以及已退役模型的直接替换方案。
 
@@ -498,6 +500,7 @@ Haiku 4.5 有自己的速率限制池，与 Haiku 3 / 3.5 分开。如果你在�
 - [ ] **[BLOCKS]** 将 `format` 从顶层 `output_format` 移入 `output_config.format`
 - [ ] **[BLOCKS]** 如果目标是 Opus 4.6 或 Sonnet 4.6，移除任何助手轮次预填充（见预填充替代方案表格）
 - [ ] **[BLOCKS]** 如果 `max_tokens > ~16000`，切换到流式传输（否则 SDK HTTP 超时）
+- [ ] **[TUNE]** 验证工具输入处理是否通过 JSON 解析而非对序列化输入进行原始字符串匹配（4.6 可能以不同方式转义 Unicode / 正斜杠；大多数 SDK 已将 `block.input` 暴露为解析后的对象）
 - [ ] **[TUNE]** 显式设置 `output_config={"effort": "..."}` —— 特别是从 Sonnet 4.5 迁移到 Sonnet 4.6 时（4.6 默认为 `high`）
 - [ ] **[TUNE]** 移除已 GA 的 beta 头：`effort-2025-11-24`、`fine-grained-tool-streaming-2025-05-14`、`token-efficient-tools-2025-02-19`、`output-128k-2025-02-19`；一旦使用自适应推理就移除 `interleaved-thinking-2025-05-14`
 - [ ] **[TUNE]** 一旦所有 beta 都被移除，将 `client.beta.messages.create(...)` → `client.messages.create(...)`

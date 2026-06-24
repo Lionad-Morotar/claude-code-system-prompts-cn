@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Ruby'
 description: Ruby SDK reference including installation, client initialization, basic requests, streaming, and beta tool runner
-ccVersion: 2.1.83
+ccVersion: 2.1.128
 -->
 # Claude API — Ruby
 
@@ -116,3 +116,30 @@ message = client.messages.create(
 1 小时 TTL：`cache_control: { type: "ephemeral", ttl: "1h" }`。`messages.create` 上还有一个顶层 `cache_control:`，会自动放置在最后一个可缓存块上。
 
 通过 `message.usage.cache_creation_input_tokens` / `message.usage.cache_read_input_tokens` 验证命中情况。
+
+---
+
+## 停止详情
+
+当 `stop_reason` 为 `:refusal` 时，响应包含结构化的 `stop_details`：
+
+```ruby
+if message.stop_reason == :refusal && message.stop_details
+  puts "Category: #{message.stop_details.category}"     # :cyber, :bio, or nil
+  puts "Explanation: #{message.stop_details.explanation}"
+end
+```
+
+---
+
+## 错误类型
+
+`APIStatusError` 暴露 `.type` 字段用于程序化错误分类：
+
+```ruby
+begin
+  client.messages.create(...)
+rescue Anthropic::APIStatusError => e
+  puts e.type  # :rate_limit_error, :overloaded_error, etc.
+end
+```

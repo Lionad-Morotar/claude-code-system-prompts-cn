@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Go'
 description: Go SDK reference
-ccVersion: 2.1.83
+ccVersion: 2.1.128
 -->
 # Claude API — Go
 
@@ -29,6 +29,12 @@ client := anthropic.NewClient(
     option.WithAPIKey("your-api-key"),
 )
 ```
+
+---
+
+## 模型常量
+
+Go SDK 提供了类型化的模型常量：`anthropic.ModelClaudeOpus4_7`、`anthropic.ModelClaudeOpus4_6`、`anthropic.ModelClaudeSonnet4_6`、`anthropic.ModelClaudeHaiku4_5_20251001`。除非用户另有指定，否则使用 `ModelClaudeOpus4_7`。
 
 ---
 
@@ -350,7 +356,7 @@ Tools: []anthropic.ToolUnionParam{
 },
 ```
 
-还有：`WebFetchTool20260209Param`、`MemoryTool20250818Param`、`ToolSearchToolBm25_20251119Param`、`ToolSearchToolRegex20251119Param`。
+还有：`WebFetchTool20260209Param`、`MemoryTool20250818Param`、`ToolSearchToolBm25_20251119Param`、`ToolSearchToolRegex20251119Param`。对于顾问工具，使用 beta 命名空间中的 `BetaAdvisorTool20260301Param`。
 
 ---
 
@@ -368,6 +374,19 @@ msg := anthropic.NewUserMessage(
 ```
 
 其他源：`URLPDFSourceParam{URL: "https://..."}`、`PlainTextSourceParam{Data: "..."}`。
+
+---
+
+## 停止详情
+
+当 `StopReason` 为 `anthropic.StopReasonRefusal` 时，响应包含结构化的 `StopDetails`：
+
+```go
+if resp.StopReason == anthropic.StopReasonRefusal {
+    fmt.Println("Category:", resp.StopDetails.Category)     // "cyber" | "bio" | ""
+    fmt.Println("Explanation:", resp.StopDetails.Explanation)
+}
+```
 
 ---
 

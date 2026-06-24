@@ -1,11 +1,11 @@
 <!--
 name: 'Data: Claude API reference — C#'
 description: C# SDK 参考，包括安装、客户端初始化、基本请求、流式传输和工具使用
-ccVersion: 2.1.83
+ccVersion: 2.1.128
 -->
 # Claude API — C#
 
-> **注意：** C# SDK 是 Anthropic 官方提供的 C# SDK。工具使用通过 Messages API 支持。暂无可用的基于类注解的工具运行器；请使用原始工具定义配合 JSON schema。该 SDK 还支持 Microsoft.Extensions.AI IChatClient 集成与函数调用。
+> **注意：** C# SDK 是 Anthropic 官方提供的 C# SDK。工具使用通过 Messages API 支持，配合 beta `BetaToolRunner` 实现自动工具执行循环。该 SDK 还支持 Microsoft.Extensions.AI IChatClient 集成与函数调用以及 Managed Agents（beta）。
 
 ## 安装
 
@@ -405,3 +405,48 @@ new BetaRequestDocumentBlock {
 ```
 
 非 beta 的 `DocumentBlockParamSource` 联合类型没有文件 ID 变体 —— 文件引用需要使用 `client.Beta.Messages.Create()`。
+
+---
+
+## 工具运行器（Beta）
+
+C# SDK 提供了 `BetaToolRunner` 用于自动工具执行循环。使用原始 JSON schema 定义工具，运行器处理 API 调用 → 工具执行 → 结果反馈的循环。
+
+```csharp
+using Anthropic.Models.Beta.Messages;
+
+// 如上文工具使用部分所示定义工具和创建参数，
+// 但使用 beta 命名空间类型（BetaToolUnion 等）
+var runner = client.Beta.Messages.ToolRunner(betaParams);
+
+await foreach (BetaMessage message in runner)
+{
+    foreach (var block in message.Content)
+    {
+        if (block.TryPickText(out var text))
+        {
+            Console.WriteLine(text.Text);
+        }
+    }
+}
+```
+
+---
+
+## 停止详情
+
+当 `StopReason` 为 `"refusal"` 时，响应包含结构化的 `StopDetails`：
+
+```csharp
+if (response.StopReason == "refusal" && response.StopDetails is { } details)
+{
+    Console.WriteLine($"Category: {details.Category}");
+    Console.WriteLine($"Explanation: {details.Explanation}");
+}
+```
+
+---
+
+## Managed Agents（Beta）
+
+C# SDK 通过 `client.Beta.Agents`、`client.Beta.Sessions`、`client.Beta.Environments` 及相关命名空间支持 Managed Agents。有关架构，请参阅 `shared/managed-agents-overview.md`；有关线路级参考，请参阅 `curl/managed-agents.md`。

@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Tool use concepts'
 description: Conceptual foundations of tool use with the Claude API including tool definitions, tool choice, and best practices
-ccVersion: 2.1.111
+ccVersion: 2.1.128
 -->
 # 工具使用概念
 
@@ -254,6 +254,26 @@ Claude 自动获得 `bash_code_execution`（运行 shell 命令）和 `text_edit
 完整文档请使用 WebFetch：
 
 - URL：`https://platform.claude.com/docs/en/build-with-claude/context-editing`
+
+---
+
+## 服务器端工具：Advisor（Beta）
+
+Advisor 工具让 Claude 在对话过程中咨询辅助模型。Advisor 使用你指定的模型运行自己的 API 调用，并将其分析结果返回给主模型。当你想要第二意见、专业知识或跨模型验证，但又不想自行管理编排时使用。
+
+### 工具定义
+
+```json
+{
+  "type": "advisor_20260301",
+  "name": "advisor",
+  "model": "claude-sonnet-4-6"
+}
+```
+
+`model` 参数是必需的 —— 它指定 Advisor 进行推理时使用的模型。可选字段：`caching`、`max_uses`、`allowed_callers`、`defer_loading`、`strict`。
+
+**需要 beta 头：** `advisor-tool-2026-03-01`。SDK 在使用 advisor 工具调用 `client.beta.messages.create()` 时自动设置此头。
 
 ---
 

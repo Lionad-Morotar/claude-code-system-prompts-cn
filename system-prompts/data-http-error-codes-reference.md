@@ -1,7 +1,7 @@
 <!--
 name: 'Data: HTTP error codes reference'
 description: Reference for HTTP error codes returned by the Claude API with common causes and handling strategies
-ccVersion: 2.1.111
+ccVersion: 2.1.128
 -->
 # HTTP 错误代码参考
 
@@ -190,8 +190,10 @@ thinking: budget_tokens=10000, max_tokens=16000
 | 401       | `Anthropic.AuthenticationError`   | `anthropic.AuthenticationError`   |
 | 403       | `Anthropic.PermissionDeniedError` | `anthropic.PermissionDeniedError` |
 | 404       | `Anthropic.NotFoundError`         | `anthropic.NotFoundError`         |
+| 413       | `Anthropic.RequestTooLargeError`  | `anthropic.RequestTooLargeError`  |
 | 429       | `Anthropic.RateLimitError`        | `anthropic.RateLimitError`        |
 | 500+      | `Anthropic.InternalServerError`   | `anthropic.InternalServerError`   |
+| 529       | `Anthropic.OverloadedError`       | `anthropic.OverloadedError`       |
 | 任意       | `Anthropic.APIError`              | `anthropic.APIError`              |
 
 ```typescript
@@ -216,3 +218,15 @@ try {
 ```
 
 所有异常类都继承自 `Anthropic.APIError`，它具有 `status` 属性。使用 `instanceof` 检查时，从最具体的到最不具体的顺序进行（例如，在 `APIError` 之前检查 `RateLimitError`）。
+
+## 错误 `.type` 字段
+
+所有 `APIStatusError` 子类现在都暴露一个 `.type` 属性（Python：`.type`，TypeScript：`.type`，Java：`.errorType()`，Go：`.Type()`，Ruby：`.type`，PHP：`.type`），返回 API 错误类型字符串（例如 `"invalid_request_error"`、`"authentication_error"`、`"rate_limit_error"`、`"overloaded_error"`）。当你需要比 HTTP 状态码更细粒度的分类时使用此属性 —— 例如，区分 `"billing_error"` 和 `"permission_error"`（两者都映射到 403）。
+
+```python
+except anthropic.APIStatusError as e:
+    if e.type == "rate_limit_error":
+        # 处理速率限制
+    elif e.type == "overloaded_error":
+        # 处理过载
+```
