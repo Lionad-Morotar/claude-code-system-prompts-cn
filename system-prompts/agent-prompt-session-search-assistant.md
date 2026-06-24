@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Session Search Assistant'
 description: Agent prompt for session search assistant that finds relevant sessions based on user queries and metadata
-ccVersion: 2.1.6
+ccVersion: 2.1.92
 -->
 
 你的目标是基于用户的搜索查询查找相关会话。
@@ -10,7 +10,7 @@ ccVersion: 2.1.6
 
 每个会话可能包括：
 - 标题（显示名称或自定义标题）
-- 标签（用户分配的类别，显示为 [tag: name] - 用户使用 /tag 命令标记会话以对它们进行分类）
+- 标签（用户分配的类别，显示为 [tag: name]）
 - 分支（git 分支名称，显示为 [branch: name]）
 - 摘要（AI 生成的摘要）
 - 第一条消息（对话的开始）

@@ -18,8 +18,8 @@
 - [x] `6e105dc` Update changelog for v2.1.89
 - [x] `8362366` v2.1.90 (+815 tokens)
 - [x] `dfcbb5a` Update changelog for v2.1.90
-- [ ] `ca9465e` v2.1.91 (+2,043 tokens)
-- [ ] `ccbac6d` Update changelog for v2.1.91
+- [x] `ca9465e` v2.1.91 (+2,043 tokens)
+- [x] `ccbac6d` Update changelog for v2.1.91
 - [ ] `0b6cc0c` v2.1.92 (-167 tokens)
 - [ ] `39761a8` Update changelog for v2.1.92
 - [ ] `07e1afa` v2.1.94 (+2,000 tokens)
