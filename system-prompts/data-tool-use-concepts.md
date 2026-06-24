@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Tool use concepts'
 description: Conceptual foundations of tool use with the Claude API including tool definitions, tool choice, and best practices
-ccVersion: 2.1.91
+ccVersion: 2.1.111
 -->
 # 工具使用概念
 
@@ -176,7 +176,7 @@ Claude 自动获得 `bash_code_execution`（运行 shell 命令）和 `text_edit
 ]
 ```
 
-### 动态过滤（Opus 4.6 / Sonnet 4.6）
+### 动态过滤（Opus 4.7 / Opus 4.6 / Sonnet 4.6）
 
 `web_search_20260209` 和 `web_fetch_20260209` 版本支持**动态过滤** —— Claude 编写并执行代码以在搜索结果到达上下文窗口之前对其进行过滤，从而提高准确性和令牌效率。动态过滤内置于这些工具版本中并自动激活；您不需要单独声明 `code_execution` 工具或传递任何 beta 标头。
 

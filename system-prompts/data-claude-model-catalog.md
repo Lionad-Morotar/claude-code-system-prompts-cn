@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude model catalog'
 description: Catalog of current and legacy Claude models with exact model IDs, aliases, context windows, and pricing
-ccVersion: 2.1.108
+ccVersion: 2.1.111
 -->
 # Claude 模型目录
 
@@ -12,9 +12,9 @@ ccVersion: 2.1.108
 如需获取**实时**能力数据 —— 上下文窗口、最大输出 token、功能支持（思考、视觉、effort、结构化输出等）—— 请查询 Models API，而不是依赖下方缓存的表格。当用户询问"X 的上下文窗口是多少"、"模型 X 是否支持视觉/思考/effort"、"哪些模型支持功能 Y"，或希望在运行时按能力选择模型时使用此方法。
 
 ```python
-m = client.models.retrieve("claude-opus-4-6")
-m.id                 # "claude-opus-4-6"
-m.display_name       # "Claude Opus 4.6"
+m = client.models.retrieve("claude-opus-4-7")
+m.id                 # "claude-opus-4-7"
+m.display_name       # "Claude Opus 4.7"
 m.max_input_tokens   # 上下文窗口 (int)
 m.max_tokens         # 最大输出 token (int)
 
@@ -37,21 +37,21 @@ caps["context_management"]["compact_20260112"]["supported"]
 ### 原始 HTTP
 
 ```bash
-curl https://api.anthropic.com/v1/models/claude-opus-4-6 \
+curl https://api.anthropic.com/v1/models/claude-opus-4-7 \
   -H "x-api-key: $ANTHROPIC_API_KEY" \
   -H "anthropic-version: 2023-06-01"
 ```
 
 ```json
 {
-  "id": "claude-opus-4-6",
-  "display_name": "Claude Opus 4.6",
-  "max_input_tokens": 1000000,
+  "id": "claude-opus-4-7",
+  "display_name": "Claude Opus 4.7",
+  "max_input_tokens": 200000,
   "max_tokens": 128000,
   "capabilities": {
     "image_input": {"supported": true},
     "structured_outputs": {"supported": true},
-    "thinking": {"supported": true, "types": {"enabled": {"supported": true}, "adaptive": {"supported": true}}},
+    "thinking": {"supported": true, "types": {"enabled": {"supported": false}, "adaptive": {"supported": true}}},
     "effort": {"supported": true, "low": {"supported": true}, …, "max": {"supported": true}},
     …
   }
@@ -62,14 +62,16 @@ curl https://api.anthropic.com/v1/models/claude-opus-4-6 \
 
 | 友好名称 | 别名（请使用） | 完整 ID | 上下文 | 最大输出 | 状态 |
 |-------------------|---------------------|-------------------------------|----------------|------------|--------|
-| Claude Opus 4.6   | `claude-opus-4-6`   | —                             | 200K (1M beta) | 128K       | 活跃 |
-| Claude Sonnet 4.6 | `claude-sonnet-4-6` | -                             | 200K (1M beta) | 64K        | 活跃 |
+| Claude Opus 4.7   | `claude-opus-4-7`   | —                             | 1M             | 128K       | 活跃 |
+| Claude Opus 4.6   | `claude-opus-4-6`   | —                             | 1M             | 128K       | 活跃 |
+| Claude Sonnet 4.6 | `claude-sonnet-4-6` | -                             | 1M             | 64K        | 活跃 |
 | Claude Haiku 4.5  | `claude-haiku-4-5`  | `claude-haiku-4-5-20251001`   | 200K           | 64K        | 活跃 |
 
 ### 模型描述
 
-- **Claude Opus 4.6** — 我们用于构建智能体和编程的最智能模型。支持自适应思考（推荐），最大输出 128K 令牌（大输出需要流式传输）。可通过 `context-1m-2025-08-07` 标头以测试版形式使用 1M 上下文窗口。
-- **Claude Sonnet 4.6** — 速度与智能的最佳结合。支持自适应思考（推荐）。可通过 `context-1m-2025-08-07` 标头以测试版形式使用 1M 上下文窗口。最大输出 64K 令牌。
+- **Claude Opus 4.7** — 迄今能力最强的 Claude 模型 —— 高度自主，擅长长周期智能体工作、知识型任务、视觉和记忆。仅支持自适应思考；采样参数和 `budget_tokens` 已移除。1M 上下文窗口，标准 API 定价（无长上下文溢价）—— 破坏性变更请参见 `shared/model-migration.md` → 迁移至 Opus 4.7。
+- **Claude Opus 4.6** — 上一代 Opus。支持自适应思考（推荐），最大输出 128K 令牌（大输出需要流式传输）。1M 上下文窗口。
+- **Claude Sonnet 4.6** — 速度与智能的最佳结合。支持自适应思考（推荐）。1M 上下文窗口。最大输出 64K 令牌。
 - **Claude Haiku 4.5** — 用于简单任务的最快、最具成本效益的模型。
 
 ## 旧版模型（仍可用）
@@ -107,7 +109,8 @@ curl https://api.anthropic.com/v1/models/claude-opus-4-6 \
 
 | 用户说... | 使用此模型 ID |
 |-------------------------------------------|--------------------------------|
-| "opus", "most powerful"                   | `claude-opus-4-6`              |
+| "opus", "most powerful"                   | `claude-opus-4-7`              |
+| "opus 4.7"                                | `claude-opus-4-7`              |
 | "opus 4.6"                                | `claude-opus-4-6`              |
 | "opus 4.5"                                | `claude-opus-4-5`              |
 | "opus 4.1"                                | `claude-opus-4-1`              |

@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Managed Agents endpoint reference'
 description: Comprehensive reference for Managed Agents API endpoints, SDK methods, request/response schemas, error handling, and rate limits
-ccVersion: 2.1.105
+ccVersion: 2.1.111
 -->
 # Managed Agents — 接口参考
 
@@ -39,7 +39,7 @@ SDK 会为所有 `client.beta.{agents,environments,sessions,vaults}.*` 调用自
 
 **Agent 简写：** session create 中的 `agent` 字段接受裸字符串（`agent="agent_abc123"`——使用最新版本）或完整的引用对象（`{type: "agent", id: "agent_abc123", version: 123}`）。
 
-**Model 简写：** agent create 中的 `model` 字段接受裸字符串（`model="claude-opus-4-6"`——使用 `standard` 速度）或完整的配置对象（`{type: "model_config", id: "claude-opus-4-6", speed: "fast"}`）。
+**Model 简写：** agent create 中的 `model` 字段接受裸字符串（`model="{{OPUS_ID}}"`——使用 `standard` 速度）或完整的配置对象（`{type: "model_config", id: "claude-opus-4-6", speed: "fast"}`）。注意：`speed: "fast"` 仅在 Opus 4.6 上受支持。
 
 ---
 

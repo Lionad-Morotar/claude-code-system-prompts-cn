@@ -1,7 +1,7 @@
 <!--
 name: 'Data: HTTP error codes reference'
 description: Reference for HTTP error codes returned by the Claude API with common causes and handling strategies
-ccVersion: 2.1.73
+ccVersion: 2.1.111
 -->
 # HTTP 错误代码参考
 
@@ -110,7 +110,12 @@ ccVersion: 2.1.73
 - 扩展思考中 `budget_tokens` >= `max_tokens`
 - 工具定义模式无效
 
-**扩展思考的常见错误：**
+**Opus 4.7 上的特定 400 错误：**
+
+- `temperature`、`top_p`、`top_k` 已被移除 — 发送其中任何一个参数都会返回 400。请删除这些参数；参见 `shared/model-migration.md` → Per-SDK Syntax Reference。
+- `thinking: {type: "enabled", budget_tokens: N}` 已被移除 — 发送此参数会返回 400。请改用 `thinking: {type: "adaptive"}`。
+
+**旧版模型（Opus 4.6 及更早版本）上扩展思考的常见错误：**
 
 ```
 # 错误：budget_tokens 必须小于 max_tokens
@@ -166,7 +171,9 @@ thinking: budget_tokens=10000, max_tokens=16000
 
 | 错误                         | 错误代码            | 解决方法                                                     |
 | ------------------------------- | ---------------- | ------------------------------------------------------- |
-| `budget_tokens` >= `max_tokens` | 400              | 确保 `budget_tokens` < `max_tokens`                   |
+| `temperature`/`top_p`/`top_k`（Opus 4.7） | 400    | 删除这些参数（参见 `shared/model-migration.md`）  |
+| `budget_tokens`（Opus 4.7）     | 400              | 改用 `thinking: {type: "adaptive"}`                      |
+| `budget_tokens` >= `max_tokens`（旧版模型） | 400              | 确保 `budget_tokens` < `max_tokens`                   |
 | 模型 ID 拼写错误                | 404              | 使用有效的模型 ID，如 `{{OPUS_ID}}`               |
 | 第一条消息是 `assistant`    | 400              | 第一条消息必须是 `user`                            |
 | 连续相同角色的消息  | 400              | 交替使用 `user` 和 `assistant`                        |

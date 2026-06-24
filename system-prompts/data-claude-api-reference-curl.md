@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — cURL'
 description: Raw API reference for Claude API for use with cURL or else Raw HTTP
-ccVersion: 2.1.83
+ccVersion: 2.1.111
 -->
 # Claude API — cURL / Raw HTTP
 
@@ -186,11 +186,11 @@ curl https://api.anthropic.com/v1/messages \
 
 ## 扩展思考
 
-> **Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在 Opus 4.6 和 Sonnet 4.6 上已弃用。
+> **Opus 4.7、Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在 Opus 4.7 上已移除（如发送则返回 400）；在 Opus 4.6 和 Sonnet 4.6 上已弃用。
 > **旧版本模型：** 使用 `"type": "enabled"` 配合 `"budget_tokens": N`（必须小于 `max_tokens`，最小 1024）。
 
 ```bash
-# Opus 4.6: 自适应思考（推荐）
+# Opus 4.7 / 4.6: 自适应思考（推荐）
 curl https://api.anthropic.com/v1/messages \
   -H "Content-Type: application/json" \
   -H "x-api-key: $ANTHROPIC_API_KEY" \

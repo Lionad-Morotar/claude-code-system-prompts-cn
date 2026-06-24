@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Python'
 description: Python SDK reference including installation, client initialization, basic requests, thinking, and multi-turn conversation
-ccVersion: 2.1.83
+ccVersion: 2.1.111
 -->
 # Claude API — Python
 
@@ -175,11 +175,11 @@ print(response.usage.input_tokens)                 # 未缓存的 token（全额
 
 ## 扩展思考
 
-> **Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在这两个模型上已弃用。
+> **Opus 4.7、Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在 Opus 4.7 上已移除（如发送则返回 400）；在 Opus 4.6 和 Sonnet 4.6 上已弃用。
 > **旧版模型：** 使用 `thinking: {type: "enabled", budget_tokens: N}`（必须小于 `max_tokens`，最小 1024）。
 
 ```python
-# Opus 4.6：自适应思考（推荐）
+# Opus 4.7 / 4.6：自适应思考（推荐）
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=16000,
@@ -280,7 +280,7 @@ response2 = conversation.send("What's my name?")  # Claude 记得 "Alice"
 
 ### 压缩（长对话）
 
-> **Beta 版，Opus 4.6 和 Sonnet 4.6。** 当对话接近 200K 上下文窗口时，压缩会在服务端自动总结较早的上下文。API 会返回一个 `compaction` 块；你必须在后续请求中将其传回——追加 `response.content`，而不仅仅是文本。
+> **Beta 版，Opus 4.7、Opus 4.6 和 Sonnet 4.6。** 当对话接近 200K 上下文窗口时，压缩会在服务端自动总结较早的上下文。API 会返回一个 `compaction` 块；你必须在后续请求中将其传回——追加 `response.content`，而不仅仅是文本。
 
 ```python
 import anthropic

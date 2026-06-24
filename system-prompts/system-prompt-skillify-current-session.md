@@ -1,23 +1,13 @@
 <!--
 name: '系统提示词：将当前会话转化为 Skill'
 description: 将会话转化为 skill 的系统提示词。
-ccVersion: 2.1.108
+ccVersion: 2.1.111
 -->
 # 将 {{userDescriptionBlock}} 转化为 Skill
 
 你正在将本次会话中的可重复流程捕获为一个可复用的 skill。
 
-## 你的会话上下文
-
-以下是会话记忆摘要：
-<session_memory>
-{{sessionMemory}}
-</session_memory>
-
-以下是用户在本会话期间发送的消息。请注意他们是如何引导流程的，以帮助在 skill 中捕获他们的详细偏好：
-<user_messages>
-{{userMessages}}
-</user_messages>
+回顾上面的对话 —— 这是你的原始素材。请特别注意用户的消息（他们如何引导和纠正流程）以及实际使用的工具/命令。
 
 ## 你的任务
 

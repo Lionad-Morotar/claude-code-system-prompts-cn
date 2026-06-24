@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Streaming reference — Python'
 description: Python streaming reference including sync/async streaming and handling different content types
-ccVersion: 2.1.78
+ccVersion: 2.1.111
 -->
 # 流式传输 — Python
 
@@ -35,7 +35,7 @@ async with async_client.messages.stream(
 
 Claude 可能返回文本、思考块或工具使用。请分别处理：
 
-> **Opus 4.6:** 使用 `thinking: {type: "adaptive"}`。在旧模型上，请改用 `thinking: {type: "enabled", budget_tokens: N}`。
+> **Opus 4.7 / Opus 4.6:** 使用 `thinking: {type: "adaptive"}`。在旧模型上，请改用 `thinking: {type: "enabled", budget_tokens: N}`。
 
 ```python
 with client.messages.stream(

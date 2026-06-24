@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Prompt Caching — Design & Optimization'
 description: Document on how to design prompt-building code for effective caching, including placement patterns and anti-patterns.
-ccVersion: 2.1.89
+ccVersion: 2.1.111
 -->
 # 提示缓存 — 设计与优化
 
@@ -116,11 +116,11 @@ messages[-1].content[-1].cache_control = {"type": "ephemeral"}
 
 | 模型 | 最小值 |
 |---|---:|
-| Opus 4.6、Opus 4.5、Haiku 4.5 | 4096 令牌 |
+| Opus 4.7、Opus 4.6、Opus 4.5、Haiku 4.5 | 4096 令牌 |
 | Sonnet 4.6、Haiku 3.5、Haiku 3 | 2048 令牌 |
 | Sonnet 4.5、Sonnet 4.1、Sonnet 4、Sonnet 3.7 | 1024 令牌 |
 
-一个 3K 令牌的提示词在 Sonnet 4.5 上可以缓存，但在 Opus 4.6 上则不会。
+一个 3K 令牌的提示词在 Sonnet 4.5 上可以缓存，但在 Opus 4.7 上则不会。
 
 **经济学：** 缓存读取成本约为基础输入价格的 0.1 倍。缓存写入成本为 **5 分钟 TTL 的 1.25 倍、1 小时 TTL 的 2 倍**。盈亏平衡取决于 TTL：使用 5 分钟 TTL，两个请求即可平衡（1.25× + 0.1× = 1.35× 对比无缓存的 2×）；使用 1 小时 TTL，至少需要三个请求（2× + 0.2× = 2.2× 对比无缓存的 3×）。1 小时 TTL 能在突发流量的间隙中保持条目存活，但双倍的写入成本意味着需要更多读取才能回本。
 

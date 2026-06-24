@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Live documentation sources'
 description: WebFetch URLs for fetching current Claude API and Agent SDK documentation from official sources
-ccVersion: 2.1.108
+ccVersion: 2.1.111
 -->
 # 实时文档源
 
@@ -21,6 +21,7 @@ ccVersion: 2.1.108
 | 主题           | URL                                                                   | 提取提示                                                               |
 | --------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
 | 模型概览 | `https://platform.claude.com/docs/en/about-claude/models/overview.md` | "提取所有 Claude 模型的当前模型 ID、上下文窗口和定价信息" |
+| 迁移指南 | `https://platform.claude.com/docs/en/about-claude/models/migration-guide.md` | "提取迁移到新版 Claude 模型时的破坏性变更、已弃用参数以及各模型迁移步骤" |
 | 定价         | `https://platform.claude.com/docs/en/pricing.md`                      | "提取每百万输入和输出 token 的当前定价"               |
 
 ### 核心功能

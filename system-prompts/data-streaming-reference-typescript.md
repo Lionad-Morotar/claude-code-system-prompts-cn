@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Streaming reference — TypeScript'
 description: TypeScript streaming reference including basic streaming and handling different content types
-ccVersion: 2.1.78
+ccVersion: 2.1.111
 -->
 # 流式传输 — TypeScript
 
@@ -28,7 +28,7 @@ for await (const event of stream) {
 
 ## 处理不同的内容类型
 
-> **Opus 4.6:** 使用 `thinking: {type: "adaptive"}`。对于旧版模型，请改用 `thinking: {type: "enabled", budget_tokens: N}`。
+> **Opus 4.7 / Opus 4.6:** 使用 `thinking: {type: "adaptive"}`。对于旧版模型，请改用 `thinking: {type: "enabled", budget_tokens: N}`。
 
 ```typescript
 const stream = client.messages.stream({
