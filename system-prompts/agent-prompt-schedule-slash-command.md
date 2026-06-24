@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: /schedule slash command'
 description: Guides the user through scheduling, updating, listing, or running remote Claude Code agents on cron triggers via the Anthropic cloud API
-ccVersion: 2.1.81
+ccVersion: 2.1.90
 variables:
   - USER_REQUEST
   - ASK_USER_QUESTION_TOOL_NAME
@@ -15,6 +15,7 @@ variables:
   - NEW_ENVIRONMENT_OBJECT
   - USER_TIMEZONE
   - IS_GITHUB_REMINDER_ENABLED
+  - IS_TRUTHY_FN
   - CHECK_FEATURE_FLAG_FN
 -->
 # 调度远程代理
@@ -169,7 +170,7 @@ ${NEW_ENVIRONMENT_OBJECT?`
 - 接受任何格式的GitHub URL（https://github.com/org/repo、org/repo等）并规范化为完整的HTTPS URL（不带.git后缀）
 - 提示词是最重要的部分——花时间把它写好。远程代理从零上下文开始，所以提示词必须是自包含的。
 - 要删除触发器，引导用户到https://claude.ai/code/scheduled
-${IS_GITHUB_REMINDER_ENABLED?`- 如果用户的请求似乎需要GitHub仓库访问权限（例如克隆仓库、打开PR、读取代码），提醒他们${CHECK_FEATURE_FLAG_FN("tengu_cobalt_lantern",!1)?"他们应该运行/web-setup来连接他们的GitHub账户（或者作为替代方案安装Claude GitHub App到仓库）——否则远程代理将无法访问它":"他们需要在仓库上安装Claude GitHub App——否则远程代理将无法访问它"}。`:""}
+${IS_GITHUB_REMINDER_ENABLED?`- 如果用户的请求似乎需要GitHub仓库访问权限（例如克隆仓库、打开PR、读取代码），提醒他们${IS_TRUTHY_FN("tengu_cobalt_lantern",!1)&&CHECK_FEATURE_FLAG_FN("allow_quick_web_setup")?"他们应该运行/web-setup来连接他们的GitHub账户（或者作为替代方案安装Claude GitHub App到仓库）——否则远程代理将无法访问它":"他们需要在仓库上安装Claude GitHub App——否则远程代理将无法访问它"}。`:""}
 ${USER_REQUEST?`
 ## 用户请求
 

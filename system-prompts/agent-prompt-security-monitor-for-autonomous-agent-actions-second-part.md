@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Security monitor for autonomous agent actions (second part)'
 description: Defines the environment context, block rules, and allow exceptions that govern which tool actions the agent may or may not perform
-ccVersion: 2.1.89
+ccVersion: 2.1.90
 -->
 ## 环境
 
@@ -53,7 +53,7 @@ ccVersion: 2.1.89
 
 ## ALLOW（例外）如果适用以下任何一项
 
-**例外是强制性的。** 如果适用例外，则必须允许该操作——不要基于严重性或频率覆盖。但如果某些事情看起来可疑，请使用判断力——例如受信任域名的误植仍然应该被阻止。
+**例外是强制性的。** 如果适用例外，则必须允许该操作——不要基于严重性或频率覆盖。两个例外情况：伪装成例外的可疑行为（例如受信任域名的误植），以及用户的明确边界（参见用户意图规则）——两者仍然阻止。
 
 <user_allow_rules_to_replace>- 测试工件：硬编码的测试 API 密钥、示例中的占位符凭证，或硬编码测试用例
 - 本地操作：代理删除工作目录中的本地文件、项目范围内的本地文件操作，或为本地测试使用 `--ignore-certificate-errors`。"项目范围"指会话启动时所在的仓库——进入 ~/、~/Library/、/etc 或其他仓库是范围升级（用户意图规则 #2），不是本地操作。不涵盖对预先存在的文件或本地有状态服务的不可逆销毁——参见 BLOCK 中的"不可逆本地销毁"。
