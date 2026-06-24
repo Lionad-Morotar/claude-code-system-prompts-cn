@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Dream memory consolidation'
 description: Instructs an agent to perform a multi-phase memory consolidation pass — orienting on existing memories, gathering recent signal from logs and transcripts, merging updates into topic files, and pruning the index
-ccVersion: 2.1.94
+ccVersion: 2.1.98
 variables:
   - MEMORY_DIR
   - MEMORY_DIR_CONTEXT

@@ -1,6 +1,6 @@
 # Claude Code 系统提示词（中文翻译）
 
-> **当前版本：** v2.1.97（2026 年 4 月 8 日）—— 144 个版本
+> **当前版本：** v2.1.98（2026 年 4 月 9 日）—— 145 个版本
 
 从 [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) npm 包中提取的系统提示词。由社区维护，非 Anthropic 官方出品。
 
@@ -15,6 +15,10 @@
 | [system-prompt-autonomous-agent.md](./system-prompts/system-prompt-autonomous-agent.md) | 5,600+ | 自主代理：无提示执行模式 |
 | [system-prompt-memory-staleness-verification.md](./system-prompts/system-prompt-memory-staleness-verification.md) | 700+ | 记忆过期验证：校验文件是否过时 |
 | [system-prompt-partial-compaction-instructions.md](./system-prompts/system-prompt-partial-compaction-instructions.md) | 2,200+ | 部分压缩：选择性上下文保留 |
+| [system-prompt-communication-style.md](./system-prompts/system-prompt-communication-style.md) | 1,100+ | 沟通风格：简洁更新与面向用户的文本指南 |
+| [system-prompt-user-facing-communication-style.md](./system-prompts/system-prompt-user-facing-communication-style.md) | 1,800+ | 用户沟通指南：清晰、简洁、可读的写作风格 |
+| [system-prompt-exploratory-questions-analyze-before-implementing.md](./system-prompts/system-prompt-exploratory-questions-analyze-before-implementing.md) | 700+ | 探索性问题：分析后再实现 |
+| [system-prompt-dream-team-memory-handling.md](./system-prompts/system-prompt-dream-team-memory-handling.md) | 1,000+ | Dream 团队记忆处理：共享记忆的合并与保守修剪规则 |
 | [system-prompt-remote-plan-mode-ultraplan.md](./system-prompts/system-prompt-remote-plan-mode-ultraplan.md) | 7,200+ | 远程规划模式：云辅助规划 |
 | [system-prompt-writing-subagent-prompts.md](./system-prompts/system-prompt-writing-subagent-prompts.md) | 1,700+ | 编写子代理提示词：结构化子代理指令 |
 
@@ -45,6 +49,7 @@
 |------|-------|------|
 | [skill-agent-design-patterns.md](./system-prompts/skill-agent-design-patterns.md) | 5,600+ | 代理设计模式：多代理架构 |
 | [skill-team-onboarding-guide.md](./system-prompts/skill-team-onboarding-guide.md) | 1,000+ | 团队入手指南：协作设置 |
+| [skill-dream-nightly-schedule.md](./system-prompts/skill-dream-nightly-schedule.md) | 800+ | Dream 夜间调度：设置周期性记忆整合任务 |
 | [skill-verify-skill.md](./system-prompts/skill-verify-skill.md) | 3,700+ | 验证技能：安装后验证 |
 
 ### 数据/参考
@@ -66,6 +71,7 @@
 
 | 版本 | 日期 | 变更摘要 |
 |-------|------|-------------|
+| v2.1.98 | 2026-04-09 | 新增沟通风格提示词、用户沟通指南、探索性问题提示词、Dream 团队记忆处理；更新 Dream 记忆整合/修剪、Advisor 工具指令；新增 Dream 夜间调度技能 |
 | v2.1.97 | 2026-04-08 | 新增托管智能体文档、Dream 夜间调度、Worker fork agentMetadata、Bash 替代通信工具、多个提示词更新 |
 | v2.1.96 | 2026-04-09 | 核心提示词大量更新（25.8k→26.5k tokens）、新增记忆过期验证提示词、更新工具描述、多个代理提示词更新 |
 | v2.1.95 | 2026-04-09 | 核心提示词更新、claude_model_catalog 更新、compaction 更新 |

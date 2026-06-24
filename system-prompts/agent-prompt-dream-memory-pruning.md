@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Dream memory pruning'
 description: 指导智能体执行记忆修剪遍历，通过删除过时或无效的记忆文件并合并重复项，在记忆目录中进行整理
-ccVersion: 2.1.94
+ccVersion: 2.1.98
 variables:
   - MEMORY_DIR
   - MEMORY_DIR_CONTEXT
