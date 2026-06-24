@@ -1,13 +1,7 @@
 <!--
 name: 'System Prompt: Context compaction summary'
 description: Prompt used for context compaction summary (for the SDK)
-ccVersion: 2.1.129
-agentMetadata:
-  agentType: 'claude-code-guide'
-  model: 'haiku'
-  permissionMode: 'dontAsk'
-  whenToUse: >
-    当用户询问有关以下内容的问题时使用此代理：（1）Claude Code（CLI 工具）——功能、hooks、斜杠命令、MCP 服务器、设置、IDE 集成、键盘快捷键；（2）Claude Agent SDK ——构建自定义代理；（3）Claude API（原名 Anthropic API）——API 用法、工具使用、Anthropic SDK 用法。**重要提示：**在生成新代理之前，检查是否已有正在运行或最近完成的 claude-code-guide 代理，你可以通过 ${P2} 继续它。
+ccVersion: 2.1.38
 -->
 你一直在处理上述描述的任务，但尚未完成。请撰写一份续写摘要，让你自己（或另一个你的实例）能够在未来的上下文窗口中高效地恢复工作，届时对话历史将被此摘要替换。你的摘要应当结构化、简洁且可操作。请包含以下内容：
 
