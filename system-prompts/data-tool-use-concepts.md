@@ -1,11 +1,11 @@
 <!--
 name: 'Data: Tool use concepts'
 description: Conceptual foundations of tool use with the Claude API including tool definitions, tool choice, and best practices
-ccVersion: 2.1.83
+ccVersion: 2.1.91
 -->
 # 工具使用概念
 
-本文档涵盖 Claude API 工具使用的概念基础。如需语言特定的代码示例，请参见 `python/`、`typescript/` 或其他语言文件夹。
+本文档涵盖 Claude API 工具使用的概念基础。如需语言特定的代码示例，请参见 `python/`、`typescript/` 或其他语言文件夹。关于使用哪些工具、如何管理长期运行代理的上下文以及缓存策略的决策启发式方法，请参见 `agent-design.md`。
 
 ## 用户定义工具
 
@@ -197,7 +197,9 @@ Claude 自动获得 `bash_code_execution`（运行 shell 命令）和 `text_edit
 
 ## 服务器端工具：程序化工具调用
 
-程序化工具调用让 Claude 在代码中执行复杂的多工具工作流，将中间结果保留在上下文窗口之外。Claude 编写直接调用您的工具的代码，减少多步骤操作的令牌使用量。
+在标准工具使用中，每次工具调用都是一次往返：Claude 调用，结果进入 Claude 的上下文，Claude 进行推理，然后调用下一个工具。链式调用会累积延迟和 token —— 大部分中间数据再也不需要了。
+
+程序化工具调用让 Claude 将这些调用组合成一个脚本。脚本在代码执行容器中运行；当它调用工具时，容器暂停，调用执行，结果返回给正在运行的代码（而非 Claude 的上下文）。脚本使用正常的控制流处理结果。只有最终输出返回给 Claude。当需要链式调用多个工具调用或中间结果很大且应在到达上下文窗口之前进行过滤时使用。
 
 完整文档请使用 WebFetch：
 
@@ -207,11 +209,21 @@ Claude 自动获得 `bash_code_execution`（运行 shell 命令）和 `text_edit
 
 ## 服务器端工具：工具搜索
 
-工具搜索工具让 Claude 从大型库中动态发现工具，而无需将所有定义加载到上下文窗口中。当您有许多工具但任何给定查询只有少量相关时很有用。
+工具搜索工具让 Claude 从大型库中动态发现工具，而无需将所有定义加载到上下文窗口中。当您有许多工具但任何给定查询只有少数相关时使用。发现的工具模式被追加到请求中，而非替换 —— 这保留了提示缓存（参见 `agent-design.md` §代理的缓存策略）。
 
 完整文档请使用 WebFetch：
 
 - URL：`https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool`
+
+---
+
+## 技能
+
+技能封装了任务特定的指令，Claude 只应在相关时加载。每个技能是一个包含 `SKILL.md` 文件的文件夹。技能的简短描述默认存在于上下文中；Claude 在当前任务需要时读取完整文件。使用技能可以将专业指令保留在基础系统提示词之外，同时不丧失可发现性。
+
+完整文档请使用 WebFetch：
+
+- URL：`https://platform.claude.com/docs/en/agents-and-tools/skills`
 
 ---
 
@@ -232,6 +244,16 @@ Claude 自动获得 `bash_code_execution`（运行 shell 命令）和 `text_edit
 完整文档请使用 WebFetch：
 
 - URL：`https://platform.claude.com/docs/en/agents-and-tools/computer-use/overview`
+
+---
+
+## 上下文编辑
+
+上下文编辑在长期运行代理累积轮次时清除记录中的陈旧工具结果和思考块。与压缩（总结）不同，上下文编辑是修剪 —— 清除的内容被移除而非替换。当旧的工具输出不再相关且希望保持记录简洁而不丢失对话结构时使用。清除内容的阈值是可配置的。
+
+完整文档请使用 WebFetch：
+
+- URL：`https://platform.claude.com/docs/en/build-with-claude/context-editing`
 
 ---
 

@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Build with Claude API (reference guide)'
 description: Template for presenting language-specific reference documentation with quick task navigation
-ccVersion: 2.1.83
+ccVersion: 2.1.91
 -->
 ## 参考文档
 
@@ -29,6 +29,9 @@ ccVersion: 2.1.83
 
 **跨多个请求的文件上传：**
 → 参考 `{lang}/claude-api/README.md` + `{lang}/claude-api/files-api.md`
+
+**Agent 设计（工具面、上下文管理、缓存策略）：**
+→ 参考 `shared/agent-design.md`
 
 **内置工具的智能体（文件/网页/终端）（仅限 Python 和 TypeScript）：**
 → 参考 `{lang}/agent-sdk/README.md` + `{lang}/agent-sdk/patterns.md`

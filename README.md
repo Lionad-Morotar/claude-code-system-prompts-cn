@@ -34,7 +34,7 @@
 > [!important]
 > **新增（2026 年 1 月 23 日）：我们已在此列表中添加了所有 Claude Code 的约 40 个系统提醒——请参阅 [系统提醒](#system-reminders)。**
 
-此仓库包含截至 **[Claude Code v2.1.90](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.90)（2026 年 4 月 1 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 139 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
+此仓库包含截至 **[Claude Code v2.1.91](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.91)（2026 年 4 月 2 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 140 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
 
 **此仓库在每次 Claude Code 发布后的几分钟内更新。请查看 [更新日志](./CHANGELOG.md)，并在 X 上关注 [@PiebaldAI](https://x.com/PiebaldAI) 以获取每次发布中系统提示词变更的摘要。**
 
@@ -86,7 +86,6 @@
 ### 斜杠命令
 
 - [代理提示词：/batch 斜杠命令](./system-prompts/agent-prompt-batch-slash-command.md) (**1106** tks) - 用于在代码库中协调大规模、可并行化更改的说明。
-- [代理提示词：/pr-comments 斜杠命令](./system-prompts/agent-prompt-pr-comments-slash-command.md) (**402** tks) - 用于获取和显示 GitHub PR 注释的系统提示词。
 - [代理提示词：/review-pr 斜杠命令](./system-prompts/agent-prompt-review-pr-slash-command.md) (**211** tks) - 用于通过代码分析审查 GitHub 拉取请求的系统提示词。
 - [代理提示词：/schedule 斜杠命令](./system-prompts/agent-prompt-schedule-slash-command.md) (**2468** tks) - 引导用户通过 Anthropic 云 API 在 cron 触发器上调度、更新、列出或运行远程 Claude Code 代理。
 - [代理提示词：/security-review 斜杠命令](./system-prompts/agent-prompt-security-review-slash-command.md) (**2610** tks) - 综合安全审查提示词，用于分析代码更改，重点关注可利用的漏洞。

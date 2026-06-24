@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Build with Claude API'
 description: Main routing guide for building LLM-powered applications with Claude, including language detection, surface selection, and architecture overview
-ccVersion: 2.1.83
+ccVersion: 2.1.91
 -->
 # 使用 Claude 构建大语言模型驱动的应用程序
 
@@ -151,7 +151,7 @@ ccVersion: 2.1.83
 
 **Opus 4.6 — 自适应思考（推荐）：** 使用 `thinking: {type: "adaptive"}`。Claude 动态决定何时以及思考多少。不需要 `budget_tokens` —— `budget_tokens` 在 Opus 4.6 和 Sonnet 4.6 上已弃用，不得使用。自适应思考还自动启用交错思考（不需要 beta header）。**当用户要求"扩展思考"、"思考预算"或 `budget_tokens` 时：始终使用 Opus 4.6 配合 `thinking: {type: "adaptive"}`。固定 token 预算的概念已弃用 —— 自适应思考取代了它。不要使用 `budget_tokens`，也不要切换到旧模型。**
 
-**Effort 参数（GA，无需 beta header）：** 通过 `output_config: {effort: "low"|"medium"|"high"|"max"}` 控制思考深度和整体 token 消耗（在 `output_config` 内部，不是顶级）。默认是 `high`（相当于省略）。`max` 仅适用于 Opus 4.6。适用于 Opus 4.5、Opus 4.6 和 Sonnet 4.6。在 Sonnet 4.5 / Haiku 4.5 上会报错。与自适应思考结合使用以获得最佳的成本-质量权衡。对子智能体或简单任务使用 `low`；对最深度的推理使用 `max`。
+**Effort 参数（GA，无需 beta header）：** 通过 `output_config: {effort: "low"|"medium"|"high"|"max"}` 控制思考深度和整体 token 消耗（在 `output_config` 内部，不是顶级）。默认是 `high`（相当于省略）。`max` 仅适用于 Opus 4.6。适用于 Opus 4.5、Opus 4.6 和 Sonnet 4.6。在 Sonnet 4.5 / Haiku 4.5 上会报错。与自适应思考结合使用以获得最佳的成本-质量权衡。较低的 effort 意味着更少且更紧凑的工具调用、更少的前置说明和更简洁的确认信息 —— `medium` 通常是较好的平衡点；当正确性比成本更重要时使用 `max`；对子智能体或简单任务使用 `low`。
 
 **Sonnet 4.6：** 支持自适应思考 (`thinking: {type: "adaptive"}`)。`budget_tokens` 在 Sonnet 4.6 上已弃用 —— 改用自适应思考。
 
@@ -179,6 +179,8 @@ ccVersion: 2.1.83
 
 有关放置模式、架构指南和静默无效因素审核清单：请阅读 `shared/prompt-caching.md`。语言特定语法：`{lang}/claude-api/README.md`（提示缓存部分）。
 
+<!-- __S3__ -->
+
 ---
 
 ## 阅读指南
@@ -202,6 +204,9 @@ ccVersion: 2.1.83
 **函数调用 / tool use / 智能体：**
 → 阅读 `{lang}/claude-api/README.md` + `shared/tool-use-concepts.md` + `{lang}/claude-api/tool-use.md`
 
+**Agent 设计（工具面、上下文管理、缓存策略）：**
+→ 阅读 `shared/agent-design.md`
+
 **批处理（对延迟不敏感）：**
 → 阅读 `{lang}/claude-api/README.md` + `{lang}/claude-api/batches.md`
 
@@ -217,13 +222,14 @@ ccVersion: 2.1.83
 
 1. **`{language}/claude-api/README.md`** —— **首先阅读此文件。** 安装、快速入门、常见模式、错误处理。
 2. **`shared/tool-use-concepts.md`** —— 当用户需要函数调用、代码执行、内存或结构化输出时阅读。涵盖概念基础。
-3. **`{language}/claude-api/tool-use.md`** —— 阅读语言特定的 tool use 代码示例（tool runner、手动循环、代码执行、内存、结构化输出）。
-4. **`{language}/claude-api/streaming.md`** —— 构建聊天 UI 或增量显示响应的界面时阅读。
-5. **`{language}/claude-api/batches.md`** —— 离线处理大量请求时阅读（对延迟不敏感）。以 50% 的成本异步运行。
-6. **`{language}/claude-api/files-api.md`** —— 在多个请求中发送相同文件而不重新上传时阅读。
-7. **`shared/prompt-caching.md`** —— 添加或优化提示缓存时阅读。涵盖前缀稳定性设计、断点放置和静默使缓存失效的反模式。
-8. **`shared/error-codes.md`** —— 调试 HTTP 错误或实现错误处理时阅读。
-9. **`shared/live-sources.md`** —— 用于获取最新官方文档的 WebFetch URL。
+3. **`shared/agent-design.md`** —— 设计代理时阅读：Bash 与专用工具的对比、程序化工具调用、工具搜索/技能、上下文编辑与压缩与记忆的对比、缓存原则。
+4. **`{language}/claude-api/tool-use.md`** —— 阅读语言特定的 tool use 代码示例（tool runner、手动循环、代码执行、内存、结构化输出）。
+5. **`{language}/claude-api/streaming.md`** —— 构建聊天 UI 或增量显示响应的界面时阅读。
+6. **`{language}/claude-api/batches.md`** —— 离线处理大量请求时阅读（对延迟不敏感）。以 50% 的成本异步运行。
+7. **`{language}/claude-api/files-api.md`** —— 在多个请求中发送相同文件而不重新上传时阅读。
+8. **`shared/prompt-caching.md`** —— 添加或优化提示缓存时阅读。涵盖前缀稳定性设计、断点放置和静默使缓存失效的反模式。
+9. **`shared/error-codes.md`** —— 调试 HTTP 错误或实现错误处理时阅读。
+10. **`shared/live-sources.md`** —— 用于获取最新官方文档的 WebFetch URL。
 
 > **注意：** 对于 Java、Go、Ruby、C#、PHP 和 cURL —— 这些每种语言都有一个涵盖所有基础知识的文件。根据需要阅读该文件以及 `shared/tool-use-concepts.md` 和 `shared/error-codes.md`。
 

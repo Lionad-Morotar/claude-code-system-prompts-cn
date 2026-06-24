@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Live documentation sources'
 description: WebFetch URLs for fetching current Claude API and Agent SDK documentation from official sources
-ccVersion: 2.1.63
+ccVersion: 2.1.91
 -->
 # 实时文档源
 
@@ -57,6 +57,12 @@ ccVersion: 2.1.63
 | -------------- | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------- |
 | 代码执行 | `https://platform.claude.com/docs/en/agents-and-tools/tool-use/code-execution-tool.md` | "提取代码执行工具设置、文件上传、容器复用和响应处理方法" |
 | 计算机使用   | `https://platform.claude.com/docs/en/agents-and-tools/tool-use/computer-use.md`        | "提取计算机使用工具设置、功能和实现示例"             |
+| Bash 工具     | `https://platform.claude.com/docs/en/agents-and-tools/tool-use/bash-tool.md`           | "提取 Bash 工具模式、参考实现和安全注意事项"        |
+| 文本编辑器    | `https://platform.claude.com/docs/en/agents-and-tools/tool-use/text-editor-tool.md`    | "提取文本编辑器工具命令、模式和参考实现"            |
+| 记忆工具      | `https://platform.claude.com/docs/en/agents-and-tools/tool-use/memory-tool.md`         | "提取记忆工具命令、目录结构和实现模式"              |
+| 工具搜索      | `https://platform.claude.com/docs/en/agents-and-tools/tool-use/tool-search-tool.md`    | "提取工具搜索设置、何时使用以及缓存交互"            |
+| 程序化工具调用 | `https://platform.claude.com/docs/en/agents-and-tools/tool-use/programmatic-tool-calling.md` | "提取 PTC 设置、脚本执行模型和从代码调用工具"    |
+| 技能          | `https://platform.claude.com/docs/en/agents-and-tools/skills.md`                       | "提取技能文件夹结构、SKILL.md 格式和加载行为"       |
 
 ### 高级功能
 
@@ -64,6 +70,7 @@ ccVersion: 2.1.63
 | ------------------ | ----------------------------------------------------------------------------- | --------------------------------------------------- |
 | 结构化输出 | `https://platform.claude.com/docs/en/build-with-claude/structured-outputs.md` | "提取 output_config.format 用法和模式强制执行"                           |
 | 压缩         | `https://platform.claude.com/docs/en/build-with-claude/compaction.md`         | "提取压缩设置、触发器配置和流式压缩"             |
+| 上下文编辑    | `https://platform.claude.com/docs/en/build-with-claude/context-editing.md`    | "提取上下文编辑阈值、清除内容和配置"            |
 | 引用          | `https://platform.claude.com/docs/en/build-with-claude/citations.md`          | "提取引用格式和实现方法"        |
 | 上下文窗口    | `https://platform.claude.com/docs/en/build-with-claude/context-windows.md`    | "提取上下文窗口大小和 Token 管理方法" |
 
