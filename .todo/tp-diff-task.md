@@ -12,8 +12,8 @@
 - [x] `24b5c59` Update changelog for v2.1.86
 - [x] `115c568` v2.1.87 (+0 tokens)
 - [x] `0cb6a72` Update changelog for v2.1.87
-- [ ] `7d7c728` v2.1.88 (-1,627 tokens)
-- [ ] `733baee` Update changelog for v2.1.88
+- [x] `7d7c728` v2.1.88 (-1,627 tokens)
+- [x] `733baee` Update changelog for v2.1.88
 - [ ] `0e24543` v2.1.89 (+3,986 tokens)
 - [ ] `6e105dc` Update changelog for v2.1.89
 - [ ] `8362366` v2.1.90 (+815 tokens)

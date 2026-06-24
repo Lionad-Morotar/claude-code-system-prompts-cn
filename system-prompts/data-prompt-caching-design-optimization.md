@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Prompt Caching — Design & Optimization'
 description: Document on how to design prompt-building code for effective caching, including placement patterns and anti-patterns.
-ccVersion: 2.1.83
+ccVersion: 2.1.89
 -->
 # 提示缓存 — 设计与优化
 
@@ -112,9 +112,17 @@ messages[-1].content[-1].cache_control = {"type": "ephemeral"}
 - 每个请求最多 **4** 个 `cache_control` 断点。
 - 可放在任何内容块上：系统文本块、工具定义、消息内容块（`text`、`image`、`tool_use`、`tool_result`、`document`）。
 - `messages.create()` 上的顶层 `cache_control` 会自动放置在最后一个可缓存块上——当你不需要精细放置时，这是最简单的选项。
-- 最小可缓存前缀取决于模型（通常为 1024–2048 token）。即使有标记，较短的前缀也不会被缓存。
+- 最小可缓存前缀取决于模型。即使有标记，较短的前缀也不会被缓存——不会报错，只是 `cache_creation_input_tokens: 0`：
 
-**经济学：** 缓存写入成本约为基础输入价格的 1.25 倍；读取成本约为 0.1 倍。一个前缀必须在 TTL 内至少被两个请求使用才能收支平衡（一个写入缓存，后续的读取缓存）。对于突发流量，1 小时 TTL 可在间隔期间保持条目存活。
+| 模型 | 最小值 |
+|---|---:|
+| Opus 4.6、Opus 4.5、Haiku 4.5 | 4096 令牌 |
+| Sonnet 4.6、Haiku 3.5、Haiku 3 | 2048 令牌 |
+| Sonnet 4.5、Sonnet 4.1、Sonnet 4、Sonnet 3.7 | 1024 令牌 |
+
+一个 3K 令牌的提示词在 Sonnet 4.5 上可以缓存，但在 Opus 4.6 上则不会。
+
+**经济学：** 缓存读取成本约为基础输入价格的 0.1 倍。缓存写入成本为 **5 分钟 TTL 的 1.25 倍、1 小时 TTL 的 2 倍**。盈亏平衡取决于 TTL：使用 5 分钟 TTL，两个请求即可平衡（1.25× + 0.1× = 1.35× 对比无缓存的 2×）；使用 1 小时 TTL，至少需要三个请求（2× + 0.2× = 2.2× 对比无缓存的 3×）。1 小时 TTL 能在突发流量的间隙中保持条目存活，但双倍的写入成本意味着需要更多读取才能回本。
 
 ---
 
@@ -130,4 +138,39 @@ messages[-1].content[-1].cache_control = {"type": "ephemeral"}
 
 如果在具有相同前缀的重复请求中 `cache_read_input_tokens` 为零，则存在静默失效因素——比较两次请求之间渲染后的提示字节来定位问题。
 
+**`input_tokens` 仅是未缓存的部分。** 总提示词大小 = `input_tokens + cache_creation_input_tokens + cache_read_input_tokens`。如果你的代理运行了数小时但 `input_tokens` 显示为 4K，其余部分是从缓存提供的——检查总和，而不是单个字段。
+
 语言特定访问方式：`response.usage.cache_read_input_tokens`（Python/TS/Ruby）、`$message->usage->cacheReadInputTokens`（PHP）、`resp.Usage.CacheReadInputTokens`（Go/C#）、`.usage().cacheReadInputTokens()`（Java）。
+
+---
+
+## 失效层级
+
+并非每个参数变化都会使所有内容失效。API 有三个缓存层级，变化只会使其自身层级及以下层级失效：
+
+| 变化 | 工具缓存 | 系统缓存 | 消息缓存 |
+|---|---|---|---|
+| 工具定义（添加/移除/重排） | ❌ | ❌ | ❌ |
+| 模型切换 | ❌ | ❌ | ❌ |
+| `speed`、网络搜索、引用切换 | ✅ | ❌ | ❌ |
+| 系统提示词内容 | ✅ | ❌ | ❌ |
+| `tool_choice`、图片、`thinking` 启用/禁用 | ✅ | ✅ | ❌ |
+| 消息内容 | ✅ | ✅ | ❌ |
+
+含义：你可以按请求更改 `tool_choice` 或切换 `thinking`，而不会丢失工具+系统缓存。不必过度担心这些——只有工具定义和模型变化才会强制完全重建。
+
+---
+
+## 20 块回看窗口
+
+每个断点最多向后查找 **20 个内容块**以查找先前的缓存条目。如果单个轮次添加了超过 20 个块（在具有许多 tool_use/tool_result 对的智能体循环中很常见），下一个请求的断点将找不到先前的缓存并静默错过。
+
+修复：在长轮次中，大约每 15 个块放置一个中间断点，或将标记放在距上一轮次最后一个缓存块 20 以内的块上。
+
+---
+
+## 并发请求时序
+
+缓存条目只有在第一个响应**开始流式传输**后才变得可读。N 个具有完全相同前缀的并行请求都需要支付全价——没有哪个能读取其他请求仍在写入的内容。
+
+对于扇出模式：发送 1 个请求，等待第一个流式令牌（不是完整响应），然后触发剩余的 N−1 个。它们将读取第一个请求刚刚写入的缓存。

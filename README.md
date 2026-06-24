@@ -34,7 +34,7 @@
 > [!important]
 > **新增（2026 年 1 月 23 日）：我们已在此列表中添加了所有 Claude Code 的约 40 个系统提醒——请参阅 [系统提醒](#system-reminders)。**
 
-此仓库包含截至 **[Claude Code v2.1.88](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.88)（2026 年 3 月 30 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 137 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
+此仓库包含截至 **[Claude Code v2.1.89](https://www.npmjs.com/package/@anthropic-ai/claude-code/v/2.1.89)（2026 年 3 月 31 日）** 的所有 Claude Code 各种系统提示词及其相关 token 计数的最新列表。它还包含了自 v2.0.14 以来 138 个版本的系统提示词的 [**CHANGELOG.md**](./CHANGELOG.md)。来自 [<img src="https://github.com/Piebald-AI/piebald/raw/main/assets/logo.svg" width="15"> **Piebald.**](https://piebald.ai/) 背后的团队。
 
 **此仓库在每次 Claude Code 发布后的几分钟内更新。请查看 [更新日志](./CHANGELOG.md)，并在 X 上关注 [@PiebaldAI](https://x.com/PiebaldAI) 以获取每次发布中系统提示词变更的摘要。**
 
@@ -50,7 +50,7 @@
 - 内置代理（如 Explore 和 Plan）的独立系统提示词。
 - 众多 AI 驱动的实用函数，如对话压缩、`CLAUDE.md` 生成、会话标题生成等，它们都有自己的系统提示词。
 
-结果——110+ 个不断变化并在一个非常大的压缩 JS 文件中移动的字符串。
+结果——110+ 个字符串
 
 > [!TIP]
 > 想要在你自己的 Claude Code 安装中**修改系统提示词的特定部分**？**使用 [tweakcc](https://github.com/Piebald-AI/tweakcc)。** 它——
