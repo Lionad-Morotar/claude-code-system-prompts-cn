@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Live documentation sources'
 description: WebFetch URLs for fetching current Claude API and Agent SDK documentation from official sources
-ccVersion: 2.1.91
+ccVersion: 2.1.97
 -->
 # 实时文档源
 
@@ -74,60 +74,33 @@ ccVersion: 2.1.91
 | 引用          | `https://platform.claude.com/docs/en/build-with-claude/citations.md`          | "提取引用格式和实现方法"        |
 | 上下文窗口    | `https://platform.claude.com/docs/en/build-with-claude/context-windows.md`    | "提取上下文窗口大小和 Token 管理方法" |
 
----
+### Managed Agents
 
-## Claude API SDK 仓库
+当托管代理的绑定、行为或线路级细节未包含在缓存的 `shared/managed-agents-*.md` 概念文件或 `{lang}/managed-agents/README.md` 中时，使用以下 URL。
 
-| SDK        | URL                                                       | 描述                    |
-| ---------- | --------------------------------------------------------- | ------------------------------ |
-| Python     | `https://github.com/anthropics/anthropic-sdk-python`     | `anthropic` pip 包源 |
-| TypeScript | `https://github.com/anthropics/anthropic-sdk-typescript` | `@anthropic-ai/sdk` npm 源 |
-| Java       | `https://github.com/anthropics/anthropic-sdk-java`       | `anthropic-java` Maven 源  |
-| Go         | `https://github.com/anthropics/anthropic-sdk-go`         | Go 模块源               |
-| Ruby       | `https://github.com/anthropics/anthropic-sdk-ruby`       | `anthropic` gem 源         |
-| C#         | `https://github.com/anthropics/anthropic-sdk-csharp`     | NuGet 包源           |
-| PHP        | `https://github.com/anthropics/anthropic-sdk-php`        | Composer 包源        |
+| 主题                 | URL                                                                              | 提取提示                                                                               |
+| --------------------- | -------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------- |
+| 概述              | `https://platform.claude.com/docs/en/managed-agents/overview.md`                 | "提取高层架构以及代理/会话/环境/保险库如何组合在一起" |
+| 快速入门            | `https://platform.claude.com/docs/en/managed-agents/quickstart.md`               | "提取从代理到环境到会话到流的最小端到端代码路径"              |
+| 代理设置           | `https://platform.claude.com/docs/en/managed-agents/agent-setup.md`              | "提取代理创建/更新/列出版本/归档生命周期和参数"                   |
+| 定义结果       | `https://platform.claude.com/docs/en/managed-agents/define-outcomes.md`          | "提取结果定义、评估钩子和成功条件配置"             |
+| 会话              | `https://platform.claude.com/docs/en/managed-agents/sessions.md`                 | "提取会话生命周期、状态转换、空闲/终止语义和恢复规则"    |
+| 环境          | `https://platform.claude.com/docs/en/managed-agents/environments.md`             | "提取环境配置（云/网络）、管理端点和重用模型"          |
+| 事件和流式传输  | `https://platform.claude.com/docs/en/managed-agents/events-and-streaming.md`     | "提取事件流类型、流优先排序、重新连接/去重和操控模式"    |
+| 工具                 | `https://platform.claude.com/docs/en/managed-agents/tools.md`                    | "提取内置工具集、自定义工具定义和工具结果线路格式"                |
+| 文件                 | `https://platform.claude.com/docs/en/managed-agents/files.md`                    | "提取文件上传、挂载路径、会话资源和列出/下载会话输出"  |
+| 权限策略   | `https://platform.claude.com/docs/en/managed-agents/permission-policies.md`      | "提取权限策略类型（允许/拒绝/确认）和每个工具的配置"                     |
+| 多代理           | `https://platform.claude.com/docs/en/managed-agents/multi-agent.md`              | "提取多代理组合模式、子代理调用和结果交接"            |
+| 可观测性         | `https://platform.claude.com/docs/en/managed-agents/observability.md`            | "提取托管代理暴露的日志、追踪和使用遥测"                       |
+| GitHub                | `https://platform.claude.com/docs/en/managed-agents/github.md`                   | "提取 github_repository 资源形状、多仓库挂载和令牌轮换"             |
+| MCP 连接器         | `https://platform.claude.com/docs/en/managed-agents/mcp-connector.md`            | "提取代理上的 MCP 服务器声明和会话时基于保险库的凭证注入"     |
+| 保险库                | `https://platform.claude.com/docs/en/managed-agents/vaults.md`                   | "提取保险库创建、凭证添加/轮换、OAuth 刷新形状和归档"                 |
+| 技能                | `https://platform.claude.com/docs/en/managed-agents/skills.md`                   | "提取托管代理的技能打包和加载模型"                                  |
+| 记忆                | `https://platform.claude.com/docs/en/managed-agents/memory.md`                   | "提取记忆资源形状、作用域和生命周期"                                         |
+| 入手指南            | `https://platform.claude.com/docs/en/managed-agents/onboarding.md`               | "提取首次运行设置、先决条件和账户/区域要求"                      |
+| 云容器      | `https://platform.claude.com/docs/en/managed-agents/cloud-containers.md`         | "提取云容器运行时、镜像配置和网络/存储旋钮"                     |
+| 迁移             | `https://platform.claude.com/docs/en/managed-agents/migration.md`                | "提取从早期 API/预览形状到 GA 托管代理的迁移路径"                 |
 
----
+### Anthropic CLI
 
-## Agent SDK 文档 URL
-
-### 核心文档
-
-| 主题                | URL                                                         | 提取提示                                               |
-| -------------------- | ----------------------------------------------------------- | --------------------------------------------------------------- |
-| Agent SDK 概览   | `https://platform.claude.com/docs/en/agent-sdk.md`          | "提取 Agent SDK 概览、主要功能和使用场景"   |
-| Agent SDK Python     | `https://github.com/anthropics/claude-agent-sdk-python`     | "提取 Python SDK 安装、导入和基本用法"     |
-| Agent SDK TypeScript | `https://github.com/anthropics/claude-agent-sdk-typescript` | "提取 TypeScript SDK 安装、导入和基本用法" |
-
-### SDK 参考（GitHub README）
-
-| 主题          | URL                                                                                       | 提取提示                                            |
-| -------------- | ----------------------------------------------------------------------------------------- | ------------------------------------------------------------ |
-| Python SDK     | `https://raw.githubusercontent.com/anthropics/claude-agent-sdk-python/main/README.md`     | "提取 Python SDK API 参考、类和方法"     |
-| TypeScript SDK | `https://raw.githubusercontent.com/anthropics/claude-agent-sdk-typescript/main/README.md` | "提取 TypeScript SDK API 参考、类型和函数" |
-
-### npm/PyPI 包
-
-| 包                             | URL                                                            | 描述               |
-| ----------------------------------- | -------------------------------------------------------------- | ------------------------- |
-| claude-agent-sdk (Python)           | `https://pypi.org/project/claude-agent-sdk/`                   | PyPI 上的 Python 包    |
-| @anthropic-ai/claude-agent-sdk (TS) | `https://www.npmjs.com/package/@anthropic-ai/claude-agent-sdk` | npm 上的 TypeScript 包 |
-
-### GitHub 仓库
-
-| 资源       | URL                                                         | 描述                         |
-| -------------- | ----------------------------------------------------------- | ----------------------------------- |
-| Python SDK     | `https://github.com/anthropics/claude-agent-sdk-python`     | Python 包源               |
-| TypeScript SDK | `https://github.com/anthropics/claude-agent-sdk-typescript` | TypeScript/Node.js 包源   |
-| MCP 服务器    | `https://github.com/modelcontextprotocol`                   | 官方 MCP 服务器实现 |
-
----
-
-## 回退策略
-
-如果 WebFetch 失败（网络问题、URL 更改）：
-
-1. 使用各语言特定文件中的缓存内容（注意缓存日期）
-2. 告知用户数据可能已过时
-3. 建议用户直接查看 platform.claude.com 或 GitHub 仓库
+`ant` CLI 提供对 Claude API 的终端访问。每个 API 资源都作为一个子命令暴露。它是创建代理、环境、会话和其他资源的一种便捷方式，可以从版本控制的 YAML 创建，并以交互方式检查响应。

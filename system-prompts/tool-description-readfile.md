@@ -1,10 +1,9 @@
 <!--
 name: 'Tool Description: ReadFile'
 description: Tool description for reading files
-ccVersion: 2.1.91
+ccVersion: 2.1.97
 variables:
-  - SUPPORTS_RELATIVE_PATHS_FN
-  - DEFAULT_READ_LINES_LIMIT
+  - MAX_READ_LINES
   - CONDITIONAL_LENGTH_NOTE
   - CAT_DASH_N_NOTE
   - READ_FULL_FILE_NOTE
@@ -17,8 +16,8 @@ variables:
 假设此工具能够读取机器上的所有文件。如果用户提供文件路径，则假设该路径有效。读取不存在的文件是可以的；将返回错误。
 
 使用说明：
-- ${SUPPORTS_RELATIVE_PATHS_FN()?"file_path 参数可以是相对于当前工作目录的路径（简洁起见优先使用）或绝对路径":"file_path 参数必须是绝对路径，而不是相对路径"}
-- 默认情况下，它从文件开头读取最多 ${DEFAULT_READ_LINES_LIMIT} 行${CONDITIONAL_LENGTH_NOTE}
+- file_path 参数必须是绝对路径，而不是相对路径
+- 默认情况下，它从文件开头读取最多 ${MAX_READ_LINES} 行${CONDITIONAL_LENGTH_NOTE}
 ${CAT_DASH_N_NOTE}
 ${READ_FULL_FILE_NOTE}
 - 此工具允许 Claude Code 读取图像（例如 PNG、JPG 等）。当读取图像文件时，内容以视觉方式呈现，因为 Claude Code 是多模态 LLM。${CAN_READ_PDF_FILES_FN()?`

@@ -4,6 +4,26 @@
 
 ### Claude Code 系统提示词变更日志
 
+# [2.1.97](https://github.com/Piebald-AI/claude-code-system-prompts/commit/38cf6fe)
+
+_+23,865 tokens_
+
+- **NEW:** 托管智能体系统提示 —— 新增 9 个托管智能体文档文件（概览、核心概念、端点参考、环境与资源、事件与操控、客户端模式、工具与技能、cURL 参考、Python 参考、TypeScript 参考）。
+- **NEW:** 托管智能体入手指南流程 —— 新增入手指南代理提示词。
+- **NEW:** Dream 夜间调度技能 —— 新增用于定时 Dream 整合循环的技能。
+- **NEW:** 构建 LLM 驱动应用技能 —— 新增替代旧的 `skill-build-with-claude-api.md` 的技能。
+- **REMOVED:** Agent SDK 模式/参考（Python 和 TypeScript）—— 被托管智能体文档替代。
+- **REMOVED:** 好友模式系统提示词 —— 已移除。
+- Agent Prompt: Worker fork —— 添加 agentMetadata 块，定义 fork 行为、继承模型和权限冒泡。
+- Agent Prompt: Status line setup —— 工作区对象添加 `git_worktree` 字段。
+- Skill: Build with Claude API (reference guide) —— 将"内置工具的智能体"条目替换为"托管智能体"。
+- Skill: Verify skill —— 获取句柄章节重写，新增 `ls .claude/skills/` 检查；移除"一旦声明验证通过"段落；新增"推进"章节；报告模板添加 `🔍` 探测标记。
+- System Prompt: Agent thread notes —— 移除 USE_EMBEDDED_TOOLS_FN 条件变量，统一使用绝对路径规则。
+- Tool Description: ReadFile —— 移除 SUPPORTS_RELATIVE_PATHS_FN 条件变量，统一使用绝对路径；变量名 DEFAULT_READ_LINES_LIMIT → MAX_READ_LINES。
+- Tool Description: Write —— 移除 PREFER_EDIT_NOTE 变量，内联编辑优先说明。
+- Data: Live documentation sources —— Claude API SDK 仓库和 Agent SDK 文档部分替换为 Managed Agents 文档 URL 和 Anthropic CLI 说明。
+- README: 版本号更新至 v2.1.97，日期更新至 2026-04-08。
+
 # [2.1.81](https://github.com/Piebald-AI/claude-code-system-prompts/commit/a82ade6)
 
 _+294 tokens_

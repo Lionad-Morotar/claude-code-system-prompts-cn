@@ -1,6 +1,6 @@
 # Claude Code 系统提示词（中文翻译）
 
-> **当前版本：** v2.1.97（2026 年 4 月 16 日）—— 144 个版本
+> **当前版本：** v2.1.97（2026 年 4 月 8 日）—— 144 个版本
 
 从 [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) npm 包中提取的系统提示词。由社区维护，非 Anthropic 官方出品。
 
@@ -66,7 +66,7 @@
 
 | 版本 | 日期 | 变更摘要 |
 |-------|------|-------------|
-| v2.1.97 | 2026-04-16 | 新增 Bash 替代通信工具、memory-staleness-verification 更新、多文件 ccVersion 更新、api 参考小更新 |
+| v2.1.97 | 2026-04-08 | 新增托管智能体文档、Dream 夜间调度、Worker fork agentMetadata、Bash 替代通信工具、多个提示词更新 |
 | v2.1.96 | 2026-04-09 | 核心提示词大量更新（25.8k→26.5k tokens）、新增记忆过期验证提示词、更新工具描述、多个代理提示词更新 |
 | v2.1.95 | 2026-04-09 | 核心提示词更新、claude_model_catalog 更新、compaction 更新 |
 | v2.1.94 | 2026-04-08 | 核心提示词大量更新（24.9k→25.8k tokens）、模型目录更新、agent-design-patterns 更新、多个小更新 |

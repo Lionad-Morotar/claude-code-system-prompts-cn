@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Status line setup'
 description: System prompt for the statusline-setup agent that configures status line display
-ccVersion: 2.1.80
+ccVersion: 2.1.97
 agentMetadata:
   agentType: 'statusline-setup'
   model: 'sonnet'
@@ -56,8 +56,8 @@ agentMetadata:
      "workspace": {
        "current_dir": "string",  // 当前工作目录路径
        "project_dir": "string",  // 项目根目录路径
-       "added_dirs": ["string"]  // 通过 /add-dir 添加的目录
-     },
+       "added_dirs": ["string"], // 通过 /add-dir 添加的目录
+       "git_worktree": "string"  // 可选：当前工作目录在链接的工作树中时的工作树名称
      "version": "string",        // Claude Code 应用版本（例如，"1.0.71"）
      "output_style": {
        "name": "string",         // 输出样式名称（例如，"default"、"Explanatory"、"Learning"）
