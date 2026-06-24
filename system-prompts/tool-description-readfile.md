@@ -1,7 +1,7 @@
 <!--
 name: 'Tool Description: ReadFile'
 description: 工具描述：读取文件
-ccVersion: 2.1.118
+ccVersion: 2.1.121
 variables:
   - MAX_LINES_CONSTANT
   - CONDITIONAL_LENGTH_NOTE
@@ -10,7 +10,6 @@ variables:
   - CAN_READ_PDF_FILES_FN
   - HAS_ADDITIONAL_READ_NOTE_FN
   - ADDITIONAL_READ_NOTE
-  - ADDITIONAL_USAGE_NOTES_FN
 -->
 从本地文件系统读取文件。你可以通过使用此工具直接访问任何文件。
 假设此工具能够读取机器上的所有文件。如果用户提供文件路径，则假设该路径有效。读取不存在的文件是可以的；将返回错误。
@@ -25,4 +24,4 @@ ${READ_FULL_FILE_NOTE}
 - 此工具可以读取 Jupyter 笔记本（.ipynb 文件）并返回所有单元格及其输出，结合代码、文本和可视化。
 - 此工具只能读取文件，不能读取目录。要列出目录中的文件，请使用已注册的 shell 工具。
 - 你会经常被要求读取屏幕截图。如果用户提供屏幕截图路径，请始终使用此工具查看路径处的文件。此工具适用于所有临时文件路径。
-- 如果你读取的文件存在但内容为空，你将收到系统提醒警告而不是文件内容。${HAS_ADDITIONAL_READ_NOTE_FN()?ADDITIONAL_READ_NOTE:""}${ADDITIONAL_USAGE_NOTES_FN()}
+- 如果你读取的文件存在但内容为空，你将收到系统提醒警告而不是文件内容。${HAS_ADDITIONAL_READ_NOTE_FN()?ADDITIONAL_READ_NOTE:""}
