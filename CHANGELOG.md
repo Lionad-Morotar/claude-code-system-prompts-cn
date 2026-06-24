@@ -4,6 +4,30 @@
 
 ### Claude Code 系统提示词变更日志
 
+# [2.1.105](https://github.com/Piebald-AI/claude-code-system-prompts/commit/0b584ef)
+
+_+4,895 tokens_
+
+- **NEW:** Skill: Verify skill (runtime-verification) —— 新增 `/runtime-verification` 技能的别名提示词，与 verify 技能内容相同，仅 frontmatter 调用名称不同。
+- Agent Prompt: Memory synthesis —— 重写：从 `one_paragraph_synthesis` 格式改为 `relevant_facts` 数组格式，每个事实 1-2 句独立呈现。
+- Agent Prompt: Explore —— 变量名 `BASH_TOOL_NAME` → `SHELL_TOOL_NAME`，新增 `IS_BASH_ENV_FN`；disallowedTools `R4` → `Agent`；新增 agentMetadata（agentType: Explore, model: haiku, whenToUse）。
+- Agent Prompt: Plan mode (enhanced) —— 变量名 `BASH_TOOL_NAME` → `SHELL_TOOL_NAME`，新增 `IS_BASH_ENV_FN`；disallowedTools `R4` → `Agent`；新增 agentMetadata 块（agentType: Plan, model: inherit, whenToUse）。
+- Agent Prompt: Managed Agents onboarding flow —— ccVersion 更新至 2.1.105。
+- Data: Managed Agents（全部 10 个文件）—— ccVersion 统一更新至 2.1.105。
+- Skill: Dynamic pacing loop execution —— 变量更新：`ADDITIONAL_INFO_FN, CONFIRMATION_MESSAGE` → `TICK_SUMMARY_LABEL`。
+- Skill: /loop self-pacing mode —— 移除 `ADDITIONAL_INFO_FN` 变量。
+- System Prompt: Fork usage guidelines —— ccVersion 更新至 2.1.105。
+- System Reminder: Exited plan mode —— 变量 `ATTACHMENT_OBJECT` → `CONDITIONAL_NOTE`。
+- Tool Description: Agent (usage notes) —— 新增 `EXTRA_USAGE_NOTES` 变量。
+- Tool Description: Background monitor (streaming events) —— 新增文件（翻译）。
+- Tool Description: EnterWorktree —— 新增"何时使用"中的 CLAUDE.md/memory 条件说明；新增"进入已有 worktree"章节。
+- Tool Description: ReadFile —— 变量 `MAX_LINES_CONSTANT` → `MAX_READ_LINES`；移除 `ADDITIONAL_USAGE_NOTES_FN`。
+- **REMOVED:** System Prompt: MCP tool result truncation —— 上游已删除。
+- **REMOVED:** System Reminder: Loop wakeup not scheduled —— 上游已删除。
+- **REMOVED:** Tool Description: ScheduleWakeup (/loop dynamic mode) —— 上游已删除。
+- **REMOVED:** Tool Description: Snooze (delay and reason guidance) —— 上游已删除。
+- README: 版本号更新至 v2.1.105，日期更新至 4 月 13 日，149 个版本。
+
 # [2.1.97](https://github.com/Piebald-AI/claude-code-system-prompts/commit/38cf6fe)
 
 _+23,865 tokens_

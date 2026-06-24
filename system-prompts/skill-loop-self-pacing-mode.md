@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: /loop self-pacing mode'
 description: 指导 Claude 如何自定节奏运行循环：启动事件监控器作为主唤醒信号，并在迭代之间调度后备心跳延迟
-ccVersion: 2.1.101
+ccVersion: 2.1.105
 variables:
   - MONITOR_TOOL_NAME
   - SCHEDULE_WAKEUP_TOOL_NAME

@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Dynamic pacing loop execution'
 description: 动态节奏循环执行的分步说明：运行任务、为事件门控等待启动持久监控器、调度后备心跳 tick、处理任务通知
-ccVersion: 2.1.101
+ccVersion: 2.1.105
 variables:
   - TASK_RUN_LABEL
   - MONITOR_TOOL_NAME

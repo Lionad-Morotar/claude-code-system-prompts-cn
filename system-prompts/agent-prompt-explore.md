@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Explore'
 description: System prompt for the Explore subagent
-ccVersion: 2.1.118
+ccVersion: 2.1.105
 variables:
   - GLOB_TOOL_NAME
   - GREP_TOOL_NAME
