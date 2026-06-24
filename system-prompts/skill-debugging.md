@@ -1,12 +1,13 @@
 <!--
      name: 'Skill: Debugging'
      description: Instructions for debugging an issue that the user is encountering in the Claude Code session
-     ccVersion: 2.1.71
+     ccVersion: 2.1.122
      variables:
        - DEBUG_LOGGING_WAS_ALREADY_ACTIVE
        - DEBUG_LOG_PATH
        - DEBUG_LOG_SUMMARY
        - ISSUE_DESCRIPTION
+       - DAEMON_DEBUG_CONTEXT
        - GET_SETTINGS_FILE_PATH_FN
        - LOG_LINE_COUNT
        - CLAUDE_CODE_GUIDE_SUBAGENT_NAME
@@ -29,9 +30,11 @@ ${DEBUG_LOG_SUMMARY}
 
 如需更多上下文，请在整个文件中搜索 [ERROR] 和 [WARN] 行。
 
+${ISSUE_DESCRIPTION}
+
 ## Issue Description
 
-${ISSUE_DESCRIPTION||"用户未描述具体问题。请读取调试日志并总结任何错误、警告或值得注意的问题。"}
+${DAEMON_DEBUG_CONTEXT||"用户未描述具体问题。请读取调试日志并总结任何错误、警告或值得注意的问题。"}
 
 ## Settings
 
