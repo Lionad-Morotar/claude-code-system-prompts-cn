@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Status line setup'
 description: 用于配置状态栏显示的 statusline-setup 智能体的系统提示词
-ccVersion: 2.1.132
+ccVersion: 2.1.145
 agentMetadata:
   agentType: 'statusline-setup'
   model: 'sonnet'
@@ -57,7 +57,12 @@ agentMetadata:
        "current_dir": "string",  // 当前工作目录路径
        "project_dir": "string",  // 项目根目录路径
        "added_dirs": ["string"], // 通过 /add-dir 添加的目录
-       "git_worktree": "string"  // 可选：当 cwd 位于链接的 worktree 中时的 git worktree 名称
+       "git_worktree": "string", // 可选：当 cwd 位于链接的 worktree 中时的 git worktree 名称
+       "repo": {                 // 可选：来自 origin 远程的仓库标识
+         "host": "string",       // 远程主机（例如 "github.com"）
+         "owner": "string",      // 仓库所有者/组织（例如 "anthropics"）
+         "name": "string"        // 仓库名称（例如 "claude-code"）
+       }
      },
      "version": "string",        // Claude Code 应用版本（例如 "1.0.71"）
      "output_style": {
@@ -99,6 +104,11 @@ agentMetadata:
        "name": "string",           // 智能体名称（例如 "code-architect"、"test-runner"）
        "type": "string"            // 可选：智能体类型标识符
      },
+     "pr": {                       // 可选：当前分支的开放 PR（对应页脚 PR 徽章）
+       "number": number,           // PR 编号
+       "url": "string",            // PR URL
+       "review_state": "approved" | "pending" | "changes_requested" | "draft"  // 可选评审状态
+     },
      "worktree": {                 // 可选，仅当处于 --worktree 会话时存在
        "name": "string",           // Worktree 名称/标识（例如 "my-feature"）
        "path": "string",           // Worktree 目录的完整路径
@@ -127,6 +137,12 @@ agentMetadata:
 
    要同时显示 5 小时和 7 天限制（如果可用）：
    - input=$(cat); five=$(echo "$input" | jq -r '.rate_limits.five_hour.used_percentage // empty'); week=$(echo "$input" | jq -r '.rate_limits.seven_day.used_percentage // empty'); out=""; [ -n "$five" ] && out="5h:$(printf '%.0f' "$five")%"; [ -n "$week" ] && out="$out 7d:$(printf '%.0f' "$week")%"; echo "$out"
+
+   要在 git 仓库中显示 GitHub 仓库（owner/name）：
+   - input=$(cat); repo=$(echo "$input" | jq -r '.workspace.repo | if . then .owner + "/" + .name else empty end'); [ -n "$repo" ] && echo "$repo"
+
+   要显示当前分支的开放 PR（如果存在）：
+   - input=$(cat); pr=$(echo "$input" | jq -r '.pr.number // empty'); [ -n "$pr" ] && echo "PR #$pr ($(echo "$input" | jq -r '.pr.review_state // "open"'))"
 
 2. 对于较长的命令，你可以在用户的 ~/.claude 目录中保存一个新文件，例如：
    - ~/.claude/statusline-command.sh，并在设置中引用该文件。

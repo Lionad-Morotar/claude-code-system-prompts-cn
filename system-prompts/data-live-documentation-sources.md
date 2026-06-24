@@ -1,7 +1,7 @@
 <!--
 name: '数据：实时文档源'
 description: 用于从官方源获取最新 Claude API 和 Agent SDK 文档的 WebFetch URL
-ccVersion: 2.1.139
+ccVersion: 2.1.145
 -->
 # 实时文档源
 
@@ -51,6 +51,7 @@ ccVersion: 2.1.139
 | Token 计数   | `https://platform.claude.com/docs/en/build-with-claude/token-counting.md`   | "提取 Token 计数 API 的用法和示例"                                                         |
 | 速率限制      | `https://platform.claude.com/docs/en/api/rate-limits.md`                    | "提取按层级和模型划分的当前速率限制"                                                         |
 | 错误           | `https://platform.claude.com/docs/en/api/errors.md`                         | "提取 HTTP 错误代码、含义和重试指南"                                                |
+| Amazon Bedrock   | `https://platform.claude.com/docs/en/build-with-claude/claude-on-amazon-bedrock.md` | "按语言提取 AnthropicBedrockMantle 客户端、带 `anthropic.` 前缀的模型 ID、认证路径、功能可用性和区域信息" |
 | AWS 上的 Claude 平台 | `https://platform.claude.com/docs/en/build-with-claude/claude-platform-on-aws.md` | "按语言提取 AnthropicAWS 客户端、SigV4 认证、凭证优先级、短期 API 密钥、workspace_id 和区域要求" |
 | AWS 上的 Claude 平台 — IAM 操作 | `https://platform.claude.com/docs/en/api/claude-platform-on-aws-iam-actions.md` | "提取 IAM 操作名称、资源 ARN 以及每个 API 功能所需的策略示例" |
 
@@ -89,6 +90,8 @@ ccVersion: 2.1.139
 | 定义结果       | `https://platform.claude.com/docs/en/managed-agents/define-outcomes.md`          | "提取结果定义、评估钩子和成功条件配置"             |
 | 会话              | `https://platform.claude.com/docs/en/managed-agents/sessions.md`                 | "提取会话生命周期、状态转换、空闲/终止语义和恢复规则"    |
 | 环境          | `https://platform.claude.com/docs/en/managed-agents/environments.md`             | "提取环境配置（云/网络）、管理端点和重用模型"          |
+| 自托管沙箱 | `https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes.md`    | "提取 config:{type:self_hosted}、ANTHROPIC_ENVIRONMENT_KEY、EnvironmentWorker.run/run_one、beta_agent_toolset、ant beta:worker poll/run、webhook 驱动唤醒" |
+| 自托管沙箱 — 安全性 | `https://platform.claude.com/docs/en/managed-agents/self-hosted-sandboxes-security.md` | "提取客户负责的部分（加固、出站、密钥保管、信任边界）与 Anthropic 无法做到的部分" |
 | 事件和流式传输  | `https://platform.claude.com/docs/en/managed-agents/events-and-streaming.md`     | "提取事件流类型、流优先排序、重新连接/去重和操控模式"    |
 | 工具                 | `https://platform.claude.com/docs/en/managed-agents/tools.md`                    | "提取内置工具集、自定义工具定义和工具结果线路格式"                |
 | 文件                 | `https://platform.claude.com/docs/en/managed-agents/files.md`                    | "提取文件上传、挂载路径、会话资源和列出/下载会话输出"  |

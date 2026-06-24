@@ -1,11 +1,11 @@
 <!--
 name: 'Data: Claude Platform on AWS 参考文档'
 description: 通过 AWS 基础设施使用 Claude 开发者平台的参考文档，涵盖 AnthropicAWS 客户端、必需的 region 和 workspace 配置、SigV4 认证以及短期 API 密钥
-ccVersion: 2.1.139
+ccVersion: 2.1.145
 -->
 # AWS 上的 Claude Platform
 
-**由 Anthropic 运营**，通过 AWS 基础设施访问 Claude 开发者平台——SigV4 认证、AWS IAM 访问控制和 AWS Marketplace 计费。由于由 Anthropic 运营，**API 接口与第一方保持一致，实现同日更新**：Managed Agents、服务端工具、批处理、Files 以及本技能中的每个功能均以相同方式工作。模型 ID 使用裸第一方字符串（`{{OPUS_ID}}`、`{{SONNET_ID}}`）——**不带 provider 前缀**。
+**由 Anthropic 运营**，通过 AWS 基础设施访问 Claude 开发者平台——SigV4 认证、AWS IAM 访问控制和 AWS Marketplace 计费。由于由 Anthropic 运营，**API 接口与第一方保持一致，实现同日更新**：Managed Agents、服务端工具、批处理、Files 以及本技能中的每个功能均以相同方式工作（**自托管沙箱除外**——`config:{type:"self_hosted"}` 在此不可用；请使用 `cloud`）。模型 ID 使用裸第一方字符串（`{{OPUS_ID}}`、`{{SONNET_ID}}`）——**不带 provider 前缀**。
 
 > **不同于 Amazon Bedrock。** Bedrock 由合作伙伴运营（AWS 运行服务；发布计划各不相同，功能子集，模型 ID 带 `anthropic.` 前缀）。AWS 上的 Claude Platform 与 Bedrock 并存；选择依据是需要 AWS 原生 IAM/计费且保持完整 Anthropic API 兼容性（本页面），还是 Bedrock 自有生态。
 

@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Prompt Caching — Design & Optimization'
 description: Document on how to design prompt-building code for effective caching, including placement patterns and anti-patterns.
-ccVersion: 2.1.111
+ccVersion: 2.1.145
 -->
 # 提示缓存 — 设计与优化
 
@@ -67,6 +67,24 @@ messages[-1].content[-1].cache_control = {"type": "ephemeral"}
 ]}]
 ```
 
+### 对话中途的系统消息
+
+**仅限 {{OPUS_NAME}}；无需 beta 头。** 当操作指令在对话中途到达时——模式切换、更新的上下文、动态注入的状态——将其作为 `{"role": "system", "content": "..."}` 追加到 `messages[]` 中，而不是编辑顶层的 `system`。编辑顶层的 `system` 会更改整个对话历史之前的前缀，导致每个已缓存的轮次都被重新处理而不使用缓存；而 `role: "system"` 消息位于历史之后，保持已缓存的前缀完好无损。
+
+```json
+// 顶层 system 保持字节一致；新指令放在已缓存的历史之后
+"system": [{"type": "text", "text": "<稳定的核心提示>", "cache_control": {"type": "ephemeral"}}],
+"messages": [
+  ...history,
+  {"role": "user", "content": "..."},
+  {"role": "system", "content": "已启用简洁模式——回复控制在 40 字以内。"}
+]
+```
+
+这也是将操作指令嵌入为用户轮次中的文本（`<system-reminder>` 模式）的防提示注入替代方案：两者具有相同的缓存特征，但 `role: "system"` 是防伪造的操作通道，而用户/工具内容中的文本可以被任何写入用户可见输入的内容伪造。
+
+适用于 {{OPUS_NAME}}；无需 beta 头。必须跟在 `role: "user"` 消息之后（或以服务器工具使用结尾的 `assistant` 消息之后），且必须是 `messages` 中的最后一条记录，或后跟 `assistant` 轮次；不能作为 `messages[0]`——对初始提示使用顶层 `system`。内容仅限文本。不支持的模型返回 400（`BadRequestError`：`role 'system' is not supported on this model`）；捕获该错误并回退到将指令放入用户轮次的 `<system-reminder>` 块中。
+
 ### 每次从头变化的提示
 
 不要缓存。如果前 1K token 每次请求都不同，就没有可重用的前缀。添加 `cache_control` 只会付出缓存写入的代价而没有任何读取收益。保持无标记。
@@ -77,7 +95,7 @@ messages[-1].content[-1].cache_control = {"type": "ephemeral"}
 
 以下决策比标记放置更重要。先解决这些问题。
 
-**保持系统提示冻结。** 不要将"当前日期：X"、"模式：Y"、"用户名：Z"插值到系统提示中——它们位于前缀的开头，会使下游所有内容失效。将动态上下文作为用户或助手消息注入到 `messages` 中的较后位置。第 5 轮的消息不会使第 5 轮之前的任何内容失效。
+**保持系统提示冻结。** 不要将"当前日期：X"、"模式：Y"、"用户名：Z"插值到系统提示中——它们位于前缀的开头，会使下游所有内容失效。将动态上下文注入到 `messages` 中的较后位置——在支持的地方作为 `{"role": "system", ...}` 消息（参见上文§对话中途的系统消息），否则作为用户消息中的文本。第 5 轮的消息不会使第 5 轮之前的任何内容失效。
 
 **不要在对话中途更改 tools 或模型。** Tools 在位置 0 渲染；添加、移除或重排工具会使整个缓存失效。切换模型也是如此（缓存是模型作用域的）。如果需要"模式"，不要替换工具集——给 Claude 一个记录模式转换的工具，或将模式作为消息内容传递。确定性序列化 tools（按名称排序）。
 
@@ -116,11 +134,11 @@ messages[-1].content[-1].cache_control = {"type": "ephemeral"}
 
 | 模型 | 最小值 |
 |---|---:|
-| Opus 4.7、Opus 4.6、Opus 4.5、Haiku 4.5 | 4096 令牌 |
-| Sonnet 4.6、Haiku 3.5、Haiku 3 | 2048 令牌 |
+| Opus 4.8、Opus 4.7、Opus 4.6、Opus 4.5、Haiku 4.5 | 4096 令牌 |
+| Fable 5、Sonnet 4.6、Haiku 3.5、Haiku 3 | 2048 令牌 |
 | Sonnet 4.5、Sonnet 4.1、Sonnet 4、Sonnet 3.7 | 1024 令牌 |
 
-一个 3K 令牌的提示词在 Sonnet 4.5 上可以缓存，但在 Opus 4.7 上则不会。
+一个 3K 令牌的提示词在 Sonnet 4.5 和 Fable 5 上可以缓存，但在 Opus 4.8 上则不会。
 
 **经济学：** 缓存读取成本约为基础输入价格的 0.1 倍。缓存写入成本为 **5 分钟 TTL 的 1.25 倍、1 小时 TTL 的 2 倍**。盈亏平衡取决于 TTL：使用 5 分钟 TTL，两个请求即可平衡（1.25× + 0.1× = 1.35× 对比无缓存的 2×）；使用 1 小时 TTL，至少需要三个请求（2× + 0.2× = 2.2× 对比无缓存的 3×）。1 小时 TTL 能在突发流量的间隙中保持条目存活，但双倍的写入成本意味着需要更多读取才能回本。
 
@@ -174,3 +192,37 @@ messages[-1].content[-1].cache_control = {"type": "ephemeral"}
 缓存条目只有在第一个响应**开始流式传输**后才变得可读。N 个具有完全相同前缀的并行请求都需要支付全价——没有哪个能读取其他请求仍在写入的内容。
 
 对于扇出模式：发送 1 个请求，等待第一个流式令牌（不是完整响应），然后触发剩余的 N−1 个。它们将读取第一个请求刚刚写入的缓存。
+
+## 预热缓存
+
+要消除*首次*真实请求的缓存未命中延迟，请在启动时（或按间隔）发送一个 **`max_tokens: 0`** 请求。API 会运行预填充——在你的 `cache_control` 断点处写入缓存——并立即返回，包含 `content: []`、`stop_reason: "max_tokens"` 和一个已填充的 `usage` 块（零输出 token 计费；`cache_creation_input_tokens` 上正常收取缓存写入费用）。
+
+**何时预热**——预热是用*当下*的缓存写入费用换取*下一次*真实请求更低的 TTFT。当以下三个条件全部满足时才值得： (a) 首次请求延迟是用户可见的（聊天/语音/交互式——而非后台任务），(b) 共享前缀足够大，冷写入明显缓慢，(c) 在流量到来*之前*有一个触发时机——应用启动、worker 启动、部署后、计划窗口开始。
+
+| 跳过预热的情况… | 原因 |
+|---|---|
+| 流量是连续的（请求间隔 ≤ TTL） | 第一个真实请求已预热缓存，后续每个请求都会命中；单独的预热调用纯属额外写入 |
+| 前缀很小或低于可缓存最小值 | 冷写入惩罚可忽略不计 |
+| 前缀因请求/用户而异 | 没有共享内容可供预热 |
+| 你会投机性地预热许多不同的前缀 | 每次都是约 1.25 倍的写入；成本可能超过节省的延迟 |
+
+**定时重新预热：** 仅在流量间隔超过 TTL 时才需要。如果真实请求的到达频率超过每 5 分钟一次，它们自己就能保持缓存热度——不要添加间隔重新预热。对于有长空闲间隙的突发流量，要么在略低于 TTL 时重新预热，要么切换到 `ttl: "1h"` 并减少预热频率。
+
+```python
+client.messages.create(
+    model="{{OPUS_ID}}",
+    max_tokens=0,
+    system=[{
+        "type": "text",
+        "text": SYSTEM_PROMPT,
+        "cache_control": {"type": "ephemeral"},
+    }],
+    messages=[{"role": "user", "content": "warmup"}],
+)
+```
+
+**断点放置：** 将 `cache_control` 放在**与真实请求共享的最后一个块**上（系统提示词或工具定义）——**不要**放在占位用户消息上，也**不要**通过顶层自动缓存（这会将缓存键绑定到占位符）。占位符可以是任意非空白字符串；它在预填充期间被读取但永远不会被回复。
+
+**被拒绝的组合：** `max_tokens: 0` 在以下情况下会返回 `invalid_request_error`：`stream: true`、`thinking.type: "enabled"`、`output_config.format`、`tool_choice` 为 `{"type":"tool"}` 或 `{"type":"any"}`，或在 Message Batches 请求中使用。
+
+**TTL 仍然适用**——对于默认缓存至少每 5 分钟重新预热一次，或使用 1 小时 TTL。这取代了旧的 `max_tokens: 1` 变通方案（无需丢弃单 token 回复，不产生输出 token 计费，意图明确）。

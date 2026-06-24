@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Managed Agents environments and resources'
 description: Reference documentation covering Managed Agents environments, file resources, GitHub repository mounting, and the Files API with SDK examples
-ccVersion: 2.1.119
+ccVersion: 2.1.145
 -->
 # Managed Agents — Environments 与 Resources
 
@@ -16,18 +16,22 @@ ccVersion: 2.1.119
 | 网络策略                          | 描述                                                           |
 | ------------------------------- | ------------------------------------------------------------- |
 | `unrestricted`                  | 完全出站（法律规定的黑名单除外）                                     |
-| `package_managers_and_custom`   | 包管理器 + 自定义 `allowed_hosts`                                |
+| `limited`                       | 默认拒绝；通过 `allowed_hosts` / `allow_package_managers` / `allow_mcp_servers` 选择性放行 |
 
 ```json
 {
   "networking": {
-    "type": "package_managers_and_custom",
+    "type": "limited",
+    "allow_package_managers": true,
+    "allow_mcp_servers": true,
     "allowed_hosts": ["api.example.com"]
   }
 }
 ```
 
-**MCP 注意事项：** 如果使用受限网络，请确保 `allowed_hosts` 包含你的 MCP 服务器域名。否则容器无法访问它们，工具会静默失败。
+所有三个 `limited` 字段都是可选的。`allow_package_managers`（默认 `false`）允许 PyPI/npm 等；`allow_mcp_servers`（默认 `false`）允许智能体配置的 MCP 服务器端点，无需在 `allowed_hosts` 中逐一列出。
+
+**MCP 注意事项：** 在 `limited` 网络策略下，要么设置 `allow_mcp_servers: true`，要么将每个 MCP 服务器域名添加到 `allowed_hosts` 中。否则容器无法访问它们，工具会静默失败。
 
 ### 创建 environment
 
@@ -42,6 +46,10 @@ const env = await client.beta.environments.create({
   },
 });
 ```
+
+### 自托管沙箱
+
+要在**你自己的基础设施**中运行工具执行（而非 Anthropic 的），设置 `config: {type: "self_hosted"}`——agent 循环仍然在 Anthropic 侧运行，但 `bash` / 文件操作 / 代码执行在你通过出站轮询 worker 控制的容器中运行。`networking` 块不适用（由你控制出站）。资源挂载（`file`、`github_repository`）和记忆存储的行为有所不同——参见 `shared/managed-agents-self-hosted-sandboxes.md` 了解 worker、凭证以及 cloud vs self-hosted 的对比。
 
 ### Environment CRUD
 

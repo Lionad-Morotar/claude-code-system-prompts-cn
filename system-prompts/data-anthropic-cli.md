@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Anthropic CLI'
 description: ant CLI 的参考文档，涵盖安装、认证、命令结构、输入输出控制、托管智能体工作流和脚本化使用模式
-ccVersion: 2.1.118
+ccVersion: 2.1.145
 -->
 # Anthropic CLI (`ant`)
 
@@ -41,7 +41,7 @@ go install github.com/anthropics/anthropic-cli/cmd/ant@latest
 ant <resource>[:<subresource>] <action> [flags]
 ```
 
-Beta 资源（agents, sessions, environments, deployments, skills, vaults, memory stores）位于 `beta:` 下——CLI 自动发送正确的 `anthropic-beta` 头，因此除非用 `--beta <header>` 覆盖，否则不要自行传递。
+Beta 资源（agents, sessions, environments, deployments, skills, vaults, memory stores）位于 `beta:` 下——CLI 自动发送正确的 `anthropic-beta` 头，因此除非用 `--beta <header>` 覆盖，否则不要自行传递。 对于自托管环境，`ant beta:worker poll/run` 和 `ant beta:environments:work stats/stop` 用于驱动和监控工作队列——参见 `shared/managed-agents-self-hosted-sandboxes.md`。
 
 ```sh
 ant models list

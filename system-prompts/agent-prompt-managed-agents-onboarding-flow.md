@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Managed Agents onboarding flow'
 description: 引导用户从零配置 Managed Agent 的交互式访谈脚本 —— 选择工具、技能、文件、环境设置 —— 并生成设置和运行时代码
-ccVersion: 2.1.132
+ccVersion: 2.1.145
 -->
 # Managed Agents — 引导流程
 
@@ -96,6 +96,8 @@ Claude Managed Agents 是一个托管式智能体（hosted agent）：Anthropic 
 - [ ] 发送给智能体的第一条消息？
 
 会话创建会阻塞直到所有资源挂载完成。在发送启动消息之前先打开事件流。流使用 SSE 格式；在 `session.status_terminated` 时退出，或在 `session.status_idle` 且 `stop_reason` 为终态时退出 —— 即除 `requires_action` 之外的任何 stop_reason。`requires_action` 在会话等待工具确认或自定义工具结果时短暂出现（参见 `shared/managed-agents-client-patterns.md` 模式 5）。用量数据在 `span.model_request_end` 上返回。智能体生成的产物位于 `/mnt/session/outputs/` —— 通过 `files.list({scope_id: session.id, betas: ["managed-agents-2026-04-01"]})` 下载。
+
+**控制台逃生舱。** 在你生成的运行时代码块中，在 `sessions.create()` 之后立即打印会话的 Console URL，以便用户在迭代时可以在 UI 中观察：`print(f"在 Console 中查看: https://platform.claude.com/workspaces/default/sessions/{session.id}")`（如果用户有自定义命名的工作区，请将 `default` 替换为该工作区的 slug）。
 
 ---
 

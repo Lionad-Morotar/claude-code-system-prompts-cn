@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Managed Agents endpoint reference'
 description: Comprehensive reference for Managed Agents API endpoints, SDK methods, request/response schemas, error handling, and rate limits
-ccVersion: 2.1.132
+ccVersion: 2.1.145
 -->
 # 托管智能体 — 端点参考
 
@@ -26,6 +26,7 @@ SDK 会自动为所有 `client.beta.{agents,environments,sessions,vaults,memory_
 | 智能体 | `agents.create` / `retrieve` / `update` / `list` / `archive` | `Agents.New` / `Get` / `Update` / `List` / `Archive` |
 | 智能体版本 | `agents.versions.list` | `Agents.Versions.List` |
 | 环境 | `environments.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `Environments.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
+| 环境工作（自托管） | `environments.work.poller` / `stats` / `stop` | 参见 `shared/managed-agents-self-hosted-sandboxes.md` |
 | 会话 | `sessions.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `Sessions.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
 | 会话事件 | `sessions.events.list` / `send` / `stream` | `Sessions.Events.List` / `Send` / `StreamEvents` |
 | 会话线程 | `sessions.threads.list` / `retrieve` / `archive`; `sessions.threads.events.list` / `stream` | `Sessions.Threads.List` / `Get` / `Archive`; `Sessions.Threads.Events.List` / `StreamEvents` |
@@ -40,10 +41,11 @@ SDK 会自动为所有 `client.beta.{agents,environments,sessions,vaults,memory_
 - 智能体和会话线程**没有** `delete` 方法——仅有 `archive`。归档是**永久性**的：智能体变为只读，新会话无法引用它，且无法取消归档。归档生产环境智能体之前需与用户确认。环境、会话、保管库、凭证和记忆存储同时拥有 `delete` 和 `archive`；会话资源、文件、技能和记忆仅有 `delete`；记忆版本两者都没有——仅有 `redact`。
 - 会话资源使用 `add`（而非 `create`）。
 - Go 的事件流方法是 `StreamEvents`（而非 `Stream`）。
+- 自托管 worker **不**在 `client.beta.*` 下——它是来自 `anthropic.lib.environments` / `@anthropic-ai/sdk/helpers/beta/environments` 的 `EnvironmentWorker`；只有 `environments.work.poller/stats/stop` 是客户端方法。
 
 **智能体简写：** 在创建会话时，`agent` 参数接受裸字符串（`agent="agent_abc123"`——使用最新版本）或完整的引用对象（`{type: "agent", id: "agent_abc123", version: 123}`）。
 
-**模型简写：** 在创建智能体时，`model` 参数接受裸字符串（`model="{{OPUS_ID}}"`——使用 `standard` 速度）或完整的配置对象（`{type: "model_config", id: "claude-opus-4-6", speed: "fast"}`）。注意：`speed: "fast"` 仅在 Opus 4.6 上受支持。
+**模型简写：** 在创建智能体时，`model` 参数接受裸字符串（`model="{{OPUS_ID}}"`——使用 `standard` 速度）或完整的配置对象（`{id: "claude-opus-4-6", speed: "fast"}`）。注意：`speed: "fast"` 仅在 Opus 4.6 上受支持。
 
 ---
 
@@ -67,7 +69,7 @@ SDK 会自动为所有 `client.beta.{agents,environments,sessions,vaults,memory_
 | `GET` | `/v1/sessions` | ListSessions | 列出会话（分页） |
 | `POST` | `/v1/sessions` | CreateSession | 创建新会话 |
 | `GET` | `/v1/sessions/{session_id}` | GetSession | 获取会话详情 |
-| `POST` | `/v1/sessions/{session_id}` | UpdateSession | 更新会话元数据/标题 |
+| `POST` | `/v1/sessions/{session_id}` | UpdateSession | 更新会话 `metadata`/`title`，或 `agent.tools`/`agent.mcp_servers`/`vault_ids`（会话级别覆盖；会话必须处于 `idle` 状态）。参见 `shared/managed-agents-core.md` → 在会话中途更新 agent 配置。 |
 | `DELETE` | `/v1/sessions/{session_id}` | DeleteSession | 删除会话 |
 | `POST` | `/v1/sessions/{session_id}/archive` | ArchiveSession | 归档会话 |
 
@@ -111,7 +113,10 @@ SDK 会自动为所有 `client.beta.{agents,environments,sessions,vaults,memory_
 | `POST`   | `/v1/environments/{environment_id}`                    | UpdateEnvironment    | 更新环境                  |
 | `DELETE` | `/v1/environments/{environment_id}`                    | DeleteEnvironment    | 删除环境。返回 204。 |
 | `POST`   | `/v1/environments/{environment_id}/archive`            | ArchiveEnvironment   | 归档环境。使其变为**只读**；现有会话继续运行，新会话无法引用它。无法取消归档——这是终态。 |
+| `GET`    | `/v1/environments/{environment_id}/work/stats`         | WorkQueueStats       | 自托管工作队列深度/待处理/工作进程。使用 `x-api-key` 认证。参见 `shared/managed-agents-self-hosted-sandboxes.md`。 |
+| `POST`   | `/v1/environments/{environment_id}/work/{work_id}/stop` | StopWork            | 自托管：停止一个已领取的工作项。使用 `x-api-key` 认证。 |
 
+对于 `type: "self_hosted"`，`config` 为裸的 `{"type": "self_hosted"}`——`networking` 和 `packages` 不适用。
 ## 保管库
 
 保管库存储由 Anthropic 代为管理的 MCP 凭证——支持自动刷新的 OAuth 凭证，或静态 bearer 令牌。通过 `vault_ids` 附加到会话。概念指南和凭证结构参见 `managed-agents-tools.md` 的保管库章节。
@@ -275,7 +280,7 @@ SDK 会自动为所有 `client.beta.{agents,environments,sessions,vaults,memory_
   "name": "string（必需）",
   "description": "string（可选）",
   "config": {
-    "type": "cloud",
+    "type": "cloud | self_hosted（联合类型——参见 SDK 类型定义）",
     "networking": {
       "type": "unrestricted | limited（联合类型——参见 SDK 类型定义）"
     },

@@ -1,9 +1,10 @@
 <!--
 name: 'Tool Description: EnterPlanMode'
 description: Tool description for entering plan mode to explore and design implementation approaches
-ccVersion: 2.0.62
+ccVersion: 2.1.145
 variables:
   - ASK_USER_QUESTION_TOOL_NAME
+  - CONDITIONAL_WHAT_HAPPENS_NOTE_FN
 -->
 当你即将开始一个非平凡的实施任务时，主动使用此工具。在编写代码之前获得用户对方法的签名可以防止浪费精力并确保一致性。此工具将你转换到计划模式，你可以在其中探索代码库并为用户批准设计实施方法。
 
@@ -45,19 +46,9 @@ variables:
 - 单行或几行修复（拼写错误、明显的错误、小调整）
 - 添加具有清晰要求的单个函数
 - 用户给出非常具体、详细指令的任务
-- 纯研究/探索任务（改用带有 explore 代理的 Task 工具）
+- 纯研究/探索任务（改用带有 explore 代理的 Agent 工具）
 
-## 计划模式中发生什么
-
-在计划模式中，你将：
-1. 使用 Glob、Grep 和 Read 工具彻底探索代码库
-2. 了解现有模式和架构
-3. 设计实施方法
-4. 向用户展示计划以供批准
-5. 如果需要阐明方法，请使用 ${ASK_USER_QUESTION_TOOL_NAME}
-6. 准备好实施时，使用 ExitPlanMode 退出计划模式
-
-## 示例
+${CONDITIONAL_WHAT_HAPPENS_NOTE_FN()}## 示例
 
 ### 良好 - 使用 EnterPlanMode：
 用户："向应用程序添加用户身份验证"

@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Managed Agents overview'
 description: Provides the agent with a comprehensive overview of the Managed Agents API architecture, mandatory agent-then-session flow, beta headers, documentation reading guide, and common pitfalls
-ccVersion: 2.1.132
+ccVersion: 2.1.145
 -->
 # Managed Agents — 概览
 
@@ -22,7 +22,7 @@ Managed Agents 为每个会话（session）提供一个容器作为 agent 的工
 
 **生成代码时，将设置与运行时分离。** `agents.create()` 应放在设置脚本中（或受 `if agent_id is None:` 保护的代码块中），而不是放在热路径的顶部。如果用户的代码每次调用都执行 `agents.create()`，他们会积累孤立的 agent 对象，并为创建延迟白白付出代价。正确模式是：创建一次 → 持久化 ID（配置文件、环境变量、密钥管理器）→ 每次运行加载 ID 并调用 `sessions.create()`。
 
-**要修改 agent 的行为，使用 `POST /v1/agents/{id}`——不要创建新的。** 每次更新递增版本号；运行中的 session 保持其锁定的版本，新 session 获取最新版本（或通过 `{type: "agent", id, version}` 显式锁定）。参见 `shared/managed-agents-core.md` → Agents → Versioning。
+**要修改 agent 的行为，使用 `POST /v1/agents/{id}`——不要创建新的。** 每次更新递增版本号；运行中的 session 保持其锁定的版本，新 session 获取最新版本（或通过 `{type: "agent", id, version}` 显式锁定）。参见 `shared/managed-agents-core.md` → Agents → Versioning。要在**单个运行中的会话**上更改 `tools`/`mcp_servers`/`vault_ids` 而不触及 agent 对象，使用 `sessions.update()`——参见 `shared/managed-agents-core.md` → 在会话中途更新 agent 配置。
 
 ## Beta 请求头
 
@@ -30,11 +30,11 @@ Managed Agents 处于 beta 阶段。SDK 会自动设置所需的 beta 请求头�
 
 | Beta 请求头                       | 启用的功能                                               |
 | -------------------------------- | ------------------------------------------------------- |
-| `managed-agents-2026-04-01`      | Agents、Environments、Sessions、Events、Session Resources、Session Threads、Outcomes、Multiagent、Vaults、Credentials、Memory Stores |
+| `managed-agents-2026-04-01`      | Agents、Environments、Sessions、Events、Session Resources、Session Threads、Outcomes、Multiagent、Vaults、Credentials、Memory Stores、Deployments |
 | `skills-2025-10-02`              | Skills API（用于管理自定义 skill 定义）                    |
 | `files-api-2025-04-14`           | Files API（用于文件上传）                                 |
 
-**哪个 beta 请求头用在哪里：** SDK 在 `client.beta.{agents,environments,sessions,vaults,memory_stores}.*` 调用时自动设置 `managed-agents-2026-04-01`，在 `client.beta.files.*` / `client.beta.skills.*` 调用时自动设置 `files-api-2025-04-14` / `skills-2025-10-02`。调用 Managed Agents 端点时，你**不需要**手动添加 Skills 或 Files beta 请求头。**例外——session 范围的文件列表：** `client.beta.files.list({scope_id: session.id})` 是一个接受 Managed Agents 参数的 Files 端点，因此需要**同时**携带两个请求头。在该调用上显式传递 `betas: ["managed-agents-2026-04-01"]`（SDK 会添加 Files 请求头；你添加 Managed Agents 的）。参见 `shared/managed-agents-environments.md` → Session outputs。
+**哪个 beta 请求头用在哪里：** SDK 在 `client.beta.{agents,environments,sessions,vaults,memory_stores,deployments,deployment_runs}.*` 调用时自动设置 `managed-agents-2026-04-01`，在 `client.beta.files.*` / `client.beta.skills.*` 调用时自动设置 `files-api-2025-04-14` / `skills-2025-10-02`。调用 Managed Agents 端点时，你**不需要**手动添加 Skills 或 Files beta 请求头。**例外——session 范围的文件列表：** `client.beta.files.list({scope_id: session.id})` 是一个接受 Managed Agents 参数的 Files 端点，因此需要**同时**携带两个请求头。在该调用上显式传递 `betas: ["managed-agents-2026-04-01"]`（SDK 会添加 Files 请求头；你添加 Managed Agents 的）。参见 `shared/managed-agents-environments.md` → Session outputs。
 
 ## 阅读指南
 
@@ -45,7 +45,7 @@ Managed Agents 处于 beta 阶段。SDK 会自动设置所需的 beta 请求头�
 | 查看完整端点参考                              | `shared/managed-agents-api-reference.md`                    |
 | **创建 agent**（必须的第一步）                | `shared/managed-agents-core.md`（Agents 部分）+ 语言文件      |
 | 更新/版本化 agent                            | `shared/managed-agents-core.md`（Agents → Versioning）— 更新，不要重新创建 |
-| 创建 session                                | `shared/managed-agents-core.md` + `{lang}/managed-agents/README.md` |
+| 创建 session                                | `shared/managed-agents-core.md` + `{lang}/managed-agents/README.md`（cURL/C#：`curl/managed-agents.md`） |
 | 配置工具和权限                                | `shared/managed-agents-tools.md`                            |
 | 设置 MCP 服务器                              | `shared/managed-agents-tools.md`（MCP Servers 部分）          |
 | 流式接收事件 / 处理 tool_use                  | `shared/managed-agents-events.md` + 语言文件                  |
@@ -53,20 +53,23 @@ Managed Agents 处于 beta 阶段。SDK 会自动设置所需的 beta 请求头�
 | 定义 outcome / 基于评分标准的迭代循环           | `shared/managed-agents-outcomes.md` — `user.define_outcome` 事件、评分器、`span.outcome_evaluation_*` 事件 |
 | 协调多个 agent / subagent / thread           | `shared/managed-agents-multiagent.md` — agent 上的 `multiagent: {type: "coordinator", agents: [...]}`、session thread、跨发帖工具确认 |
 | 设置 environment                            | `shared/managed-agents-environments.md` + 语言文件            |
+| 在你自己的基础设施/VPC 中运行工具执行（自托管沙箱） | `shared/managed-agents-self-hosted-sandboxes.md` — `config:{type:"self_hosted"}`、`ANTHROPIC_ENVIRONMENT_KEY`、`EnvironmentWorker.run()` / `ant beta:worker poll` |
 | 上传文件 / 挂载仓库                          | `shared/managed-agents-environments.md`（Resources）          |
 | 为 agent 提供跨 session 的持久化记忆          | `shared/managed-agents-memory.md` — memory stores、`memory_store` session resource、preconditions、versions/redact |
 | 将 agent/environment 定义为版本控制的 YAML；从 shell 驱动 API | `shared/anthropic-cli.md` —— `ant beta:agents create < agent.yaml`、`--transform`、`@file` 内联 |
-| 存储 MCP 凭证                                | `shared/managed-agents-tools.md`（Vaults 部分）               |
-| 调用需要密钥的非 MCP API / CLI                | `shared/managed-agents-client-patterns.md` Pattern 9 — 容器内无环境变量；vault 仅限 MCP；通过自定义工具将密钥保留在主机侧 |
+| 存储凭证（MCP 认证、CLI/SDK 的 API 密钥）     | `shared/managed-agents-tools.md`（Vaults 部分）— `mcp_oauth` / `static_bearer` / `environment_variable` |
+| 调用需要密钥的非 MCP API / CLI                | `shared/managed-agents-tools.md`（Vaults 部分）— `environment_variable` 凭证，在出口处替换。如果不适用（例如自托管沙箱），`shared/managed-agents-client-patterns.md` Pattern 9 通过自定义工具将密钥保留在主机侧 |
+| 按周期性 cron 调度运行 agent                 | `shared/managed-agents-scheduled-deployments.md` — deployments、deployment runs、pause/auto-pause |
 
 ## 常见陷阱
 
 - **先 Agent，再 Session——没有例外** — session 的 `agent` 字段**仅**接受字符串 ID 或 `{type: "agent", id, version}`。`model`、`system`、`tools`、`mcp_servers`、`skills` 是 **`POST /v1/agents` 的顶层字段**，绝不能放在 `sessions.create()` 上。如果用户还没有创建 agent，那是每个示例的第零步。
 - **Agent 只需创建一次，不是每次运行** — `agents.create()` 是设置步骤。存储返回的 `agent_id` 并复用；不要在热路径顶部调用 `agents.create()`。如果需要修改 agent 的配置，使用 `POST /v1/agents/{id}`——每次更新创建新版本，session 可以锁定特定版本以实现可复现性。
-- **MCP 认证通过 vault 进行** — agent 的 `mcp_servers` 数组仅声明 `{type, name, url}`（不含认证信息）。凭证存储在 vault 中（`client.beta.vaults.credentials.create`），并通过 `vault_ids` 附加到 session。Anthropic 使用存储的 refresh token 自动刷新 OAuth token。
+- **MCP 认证通过 vault 进行** — agent 的 `mcp_servers` 数组仅声明 `{type, name, url}`（不含认证信息）。凭证存储在 vault 中（`client.beta.vaults.credentials.create`），并通过 `vault_ids` 附加到 session。Anthropic 使用存储的 refresh token 自动刷新 OAuth token。Vault 还可为 MCP 之外的服务（CLI、SDK、直接 API 调用）保存 `environment_variable` 凭证——在出口处替换，在沙箱中永远不可见。
+- **首次运行前盘点资源** — 一个 session 即使需求明确，但如果缺少工具、凭证、数据挂载或上下文，会在运行中途发现缺口，然后无效挣扎并放弃。创建 session 之前，确认任务中的每个操作都映射到已配置的工具/MCP server，每个 MCP server 都有 vault 凭证，每个引用的文件/主机都已挂载/可达。帮助用户设置时，运行 `shared/managed-agents-onboarding.md` → §3 运行前可行性检查中的盘点流程。
 - **通过流接收事件** — `GET /v1/sessions/{id}/events/stream` 是实时接收 agent 输出的主要方式。
 - **SSE 流没有重放——重连时需合并历史** — 如果流在 `agent.tool_use`、`agent.mcp_tool_use` 或 `agent.custom_tool_use` 等待解决时断开（前两者等待 `user.tool_confirmation`，后者等待 `user.custom_tool_result`），session 会死锁（客户端断开 → session 空闲 → 重连发生 → 没有客户端解决）。每次（重）连接时：先打开 `GET /v1/sessions/{id}/events/stream` 流，再获取 `GET /v1/sessions/{id}/events`，按事件 ID 去重，然后继续处理。参见 `shared/managed-agents-events.md` → Reconnecting after a dropped stream。
 - **不要将 HTTP 库超时当作挂钟截止时间** — `requests` 的 `timeout=(c, r)` 和 `httpx.Timeout(n)` 是**每块（per-chunk）**读取超时；每收到一个字节就重置，因此一个缓慢滴流的连接可以无限期阻塞。要为原始 HTTP 轮询设置硬性截止时间，在循环级别跟踪 `time.monotonic()` 并显式退出。优先使用 SDK 的 `sessions.events.stream()` / `session.events.list()` 而非手写 HTTP。参见 `shared/managed-agents-events.md` → Receiving Events。
 - **消息排队** — 你可以在 session 处于 `running` 或 `idle` 状态时发送事件；它们按顺序处理。无需等待响应再发送下一条消息。
-- **仅支持云端 environment** — `config.type: "cloud"` 是唯一支持的 environment 类型。
+- **Environment 的 `config.type` 可以是 `"cloud"` 或 `"self_hosted"`**——`cloud` 在 Anthropic 的基础设施上运行容器；`self_hosted` 将工具执行移至你自己的基础设施（参见 `shared/managed-agents-self-hosted-sandboxes.md`）。
 - **归档对每个资源都是永久性的** — 归档 agent、environment、session、vault、credential 或 memory store 会使其变为只读，且不可取消归档。特别是对于 agent、environment 和 memory store，归档后的资源不能被新 session 引用（已有 session 继续运行）。不要在生产 agent、environment 或 memory store 上调用 `.archive()` 作为清理手段——**归档前务必与用户确认。**

@@ -1,7 +1,7 @@
 <!--
 name: '数据：Managed Agents 核心概念'
 description: Managed Agents API 的参考文档，涵盖核心概念（Agent、Session、Environment、Container）、生命周期、版本管理、端点及使用模式
-ccVersion: 2.1.132
+ccVersion: 2.1.145
 -->
 # Managed Agents — 核心概念
 
@@ -127,6 +127,8 @@ const session = await client.beta.sessions.create(
 );
 ```
 
+> 💡 **在 Console 中实时观察。** 开发时，打印一个链接以便点击进入会话 UI，而无需解析事件流：`https://platform.claude.com/workspaces/{workspace}/sessions/{session.id}`。除非你在非默认工作区中创建了会话，否则使用 `default` 作为工作区 slug；你的工作区会话列表位于 `https://platform.claude.com/workspaces/default/sessions`。在为用户生成的代码中包含此 `print`/`console.log`，方便他们本地迭代。
+
 **Session 创建参数：**
 
 | 字段           | 类型     | 必填 | 描述                                    |
@@ -232,5 +234,23 @@ session = client.beta.sessions.create(
 session = client.beta.sessions.create(
     agent={"type": "agent", "id": agent.id, "version": agent.version},
     environment_id=environment_id,
+)
+```
+
+### 在会话中途更新 agent 配置
+
+`sessions.update()` 可以在**现有**会话上更改 `agent.tools`、`agent.mcp_servers`（包括权限策略）和 `vault_ids`。这是一个**会话级别的覆盖**——它不会创建新的 agent 版本，也不会传播回 agent 对象。提供的数组是**完全替换**；要追加一个工具，先 `GET` 会话，修改后再 `POST` 回去。会话必须处于 `idle` 状态——如果正在运行，先中断。
+
+```python
+client.beta.sessions.update(
+    session.id,
+    agent={
+        "tools": [
+            {"type": "agent_toolset_20260401"},
+            {"type": "mcp_toolset", "mcp_server_name": "linear"},
+        ],
+        "mcp_servers": [{"type": "url", "name": "linear", "url": "https://mcp.linear.app/sse"}],
+    },
+    vault_ids=["vlt_..."],
 )
 ```

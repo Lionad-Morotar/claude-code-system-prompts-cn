@@ -1,7 +1,7 @@
 <!--
 name: '数据：Managed Agents 工具与技能'
 description: Managed Agents SDK 的参考文档，涵盖工具类型（agent 工具集、MCP、自定义）、权限策略、vault 凭证管理和用于构建专用 agent 的技能 API
-ccVersion: 2.1.132
+ccVersion: 2.1.145
 -->
 # Managed Agents — 工具与技能
 
@@ -11,8 +11,8 @@ ccVersion: 2.1.132
 
 | 类型 | 谁运行 | 如何工作 |
 |---|---|---|
-| **预构建的 Claude Agent 工具**（`agent_toolset_20260401`） | Anthropic，在 session 的容器上 | 文件操作、bash、网络搜索等。一次性全部启用或通过 `enabled: true/false` 单独配置。 |
-| **MCP 工具**（`mcp_toolset`） | Anthropic，在 session 的容器上 | 由连接的 MCP 服务器暴露的能力。通过工具集按服务器授予访问权限。 |
+| **预构建的 Claude Agent 工具**（`agent_toolset_20260401`） | Anthropic，在 session 的容器上（对于 `cloud` 环境；对于 `self_hosted`，**你的** worker 提供并运行它们——参见 `shared/managed-agents-self-hosted-sandboxes.md`） | 文件操作、bash、网络搜索等。一次性全部启用或通过 `enabled: true/false` 单独配置。 |
+| **MCP 工具**（`mcp_toolset`） | Anthropic 的编排层 | 由连接的 MCP 服务器暴露的能力。通过工具集按服务器授予访问权限。 |
 | **自定义工具** | **你**——你的应用程序处理调用并返回结果 | Agent 发出 `agent.custom_tool_use` 事件，session 进入 `idle`，你发回 `user.custom_tool_result` 事件。 |
 
 **建议：** 通过 `agent_toolset_20260401` 启用所有预构建工具，然后根据需要单独禁用。
@@ -187,11 +187,22 @@ MCP（Model Context Protocol，模型上下文协议）服务器暴露标准化�
 
 > 💡 **按工具启用（经验性观察）：** 已观察到 `mcp_toolset` 接受 `default_config: {enabled: false}` + `configs: [{name, enabled: true}]` 的允许列表模式。API 参考仅显示最小化的 `{type, mcp_server_name}` 形式。
 
+> 💡 **在运行中的会话上更改工具/MCP 服务器：** `sessions.update()` 可以在会话处于 `idle` 状态时替换 `agent.tools`、`agent.mcp_servers` 和 `vault_ids`——这是一个会话级别的覆盖，不会触及 agent 对象。参见 `shared/managed-agents-core.md` → 在会话中途更新 agent 配置。
+
+**大型 MCP 工具输出。** 如果 MCP 工具返回超过 **100K token**，输出会自动转存到沙箱中的一个文件——agent 收到截断预览加上文件路径，然后可以通过 `read` 读取完整内容。无需配置。
+
+**无效的 vault 凭证不会阻止会话创建。** 如果 vault 凭证对于声明的 MCP 服务器无效，会话仍然会成功创建；`session.error` 事件会描述 MCP 认证失败，并在下次 `session.status_idle` → `session.status_running` 转换时重试认证。
+
 > ⚠️ **MCP 认证 token ≠ REST API token。** 托管的 MCP 服务器（`mcp.notion.com`、`mcp.linear.app` 等）通常需要 **OAuth bearer token**，而非服务本身的 API 密钥。Notion 的 `ntn_` 集成 token 对 Notion REST API 进行认证，但**不能**作为 Notion MCP 服务器的 vault 凭证使用。这些是不同的认证系统。
 
-### Vaults——MCP 凭证存储
+### Vaults——凭证存储
 
-**Vault** 存储 OAuth 凭证（access token + refresh token），Anthropic 通过标准 OAuth 2.0 `refresh_token` 授权方式代你自动刷新。这是在 launch SDK 中认证 MCP 服务器的唯一方式。
+**Vault** 存储凭证，由 Anthropic 代你管理。两类凭证：
+
+- **MCP 凭证**（`mcp_oauth`、`static_bearer`）——以 `mcp_server_url` 为键。当 agent 连接到该 URL 的服务器时，token 会自动注入。`mcp_oauth` token 通过标准 OAuth 2.0 `refresh_token` 授权方式自动刷新。这是认证 MCP 服务器的唯一方式。
+- **环境变量**（`environment_variable`）——以 `secret_name`（环境变量名）为键。沙箱中仅看到一个**不透明占位符**；真实密钥在**出口处**替换到出站请求中。适用于任何通过环境变量认证的服务：CLI（`aws`、`gcloud`、`stripe`）、SDK 或通过 `bash` 工具发出的直接 `curl` 调用。
+
+你提供的密钥字段（`token`、`access_token`、`refresh_token`、`client_secret`、`secret_value`）是只写的——绝不会在 API 响应中返回。
 
 #### 凭证与沙箱
 
@@ -199,11 +210,9 @@ Vault 存储凭证；这些凭证**绝不会进入沙箱**。这是一个有意�
 
 - **MCP 工具调用**通过 Anthropic 端的代理路由，该代理从 vault 获取凭证并将其添加到出站请求中。
 - **对挂载的 GitHub 仓库的 Git 操作**（`git pull`、`git push`、GitHub REST 调用）通过一个 git 代理路由，该代理以相同方式注入 `github_repository` 资源的 `authorization_token`。
+- **环境变量凭证**在沙箱中显示为不透明占位符；真实值在出口处替换到请求中，且仅替换到凭证允许的主机。
 
-**尚不支持：** 直接在沙箱内运行其他经过认证的 CLI（如 `aws`、`gcloud`、`stripe`）。目前无法设置容器环境变量或将 vault 凭证暴露给任意进程。如果你今天需要这些：
-
-- **优先使用该服务的 MCP 服务器**（如果存在）——它获得相同的 vault 支持的注入。
-- **否则，注册一个自定义工具：** agent 发出 `agent.custom_tool_use`，你的编排器（已经持有凭证）执行调用并通过相同经过认证的事件流返回 `user.custom_tool_result`。没有暴露公共端点；沙箱永远不会看到密钥。参见 `shared/managed-agents-client-patterns.md` → Pattern 9。
+**当 vault 凭证不适用时**（例如自托管沙箱——`environment_variable` 在那里尚不支持），**注册一个自定义工具：** agent 发出 `agent.custom_tool_use`，你的编排器（已经持有凭证）执行调用并通过相同经过认证的事件流返回 `user.custom_tool_result`。没有暴露公共端点；沙箱永远不会看到密钥。参见 `shared/managed-agents-client-patterns.md` → Pattern 9。
 
 **不要将 API 密钥放在系统提示词或用户消息中作为变通方案**——它们会持久化在 session 的事件历史中。
 
@@ -212,11 +221,11 @@ Vault 存储凭证；这些凭证**绝不会进入沙箱**。这是一个有意�
 **流程：**
 
 1. 创建一个 vault（`client.beta.vaults.create(...)`）——每个租户/用户一个，或共享一个，取决于你的模型
-2. 向其中添加 MCP 凭证（`client.beta.vaults.credentials.create(...)`）——每个凭证绑定到一个 MCP 服务器 URL
+2. 向其中添加凭证（`client.beta.vaults.credentials.create(...)`）——MCP 凭证以 MCP 服务器 URL 为键；环境变量凭证以 `secret_name` 为键
 3. 在 session 创建时通过 `vault_ids: ["vlt_..."]` 引用该 vault
-4. Anthropic 在 token 过期前自动刷新；agent 在调用 MCP 工具时使用当前的 access token
+4. Anthropic 在 OAuth token 过期前自动刷新，并在运行时替换密钥
 
-**凭证格式**：
+**MCP OAuth 凭证格式**：
 
 ```json
 {
@@ -247,6 +256,40 @@ Vault 存储凭证；这些凭证**绝不会进入沙箱**。这是一个有意�
 如果只有 access token 而没有刷新能力，完全省略 `refresh`——它会在过期前一直有效，之后 agent 将失去访问权限。
 
 > 💡 **获取 OAuth token。** 如何获取初始 access token 和 refresh token 取决于 MCP 服务器——查阅其文档。获得后，使用上述格式将它们存储在 vault 凭证中；Anthropic 会通过 `refresh.token_endpoint` 自动刷新。
+
+**环境变量凭证格式**：
+
+```json
+{
+  "display_name": "Twilio API key for sandbox",
+  "auth": {
+    "type": "environment_variable",
+    "secret_name": "TWILIO_API_KEY",
+    "secret_value": "sk-your-secret-here",
+    "networking": {
+      "type": "limited",
+      "allowed_hosts": ["api.twilio.com", "*.twilio.com"]
+    }
+  }
+}
+```
+
+`networking.allowed_hosts` 控制密钥可以替换到哪些出站主机——`{"type": "limited", "allowed_hosts": [...]}` 或 `{"type": "unrestricted"}`（如果你无法提前枚举域名）。强烈建议使用限制模式：它可以防止密钥被发送到未授权的主机。
+
+> ⚠️ **两层网络控制，缺一不可。** 凭证上的 `networking.allowed_hosts` 控制哪些请求*使用该密钥*，而非哪些请求*被允许*。Agent 还必须能够在**环境级别**访问该域名（`unrestricted`，或环境 `allowed_hosts` 中列出的主机——参见 `shared/managed-agents-environments.md`）。任一层面缺失的域名都会导致密钥替换请求失败。
+
+> ⚠️ **客户端验证的注意事项。** 替换发生在出口处，而非沙箱内部——在发出网络请求之前在本地验证凭证*格式*的客户端（例如检查密钥是否以 `sk-` 开头的 CLI）会看到不透明占位符，可能在启动时失败。如果客户端在任何网络调用之前就拒绝了凭证，这就是原因。
+
+> 💡 **使用最小权限密钥。** Agent 可以做密钥允许的任何事；权限超出任务需求的密钥会增加 agent 行为异常时的风险范围。
+
+**自托管沙箱不支持**——`environment_variable` 凭证需要 Anthropic 管理的出口。参见 `shared/managed-agents-self-hosted-sandboxes.md`。
+
+**约束条件（所有凭证类型）：**
+
+- **每个 vault 内键必须唯一。** `mcp_server_url`（MCP 凭证）和 `secret_name`（环境变量凭证）在同一 vault 的有效凭证中必须唯一；重复会返回 409。
+- **键是不可变的。** 密钥值和 `display_name` 可以更新（轮换）；要更改 `mcp_server_url`、`secret_name`、`token_endpoint` 或 `client_id`，需归档凭证并创建新的。归档会清除密钥并释放该键以供替换。
+- **每个 vault 最多 20 个凭证。**
+- 凭证按原样存储，**直到 session 运行时才验证**——无效凭证会在 session 期间表现为认证或下游错误，该错误会被发出但不阻止 session 继续运行。
 
 **作用域：** Vault 是工作区范围的。API 工作区中具有 developer+ 角色的任何人都可以创建、读取（仅元数据——密钥是只写的）和挂载 vault。`vault_ids` 可以在 session **创建**时设置，但不能通过 session 更新设置（SDK 文档字符串说明"尚不支持；设置此字段的请求会被拒绝"）。
 
