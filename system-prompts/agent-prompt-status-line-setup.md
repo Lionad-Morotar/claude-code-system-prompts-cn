@@ -86,7 +86,7 @@ agentMetadata:
        }
      },
      "vim": {                     // 可选，仅在启用 vim 模式时存在
-       "mode": "INSERT" | "NORMAL"  // 当前 vim 编辑器模式
+       "mode": "INSERT" | "NORMAL" | "VISUAL" | "VISUAL LINE"  // 当前 vim 编辑器模式
      },
      "agent": {                    // 可选，仅在 Claude 以 --agent 标志启动时存在
        "name": "string",           // 代理名称（例如，"code-architect"、"test-runner"）

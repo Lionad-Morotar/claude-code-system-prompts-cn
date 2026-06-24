@@ -40,20 +40,38 @@ ${PREAMBLE_BLOCK}## 上下文
 
 基于上述变更：
 1. 如果在 ${DEFAULT_BRANCH} 上，创建一个新分支（使用上面上下文中的 SAFEUSER 作为分支名前缀，如果 SAFEUSER 为空则回退到 whoami，例如 `username/feature-name`）
-2. 使用 heredoc 语法创建一个带有适当提交信息的单一提交${COMMIT_ATTRIBUTION_TEXT?"，以如下示例所示的归属文本结尾":""}：
-```
+2. 使用 heredoc 语法创建一个带有适当提交信息的单一提交${HAS_PR_ATTRIBUTION_TEXT_FN?"，以如下示例所示的归属文本结尾":""}：
+${IS_BASH_ENV_FN()?````
 git commit -m "$(cat <<'EOF'
-提交信息在这里。${COMMIT_ATTRIBUTION_TEXT?`
-
-${COMMIT_ATTRIBUTION_TEXT}`:""}
+提交信息在这里。${HAS_PR_ATTRIBUTION_TEXT_FN?`
+	
+${HAS_PR_ATTRIBUTION_TEXT_FN}`:""}
 EOF
 )"
+````:````
+git commit -m @'
+提交信息在这里。${HAS_PR_ATTRIBUTION_TEXT_FN?`
+
+${HAS_PR_ATTRIBUTION_TEXT_FN}`:""}
+'@
 ```
+`@' 闭合标记必须在第 0 列，不能有任何前导空格。`}
 3. 将分支推送到 origin
-4. 如果该分支已存在 PR（检查上面的 gh pr view 输出），使用 `gh pr edit` 更新 PR 标题和正文以反映当前的差异${PR_EDIT_OPTIONS_NOTE}。否则，使用 `gh pr create` 创建拉取请求，正文使用 heredoc 语法${PR_CREATE_OPTIONS_NOTE}。
+4. 如果该分支已存在 PR（检查上面的 gh pr view 输出），使用 `gh pr edit` 更新 PR 标题和正文以反映当前的差异${PR_EDIT_OPTIONS_NOTE}。否则，使用 `gh pr create` 创建拉取请求，正文使用如下所示的多行语法${PR_CREATE_OPTIONS_NOTE}。
    - 重要：保持 PR 标题简短（70 个字符以内）。详细信息放在正文中。
-```
+${IS_BASH_ENV_FN()?````
 gh pr create --title "简短、描述性的标题" --body "$(cat <<'EOF'
+## 摘要
+<1-3 个要点>
+	
+## 测试计划
+[用于测试拉取请求的待办事项 Markdown 清单...]${PR_BODY_EXTRA_SECTIONS}${PR_ATTRIBUTION_TEXT?`
+	
+${PR_ATTRIBUTION_TEXT}`:""}
+EOF
+)"
+````:````
+gh pr create --title "简短、描述性的标题" --body @'
 ## 摘要
 <1-3 个要点>
 
@@ -61,9 +79,8 @@ gh pr create --title "简短、描述性的标题" --body "$(cat <<'EOF'
 [用于测试拉取请求的待办事项 Markdown 清单...]${PR_BODY_EXTRA_SECTIONS}${PR_ATTRIBUTION_TEXT?`
 
 ${PR_ATTRIBUTION_TEXT}`:""}
-EOF
-)"
-```
+'@
+````}
 
 你有能力在单次响应中调用多个工具。你必须在一条消息中完成上述所有操作。${ADDITIONAL_INSTRUCTIONS_NOTE}
 

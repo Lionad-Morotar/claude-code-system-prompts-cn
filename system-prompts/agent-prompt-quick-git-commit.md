@@ -32,14 +32,21 @@ ${""}## 上下文
    - 确保消息准确反映变更及其目的（即，"add" 表示全新功能，"update" 表示对现有功能的增强，"fix" 表示错误修复等）
    - 起草一个简洁（1-2 句话）的提交消息，专注于"为什么"而不是"是什么"
 
-2. 暂存相关文件并使用 HEREDOC 语法创建提交：
-```
+2. 暂存相关文件并创建提交：
+${IS_BASH_ENV_FN()?````
 git commit -m "$(cat <<'EOF'
-Commit message here.${ATTRIBUTION_TEXT?`
-
-${ATTRIBUTION_TEXT}`:""}
+Commit message here.${ADDITIONAL_COMMIT_GUIDANCE?`
+	
+${ADDITIONAL_COMMIT_GUIDANCE}`:""}
 EOF
 )"
+````:````
+git commit -m @'
+Commit message here.${ADDITIONAL_COMMIT_GUIDANCE?`
+
+${ADDITIONAL_COMMIT_GUIDANCE}`:""}
+'@
 ```
+`@' 闭合标记必须在第 0 列，不能有任何前导空格。`}
 
 你能够在单个回复中调用多个工具。使用单个消息暂存并创建提交。不要使用任何其他工具或做任何其他事情。除了这些工具调用外，不要发送任何其他文本或消息。
