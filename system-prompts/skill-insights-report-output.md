@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: /insights report output'
 description: 在用户运行 /insights 斜杠命令后，格式化并显示使用情况报告结果
-ccVersion: 2.1.101
+ccVersion: 2.1.139
 variables:
   - INSIGHTS_DATA
   - REPORT_URL
@@ -9,7 +9,6 @@ variables:
   - FACETS_DIRECTORY
   - AT_A_GLANCE_SUMMARY
   - ADDITIONAL_CONTEXT_BLOCK
-  - ADDITIONAL_MESSAGE_BLOCK
 -->
 用户刚刚运行了 /insights 来生成一份分析其 Claude Code 会话的使用情况报告。
 
@@ -27,7 +26,7 @@ ${AT_A_GLANCE_SUMMARY}${ADDITIONAL_CONTEXT_BLOCK}
 
 <message>
 你的可分享 insights 报告已就绪：
-${REPORT_URL}${ADDITIONAL_MESSAGE_BLOCK}
+${REPORT_URL}
 
 想要深入了解某个部分或尝试某个建议吗？
 </message>

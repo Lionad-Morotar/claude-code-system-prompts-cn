@@ -1,7 +1,7 @@
 <!--
 name: '技能：模型迁移指南'
 description: 将现有代码迁移到新版 Claude 模型的分步说明，涵盖破坏性变更、已弃用参数、各 SDK 语法、提示行为变化及迁移检查清单
-ccVersion: 2.1.128
+ccVersion: 2.1.139
 -->
 # 模型迁移指南
 
@@ -486,6 +486,10 @@ Haiku 4.5 有自己的速率限制池，与 Haiku 3 / 3.5 分开。如果你在�
 | `claude-sonnet-4-0` | `claude-sonnet-4-6` |
 
 旧别名（`claude-opus-4-5`、`claude-sonnet-4-5`、`claude-opus-4-1` 等）仍然有效，如果你在升级前需要时间，可以锁定它们 —— 完整旧版列表见 `shared/models.md`。
+
+### AWS 上的 Claude 平台
+
+如果代码使用了 `AnthropicAWS` / `AnthropicAws` / `anthropicaws.NewClient` / `AnthropicAwsClient`（或以 `https://aws-external-anthropic.{region}.api.aws` 为目标），则它运行在 **AWS 上的 Claude 平台**上 —— 由 Anthropic 运营，具有当日 API 同步。模型 ID 为**裸的第一方**字符串；按**原样**应用上述重命名表以及本指南中每个破坏性变更部分，无需任何更改。无需跳过任何内容。**不要**添加 `anthropic.` 前缀（那是 Amazon Bedrock，一个独立的服务）。有关客户端/认证的详细信息，请参见 `shared/claude-platform-on-aws.md`。
 
 ---
 

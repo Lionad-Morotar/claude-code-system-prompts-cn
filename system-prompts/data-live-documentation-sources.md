@@ -1,7 +1,7 @@
 <!--
 name: '数据：实时文档源'
 description: 用于从官方源获取最新 Claude API 和 Agent SDK 文档的 WebFetch URL
-ccVersion: 2.1.132
+ccVersion: 2.1.139
 -->
 # 实时文档源
 
@@ -51,6 +51,8 @@ ccVersion: 2.1.132
 | Token 计数   | `https://platform.claude.com/docs/en/build-with-claude/token-counting.md`   | "提取 Token 计数 API 的用法和示例"                                                         |
 | 速率限制      | `https://platform.claude.com/docs/en/api/rate-limits.md`                    | "提取按层级和模型划分的当前速率限制"                                                         |
 | 错误           | `https://platform.claude.com/docs/en/api/errors.md`                         | "提取 HTTP 错误代码、含义和重试指南"                                                |
+| AWS 上的 Claude 平台 | `https://platform.claude.com/docs/en/build-with-claude/claude-platform-on-aws.md` | "按语言提取 AnthropicAWS 客户端、SigV4 认证、凭证优先级、短期 API 密钥、workspace_id 和区域要求" |
+| AWS 上的 Claude 平台 — IAM 操作 | `https://platform.claude.com/docs/en/api/claude-platform-on-aws-iam-actions.md` | "提取 IAM 操作名称、资源 ARN 以及每个 API 功能所需的策略示例" |
 
 ### 工具
 

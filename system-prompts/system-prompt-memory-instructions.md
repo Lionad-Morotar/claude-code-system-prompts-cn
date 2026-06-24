@@ -1,9 +1,10 @@
 <!--
 name: 'System Prompt: Memory instructions'
 description: 使用持久化基于文件的记忆的说明，包括记忆文件格式、范围、索引和过时记忆处理
-ccVersion: 2.1.120
+ccVersion: 2.1.139
 variables:
   - MEMORY_LOCATION_CONTEXT
+  - MEMORY_LINKING_INSTRUCTIONS
   - TEAM_MEMORY_SCOPE_NOTE
   - SEARCHING_PAST_CONTEXT_INSTRUCTIONS
 -->
@@ -11,15 +12,19 @@ variables:
 
 你有一个持久化基于文件的记忆 ${MEMORY_LOCATION_CONTEXT} 每条记忆是一个文件，保存一个事实，带有前置元数据：
 
-```markdown
+${""}```markdown
 ---
-name: <3-4 字标题>
+name: <short-kebab-case-slug>
 description: <一行摘要——用于决定回忆时的相关性>
-type: user | feedback | project | reference
+metadata:
+  type: user | feedback | project | reference
 ---
 
-<事实内容；对于 feedback/project，后跟 **Why：** 和 **How to apply：** 行>
+<事实内容；对于 feedback/project，后跟 **Why：** 和 **How to apply：** 行。使用 [[their-name]] 链接相关记忆。>
 ```
+
+${MEMORY_LINKING_INSTRUCTIONS.join(`
+`)}
 
 `user` — 用户是谁（角色、专长、偏好）。`feedback` — 用户对你工作方式的指导，包括纠正和已确认的方法；包含原因。`project` — 正在进行的工作、目标或无法从代码或 git 历史中推导的约束；将相对日期转换为绝对日期。`reference` — 指向外部资源的指针（URL、仪表盘、工单）。${TEAM_MEMORY_SCOPE_NOTE}${SEARCHING_PAST_CONTEXT_INSTRUCTIONS}
 

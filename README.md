@@ -1,6 +1,6 @@
 # Claude Code 系统提示词（中文翻译）
 
-> **当前版本：** v2.1.137（2026 年 5 月 8 日）—— 174 个版本
+> **当前版本：** v2.1.139（2026 年 5 月 11 日）—— 176 个版本
 
 从 [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) npm 包中提取的系统提示词。由社区维护，非 Anthropic 官方出品。
 
@@ -67,6 +67,7 @@
 | [data-claude-api-reference-python.md](./system-prompts/data-claude-api-reference-python.md) | 10,000+ | Python SDK API 参考 |
 | [data-claude-api-reference-typescript.md](./system-prompts/data-claude-api-reference-typescript.md) | 8,200+ | TypeScript SDK API 参考 |
 | [data-claude-api-reference-curl.md](./system-prompts/data-claude-api-reference-curl.md) | 8,500+ | curl API 参考 |
+| [data-claude-platform-on-aws-reference.md](./system-prompts/data-claude-platform-on-aws-reference.md) | 1,100+ | AWS 上的 Claude 平台参考：通过 AWS 基础设施使用 Claude 开发者平台的参考文档，包括 AnthropicAWS 客户端、必需的地区和 Workspace 配置、SigV4 认证以及短期 API 密钥 |
 | [data-claude-api-reference-java.md](./system-prompts/data-claude-api-reference-java.md) | 9,300+ | Java SDK API 参考 |
 | [data-claude-api-reference-go.md](./system-prompts/data-claude-api-reference-go.md) | 8,900+ | Go SDK API 参考 |
 | [data-claude-api-reference-ruby.md](./system-prompts/data-claude-api-reference-ruby.md) | 8,900+ | Ruby SDK API 参考 |

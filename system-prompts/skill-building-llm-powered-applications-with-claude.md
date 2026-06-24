@@ -1,7 +1,7 @@
 <!--
 name: 技能：使用 Claude 构建 LLM 驱动的应用程序
 description: 指导 Claude 使用 Anthropic SDK 构建 LLM 驱动的应用程序，涵盖语言检测、API 接口选择（Claude API vs Managed Agents）、模型默认值、thinking/effort 配置以及语言特定文档阅读
-ccVersion: 2.1.132
+ccVersion: 2.1.139
 -->
 # 使用 Claude 构建 LLM 驱动的应用程序
 
@@ -107,16 +107,16 @@ ccVersion: 2.1.132
 
 > **注意：**当你希望 Anthropic 运行 agent 循环*并且*托管工具执行的容器时——文件操作、bash、代码执行都在每个 session 的工作空间中运行——Managed Agents 是正确的选择。如果你想自己托管计算环境或运行自己的自定义工具运行时，Claude API + 工具使用是正确的选择——使用 tool runner 进行自动循环处理，或使用手动循环进行细粒度控制（审批关卡、自定义日志、条件执行）。
 
-> **第三方提供商（Amazon Bedrock、Google Vertex AI、Microsoft Foundry）：**Managed Agents **不适用于** Bedrock、Vertex 或 Foundry。如果你通过任何第三方提供商部署，请对所有用例使用 **Claude API + 工具使用**——包括那些 Managed Agents 本来是推荐接口的用例。
+> **云提供商访问。** **AWS 上的 Claude 平台**由 Anthropic 运营，具有当日 API 同步——Managed Agents 以及此技能中的每个功能均可在此处使用（参见 `shared/claude-platform-on-aws.md`）。**Amazon Bedrock**、**Google Vertex AI** 和 **Microsoft Foundry** **不**支持 Managed Agents 或 Anthropic 服务端工具；请在这些平台上使用 **Claude API + 工具使用**。
 
 ### 决策树
 
 ```
 你的应用需要什么？
 
-0. 你是否通过 Amazon Bedrock、Google Vertex AI 或 Microsoft Foundry 部署？
-   └── 是 → Claude API（+ 工具使用用于 agent）——Managed Agents 仅适用于第一方。
-   否 → 继续。
+0. 使用哪个提供商？
+   ├── 第一方 API 或 AWS 上的 Claude 平台 → 继续（完整功能可用）。
+   └── Amazon Bedrock、Google Vertex AI 或 Microsoft Foundry → Claude API（+ 工具使用用于 agent）；Managed Agents 不适用于这些平台。
 
 1. 单次 LLM 调用（分类、摘要、提取、问答）
    └── Claude API——一次请求，一次响应
@@ -224,7 +224,7 @@ ccVersion: 2.1.132
 
 **Managed Agents** 是第三种接口：服务端管理的有状态 agent，由 Anthropic 托管工具执行。你创建一个持久化、版本化的 Agent 配置（`POST /v1/agents`），然后启动引用它的 Session。每个 session 会配置一个容器作为 agent 的工作空间——bash、文件操作和代码执行在那里运行；agent 循环本身运行在 Anthropic 的编排层上，通过工具对容器进行操作。Session 流式传输事件；你发送消息和工具结果作为回应。
 
-**Managed Agents 仅适用于第一方。**它不适用于 Amazon Bedrock、Google Vertex AI 或 Microsoft Foundry。对于第三方提供商上的 agent，使用 Claude API + 工具使用。
+**Managed Agents 适用于第一方 API 和 AWS 上的 Claude 平台。**它**不**适用于 Amazon Bedrock、Google Vertex AI 或 Microsoft Foundry——对于这些平台上的 agent，请使用 Claude API + 工具使用。
 
 **强制流程：**Agent（一次）→ Session（每次运行）。`model`/`system`/`tools` 位于 agent 上，而非 session。参见 `shared/managed-agents-overview.md` 了解完整的阅读指南、beta 头和陷阱。
 
