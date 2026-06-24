@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: /schedule slash command'
 description: Guides the user through scheduling, updating, listing, or running remote Claude Code agents on cron triggers via the Anthropic cloud API
-ccVersion: 2.1.90
+ccVersion: 2.1.116
 variables:
   - USER_REQUEST
   - ASK_USER_QUESTION_TOOL_NAME
@@ -84,7 +84,7 @@ ${MCP_CONNECTORS_LIST}
 
 将连接器附加到触发器时，使用上面显示的`connector_uuid`和`name`（名称已清理为仅包含字母、数字、连字符和下划线），以及连接器的URL。`mcp_connections`中的`name`字段必须仅包含`[a-zA-Z0-9_-]`——不允许点和空格。
 
-**重要：**从用户的描述中推断代理需要什么服务。例如，如果他们说"检查Datadog并Slack给我错误"，代理需要Datadog和Slack连接器。对照上面的列表进行交叉引用，如果缺少任何必需的服务则发出警告。如果缺少必需的连接器，引导用户到https://claude.ai/settings/connectors先进行连接。
+**重要：**从用户的描述中推断代理需要什么服务。例如，如果他们说"检查Datadog并Slack给我错误"，代理需要Datadog和Slack连接器。对照上面的列表进行交叉引用，如果缺少任何必需的服务则发出警告。如果缺少必需的连接器，引导用户到https://claude.ai/customize/connectors先进行连接。
 
 ## 环境
 
@@ -140,7 +140,7 @@ ${NEW_ENVIRONMENT_OBJECT?`
    - 明确要采取什么行动（打开PR、提交、只是分析等）
 3. **设置计划** — 询问何时以及多久运行一次。用户的时区是${USER_TIMEZONE}。当他们说一个时间（例如，"每天早上9点"）时，假设他们指的是本地时间并转换为UTC用于cron表达式。始终确认转换："9am ${USER_TIMEZONE} = Xam UTC。"
 4. **选择模型** — 默认为`claude-sonnet-4-6`。告诉用户你默认使用哪个模型，并询问他们是否想要不同的模型。
-5. **验证连接** — 从用户的描述中推断代理需要什么服务。例如，如果他们说"检查Datadog并Slack给我错误"，代理需要Datadog和Slack MCP连接器。与上面的连接器列表进行交叉引用。如果缺少任何连接器，警告用户并引导他们到https://claude.ai/settings/connectors先进行连接。${DEFAULT_GIT_REPO_URL?` 默认git仓库已设置为`${DEFAULT_GIT_REPO_URL}`。询问用户这是否是正确的仓库，或者他们是否需要不同的仓库。`:" 询问远程代理需要克隆哪些git仓库到其环境中。"}
+5. **验证连接** — 从用户的描述中推断代理需要什么服务。例如，如果他们说"检查Datadog并Slack给我错误"，代理需要Datadog和Slack MCP连接器。与上面的连接器列表进行交叉引用。如果缺少任何连接器，警告用户并引导他们到https://claude.ai/customize/connectors先进行连接。${DEFAULT_GIT_REPO_URL?` 默认git仓库已设置为`${DEFAULT_GIT_REPO_URL}`。询问用户这是否是正确的仓库，或者他们是否需要不同的仓库。`:" 询问远程代理需要克隆哪些git仓库到其环境中。"}
 6. **审查并确认** — 在创建之前显示完整配置。让他们调整。
 7. **创建它** — 使用 `action: "create"` 调用 `${REMOTE_TRIGGER_TOOL_NAME}` 并显示结果。响应包含触发器ID。最后始终输出一个链接：`https://claude.ai/code/scheduled/{TRIGGER_ID}`
 
