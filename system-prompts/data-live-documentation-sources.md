@@ -1,7 +1,7 @@
 <!--
-name: 'Data: Live documentation sources'
-description: WebFetch URLs for fetching current Claude API and Agent SDK documentation from official sources
-ccVersion: 2.1.111
+name: '数据：实时文档源'
+description: 用于从官方源获取最新 Claude API 和 Agent SDK 文档的 WebFetch URL
+ccVersion: 2.1.132
 -->
 # 实时文档源
 
@@ -18,11 +18,11 @@ ccVersion: 2.1.111
 
 ### 模型与定价
 
-| 主题           | URL                                                                   | 提取提示                                                               |
-| --------------- | --------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
-| 模型概览 | `https://platform.claude.com/docs/en/about-claude/models/overview.md` | "提取所有 Claude 模型的当前模型 ID、上下文窗口和定价信息" |
+| 主题           | URL                                                                          | 提取提示                                                               |
+| --------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| 模型概览 | `https://platform.claude.com/docs/en/about-claude/models/overview.md`        | "提取所有 Claude 模型的当前模型 ID、上下文窗口和定价信息" |
 | 迁移指南 | `https://platform.claude.com/docs/en/about-claude/models/migration-guide.md` | "提取迁移到新版 Claude 模型时的破坏性变更、已弃用参数以及各模型迁移步骤" |
-| 定价         | `https://platform.claude.com/docs/en/pricing.md`                      | "提取每百万输入和输出 token 的当前定价"               |
+| 定价         | `https://platform.claude.com/docs/en/pricing.md`                             | "提取每百万输入和输出 token 的当前定价"               |
 
 ### 核心功能
 
@@ -93,6 +93,7 @@ ccVersion: 2.1.111
 | 权限策略   | `https://platform.claude.com/docs/en/managed-agents/permission-policies.md`      | "提取权限策略类型（允许/拒绝/确认）和每个工具的配置"                     |
 | 多代理           | `https://platform.claude.com/docs/en/managed-agents/multi-agent.md`              | "提取多代理组合模式、子代理调用和结果交接"            |
 | 可观测性         | `https://platform.claude.com/docs/en/managed-agents/observability.md`            | "提取托管代理暴露的日志、追踪和使用遥测"                       |
+| Webhooks              | `https://platform.claude.com/docs/en/managed-agents/webhooks.md`                 | "提取 Webhook 端点注册、HMAC 签名验证、支持的事件类型和投递语义" |
 | GitHub                | `https://platform.claude.com/docs/en/managed-agents/github.md`                   | "提取 github_repository 资源形状、多仓库挂载和令牌轮换"             |
 | MCP 连接器         | `https://platform.claude.com/docs/en/managed-agents/mcp-connector.md`            | "提取代理上的 MCP 服务器声明和会话时基于保险库的凭证注入"     |
 | 保险库                | `https://platform.claude.com/docs/en/managed-agents/vaults.md`                   | "提取保险库创建、凭证添加/轮换、OAuth 刷新形状和归档"                 |

@@ -1,13 +1,13 @@
 <!--
 name: 'Data: Managed Agents overview'
 description: Provides the agent with a comprehensive overview of the Managed Agents API architecture, mandatory agent-then-session flow, beta headers, documentation reading guide, and common pitfalls
-ccVersion: 2.1.119
+ccVersion: 2.1.132
 -->
 # Managed Agents — 概览
 
 Managed Agents 为每个会话（session）提供一个容器作为 agent 的工作空间。Agent 循环运行在 Anthropic 的编排层上；容器是 agent 的**工具**执行之处——bash 命令、文件操作、代码。你需要创建一个持久化的 **Agent** 配置（model、system prompt、tools、MCP servers、skills），然后启动引用它的 **Session**。Session 将事件流式返回给你；你则发送用户消息和工具结果。
 
-## 强制流程：Agent（一次性）→ Session（每次运行）
+## ⚠️ 强制流程：Agent（一次性）→ Session（每次运行）
 
 **Agent 之所以是独立对象：版本控制。** Agent 是一个持久化、带版本的配置——每次更新都会创建一个新的不可变版本，session 在创建时锁定一个版本。这使得你可以在不破坏已在运行 session 的情况下迭代 agent（调整 prompt、添加工具），在变更导致退化时回滚，以及并行进行 A/B 测试。如果你每次运行都调用 `agents.create()`，这一切都无法实现。
 
@@ -30,7 +30,7 @@ Managed Agents 处于 beta 阶段。SDK 会自动设置所需的 beta 请求头�
 
 | Beta 请求头                       | 启用的功能                                               |
 | -------------------------------- | ------------------------------------------------------- |
-| `managed-agents-2026-04-01`      | Agents、Environments、Sessions、Events、Session Resources、Vaults、Credentials、Memory Stores |
+| `managed-agents-2026-04-01`      | Agents、Environments、Sessions、Events、Session Resources、Session Threads、Outcomes、Multiagent、Vaults、Credentials、Memory Stores |
 | `skills-2025-10-02`              | Skills API（用于管理自定义 skill 定义）                    |
 | `files-api-2025-04-14`           | Files API（用于文件上传）                                 |
 
@@ -49,6 +49,9 @@ Managed Agents 处于 beta 阶段。SDK 会自动设置所需的 beta 请求头�
 | 配置工具和权限                                | `shared/managed-agents-tools.md`                            |
 | 设置 MCP 服务器                              | `shared/managed-agents-tools.md`（MCP Servers 部分）          |
 | 流式接收事件 / 处理 tool_use                  | `shared/managed-agents-events.md` + 语言文件                  |
+| 通过 webhook 接收 session 状态变更通知（无需轮询） | `shared/managed-agents-webhooks.md` — 控制台注册端点、HMAC 验证、精简 payload + 拉取 |
+| 定义 outcome / 基于评分标准的迭代循环           | `shared/managed-agents-outcomes.md` — `user.define_outcome` 事件、评分器、`span.outcome_evaluation_*` 事件 |
+| 协调多个 agent / subagent / thread           | `shared/managed-agents-multiagent.md` — agent 上的 `multiagent: {type: "coordinator", agents: [...]}`、session thread、跨发帖工具确认 |
 | 设置 environment                            | `shared/managed-agents-environments.md` + 语言文件            |
 | 上传文件 / 挂载仓库                          | `shared/managed-agents-environments.md`（Resources）          |
 | 为 agent 提供跨 session 的持久化记忆          | `shared/managed-agents-memory.md` — memory stores、`memory_store` session resource、preconditions、versions/redact |
@@ -61,7 +64,6 @@ Managed Agents 处于 beta 阶段。SDK 会自动设置所需的 beta 请求头�
 - **先 Agent，再 Session——没有例外** — session 的 `agent` 字段**仅**接受字符串 ID 或 `{type: "agent", id, version}`。`model`、`system`、`tools`、`mcp_servers`、`skills` 是 **`POST /v1/agents` 的顶层字段**，绝不能放在 `sessions.create()` 上。如果用户还没有创建 agent，那是每个示例的第零步。
 - **Agent 只需创建一次，不是每次运行** — `agents.create()` 是设置步骤。存储返回的 `agent_id` 并复用；不要在热路径顶部调用 `agents.create()`。如果需要修改 agent 的配置，使用 `POST /v1/agents/{id}`——每次更新创建新版本，session 可以锁定特定版本以实现可复现性。
 - **MCP 认证通过 vault 进行** — agent 的 `mcp_servers` 数组仅声明 `{type, name, url}`（不含认证信息）。凭证存储在 vault 中（`client.beta.vaults.credentials.create`），并通过 `vault_ids` 附加到 session。Anthropic 使用存储的 refresh token 自动刷新 OAuth token。
-- **Memory stores 通过 session resources 挂载，且仅在创建时** — 要通过 Managed Agents API 使用 memory stores，在 `sessions.create()` 的 `resources[]` 中包含一个 `{"type": "memory_store", "memory_store_id": "..."}` 条目（创建后无法添加）。Memory stores 在 agent 的工作空间中以 FUSE 挂载形式呈现，以 `/memory/` 为根。参见 `shared/managed-agents-memory.md` 了解完整详情。
 - **通过流接收事件** — `GET /v1/sessions/{id}/events/stream` 是实时接收 agent 输出的主要方式。
 - **SSE 流没有重放——重连时需合并历史** — 如果流在 `agent.tool_use`、`agent.mcp_tool_use` 或 `agent.custom_tool_use` 等待解决时断开（前两者等待 `user.tool_confirmation`，后者等待 `user.custom_tool_result`），session 会死锁（客户端断开 → session 空闲 → 重连发生 → 没有客户端解决）。每次（重）连接时：先打开 `GET /v1/sessions/{id}/events/stream` 流，再获取 `GET /v1/sessions/{id}/events`，按事件 ID 去重，然后继续处理。参见 `shared/managed-agents-events.md` → Reconnecting after a dropped stream。
 - **不要将 HTTP 库超时当作挂钟截止时间** — `requests` 的 `timeout=(c, r)` 和 `httpx.Timeout(n)` 是**每块（per-chunk）**读取超时；每收到一个字节就重置，因此一个缓慢滴流的连接可以无限期阻塞。要为原始 HTTP 轮询设置硬性截止时间，在循环级别跟踪 `time.monotonic()` 并显式退出。优先使用 SDK 的 `sessions.events.stream()` / `session.events.list()` 而非手写 HTTP。参见 `shared/managed-agents-events.md` → Receiving Events。

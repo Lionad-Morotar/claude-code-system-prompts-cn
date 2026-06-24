@@ -1,168 +1,182 @@
 <!--
 name: 'Data: Managed Agents endpoint reference'
 description: Comprehensive reference for Managed Agents API endpoints, SDK methods, request/response schemas, error handling, and rate limits
-ccVersion: 2.1.120
+ccVersion: 2.1.132
 -->
-# Managed Agents — 接口参考
+# 托管智能体 — 端点参考
 
-所有接口都需要 `x-api-key` 和 `anthropic-version: 2023-06-01` 请求头。Managed Agents 接口额外需要 `anthropic-beta` 请求头。
+所有端点均需要 `x-api-key` 和 `anthropic-version: 2023-06-01` 头部。托管智能体端点还需要 `anthropic-beta` 头部。
 
-## Beta 请求头
+## Beta 头部
 
 ```
 anthropic-beta: managed-agents-2026-04-01
 ```
 
-SDK 会为所有 `client.beta.{agents,environments,sessions,vaults,memory_stores}.*` 调用自动添加此请求头。Skills 接口使用 `skills-2025-10-02`；Files 接口使用 `files-api-2025-04-14`。
+SDK 会自动为所有 `client.beta.{agents,environments,sessions,vaults,memory_stores}.*` 调用添加此头部。Skills 端点使用 `skills-2025-10-02`；Files 端点使用 `files-api-2025-04-14`。
 
 ---
 
 ## SDK 方法参考
 
-所有资源均位于 `beta` 命名空间下。Python 和 TypeScript 共享相同的方法名。
+所有资源均在 `beta` 命名空间下。Python 和 TypeScript 共享相同的方法名。
 
 | 资源 | Python / TypeScript (`client.beta.*`) | Go (`client.Beta.*`) |
 | --- | --- | --- |
-| Agents | `agents.create` / `retrieve` / `update` / `list` / `archive` | `Agents.New` / `Get` / `Update` / `List` / `Archive` |
-| Agent Versions | `agents.versions.list` | `Agents.Versions.List` |
-| Environments | `environments.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `Environments.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
-| Sessions | `sessions.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `Sessions.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
-| Session Events | `sessions.events.list` / `send` / `stream` | `Sessions.Events.List` / `Send` / `StreamEvents` |
-| Session Resources | `sessions.resources.add` / `retrieve` / `update` / `list` / `delete` | `Sessions.Resources.Add` / `Get` / `Update` / `List` / `Delete` |
-| Vaults | `vaults.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `Vaults.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
-| Credentials | `vaults.credentials.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `Vaults.Credentials.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
-| Memory Stores | `memory_stores.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `MemoryStores.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
-| Memories | `memory_stores.memories.create` / `retrieve` / `update` / `list` / `delete` | `MemoryStores.Memories.New` / `Get` / `Update` / `List` / `Delete` |
-| Memory Versions | `memory_stores.memory_versions.list` / `retrieve` / `redact` | `MemoryStores.MemoryVersions.List` / `Get` / `Redact` |
+| 智能体 | `agents.create` / `retrieve` / `update` / `list` / `archive` | `Agents.New` / `Get` / `Update` / `List` / `Archive` |
+| 智能体版本 | `agents.versions.list` | `Agents.Versions.List` |
+| 环境 | `environments.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `Environments.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
+| 会话 | `sessions.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `Sessions.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
+| 会话事件 | `sessions.events.list` / `send` / `stream` | `Sessions.Events.List` / `Send` / `StreamEvents` |
+| 会话线程 | `sessions.threads.list` / `retrieve` / `archive`; `sessions.threads.events.list` / `stream` | `Sessions.Threads.List` / `Get` / `Archive`; `Sessions.Threads.Events.List` / `StreamEvents` |
+| 会话资源 | `sessions.resources.add` / `retrieve` / `update` / `list` / `delete` | `Sessions.Resources.Add` / `Get` / `Update` / `List` / `Delete` |
+| 保管库 | `vaults.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `Vaults.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
+| 凭证 | `vaults.credentials.create` / `retrieve` / `update` / `list` / `delete` / `archive` / `mcp_oauth_validate` | `Vaults.Credentials.New` / `Get` / `Update` / `List` / `Delete` / `Archive` / `McpOauthValidate` |
+| 记忆存储 | `memory_stores.create` / `retrieve` / `update` / `list` / `delete` / `archive` | `MemoryStores.New` / `Get` / `Update` / `List` / `Delete` / `Archive` |
+| 记忆 | `memory_stores.memories.create` / `retrieve` / `update` / `list` / `delete` | `MemoryStores.Memories.New` / `Get` / `Update` / `List` / `Delete` |
+| 记忆版本 | `memory_stores.memory_versions.list` / `retrieve` / `redact` | `MemoryStores.MemoryVersions.List` / `Get` / `Redact` |
 
 **需要注意的命名差异：**
-- Agents **没有 delete**——只有 `archive`。Archive 是**不可逆的**：agent 变为只读，新 session 无法引用它，且没有 unarchive 操作。归档生产环境 agent 之前请与用户确认。Environments、Sessions、Vaults、Credentials 和 Memory Stores 同时有 `delete` 和 `archive`；Session Resources、Files、Skills 和 Memories 只有 `delete`；Memory Versions 两者都没有——只有 `redact`。
-- Session resources 使用 `add`（而非 `create`）。
+- 智能体和会话线程**没有** `delete` 方法——仅有 `archive`。归档是**永久性**的：智能体变为只读，新会话无法引用它，且无法取消归档。归档生产环境智能体之前需与用户确认。环境、会话、保管库、凭证和记忆存储同时拥有 `delete` 和 `archive`；会话资源、文件、技能和记忆仅有 `delete`；记忆版本两者都没有——仅有 `redact`。
+- 会话资源使用 `add`（而非 `create`）。
 - Go 的事件流方法是 `StreamEvents`（而非 `Stream`）。
 
-**Agent 简写：** session create 中的 `agent` 字段接受裸字符串（`agent="agent_abc123"`——使用最新版本）或完整的引用对象（`{type: "agent", id: "agent_abc123", version: 123}`）。
+**智能体简写：** 在创建会话时，`agent` 参数接受裸字符串（`agent="agent_abc123"`——使用最新版本）或完整的引用对象（`{type: "agent", id: "agent_abc123", version: 123}`）。
 
-**Model 简写：** agent create 中的 `model` 字段接受裸字符串（`model="{{OPUS_ID}}"`——使用 `standard` 速度）或完整的配置对象（`{type: "model_config", id: "claude-opus-4-6", speed: "fast"}`）。注意：`speed: "fast"` 仅在 Opus 4.6 上受支持。
+**模型简写：** 在创建智能体时，`model` 参数接受裸字符串（`model="{{OPUS_ID}}"`——使用 `standard` 速度）或完整的配置对象（`{type: "model_config", id: "claude-opus-4-6", speed: "fast"}`）。注意：`speed: "fast"` 仅在 Opus 4.6 上受支持。
 
 ---
 
-## Agents
+## 智能体
 
-**所有流程的第一步。** Session 需要预先创建 agent——在 `managed-agents-2026-04-01` 下不支持内联 agent 配置。
+**所有流程的第一步。** 会话需要预先创建的智能体——在 `managed-agents-2026-04-01` 下不支持内联智能体配置。
 
-| 方法   | 路径                                             | 操作            | 描述                              |
+| 方法   | 路径                                             | 操作        | 描述                              |
 | -------- | ------------------------------------------------ | ---------------- | ---------------------------------------- |
-| `GET` | `/v1/agents` | ListAgents | 列出 agents |
-| `POST` | `/v1/agents` | CreateAgent | 创建已保存的 agent 配置 |
-| `GET` | `/v1/agents/{agent_id}` | GetAgent | 获取 agent 详情 |
-| `POST` | `/v1/agents/{agent_id}` | UpdateAgent | 更新 agent 配置 |
-| `POST` | `/v1/agents/{agent_id}/archive` | ArchiveAgent | 归档 agent。使其**只读**；已有 session 继续运行，新 session 无法引用它。不可 unarchive——这是终态。 |
-| `GET` | `/v1/agents/{agent_id}/versions` | ListAgentVersions | 列出 agent 版本 |
+| `GET` | `/v1/agents` | ListAgents | 列出智能体 |
+| `POST` | `/v1/agents` | CreateAgent | 创建已保存的智能体配置 |
+| `GET` | `/v1/agents/{agent_id}` | GetAgent | 获取智能体详情 |
+| `POST` | `/v1/agents/{agent_id}` | UpdateAgent | 更新智能体配置 |
+| `POST` | `/v1/agents/{agent_id}/archive` | ArchiveAgent | 归档智能体。使其变为**只读**；现有会话继续运行，新会话无法引用它。无法取消归档——这是终态。 |
+| `GET` | `/v1/agents/{agent_id}/versions` | ListAgentVersions | 列出智能体版本 |
 
-## Sessions
+## 会话
 
-| 方法   | 路径                                             | 操作            | 描述                              |
+| 方法   | 路径                                             | 操作        | 描述                              |
 | -------- | ------------------------------------------------ | ---------------- | ---------------------------------------- |
-| `GET` | `/v1/sessions` | ListSessions | 列出 sessions（分页） |
-| `POST` | `/v1/sessions` | CreateSession | 创建新 session |
-| `GET` | `/v1/sessions/{session_id}` | GetSession | 获取 session 详情 |
-| `POST` | `/v1/sessions/{session_id}` | UpdateSession | 更新 session 元数据/标题 |
-| `DELETE` | `/v1/sessions/{session_id}` | DeleteSession | 删除 session |
-| `POST` | `/v1/sessions/{session_id}/archive` | ArchiveSession | 归档 session |
+| `GET` | `/v1/sessions` | ListSessions | 列出会话（分页） |
+| `POST` | `/v1/sessions` | CreateSession | 创建新会话 |
+| `GET` | `/v1/sessions/{session_id}` | GetSession | 获取会话详情 |
+| `POST` | `/v1/sessions/{session_id}` | UpdateSession | 更新会话元数据/标题 |
+| `DELETE` | `/v1/sessions/{session_id}` | DeleteSession | 删除会话 |
+| `POST` | `/v1/sessions/{session_id}/archive` | ArchiveSession | 归档会话 |
 
-## Events
+## 事件
 
-| 方法   | 路径                                             | 操作            | 描述                              |
+| 方法   | 路径                                             | 操作        | 描述                              |
 | -------- | ------------------------------------------------ | ---------------- | ---------------------------------------- |
-| `GET` | `/v1/sessions/{session_id}/events` | ListEvents | 列出 events（轮询，分页） |
-| `POST` | `/v1/sessions/{session_id}/events` | SendEvents | 发送 events（用户消息、工具结果） |
-| `GET` | `/v1/sessions/{session_id}/events/stream` | StreamEvents | 通过 SSE 流式传输 events |
+| `GET` | `/v1/sessions/{session_id}/events` | ListEvents | 列出事件（轮询，分页） |
+| `POST` | `/v1/sessions/{session_id}/events` | SendEvents | 发送事件（用户消息、工具结果） |
+| `GET` | `/v1/sessions/{session_id}/events/stream` | StreamEvents | 通过 SSE 流式传输事件 |
 
-## Session Resources
+## 会话线程
 
-| 方法   | 路径                                                    | 操作            | 描述                              |
+多智能体会话中的每个子智能体事件流。参见 `shared/managed-agents-multiagent.md`。
+
+| 方法   | 路径                                             | 操作        | 描述                              |
+| -------- | ------------------------------------------------ | ---------------- | ---------------------------------------- |
+| `GET` | `/v1/sessions/{session_id}/threads` | ListThreads | 列出线程（分页） |
+| `GET` | `/v1/sessions/{session_id}/threads/{thread_id}` | GetThread | 获取单个线程（携带 `agent` 快照、`status`、`parent_thread_id`、`stats`、`usage`） |
+| `POST` | `/v1/sessions/{session_id}/threads/{thread_id}/archive` | ArchiveThread | 归档线程 |
+| `GET` | `/v1/sessions/{session_id}/threads/{thread_id}/events` | ListThreadEvents | 列出某个线程的历史事件（分页） |
+| `GET` | `/v1/sessions/{session_id}/threads/{thread_id}/stream` | StreamThreadEvents | 通过 SSE 流式传输单个线程（SDK：`threads.events.stream`） |
+
+## 会话资源
+
+| 方法   | 路径                                                    | 操作        | 描述                              |
 | -------- | ------------------------------------------------------- | ---------------- | ---------------------------------------- |
-| `GET` | `/v1/sessions/{session_id}/resources` | ListResources | 列出附加到 session 的资源 |
-| `POST` | `/v1/sessions/{session_id}/resources` | AddResource | 挂载 `file` 或 `github_repository` 资源（SDK 方法：`add`，而非 `create`）。`memory_store` 资源只能在 session 创建时挂载。 |
+| `GET` | `/v1/sessions/{session_id}/resources` | ListResources | 列出附加到会话的资源 |
+| `POST` | `/v1/sessions/{session_id}/resources` | AddResource | 附加 `file` 或 `github_repository` 资源（SDK 方法：`add`，非 `create`）。`memory_store` 资源仅在会话创建时附加。 |
 | `GET` | `/v1/sessions/{session_id}/resources/{resource_id}` | GetResource | 获取单个资源 |
 | `POST` | `/v1/sessions/{session_id}/resources/{resource_id}` | UpdateResource | 更新资源 |
-| `DELETE` | `/v1/sessions/{session_id}/resources/{resource_id}` | DeleteResource | 从 session 中移除资源 |
+| `DELETE` | `/v1/sessions/{session_id}/resources/{resource_id}` | DeleteResource | 从会话中移除资源 |
 
-## Environments
+## 环境
 
-| 方法   | 路径                                                             | 操作                | 描述                         |
+| 方法   | 路径                                                             | 操作            | 描述                         |
 | -------- | ---------------------------------------------------------------- | -------------------- | ----------------------------------- |
-| `POST`   | `/v1/environments`                                     | CreateEnvironment    | 创建 environment                |
-| `GET`    | `/v1/environments`                                     | ListEnvironments     | 列出 environments                  |
-| `GET`    | `/v1/environments/{environment_id}`                    | GetEnvironment       | 获取 environment 详情             |
-| `POST`   | `/v1/environments/{environment_id}`                    | UpdateEnvironment    | 更新 environment                  |
-| `DELETE` | `/v1/environments/{environment_id}`                    | DeleteEnvironment    | 删除 environment。返回 204。 |
-| `POST`   | `/v1/environments/{environment_id}/archive`            | ArchiveEnvironment   | 归档 environment。使其**只读**；已有 session 继续运行，新 session 无法引用它。不可 unarchive——这是终态。 |
+| `POST`   | `/v1/environments`                                     | CreateEnvironment    | 创建环境                  |
+| `GET`    | `/v1/environments`                                     | ListEnvironments     | 列出环境                   |
+| `GET`    | `/v1/environments/{environment_id}`                    | GetEnvironment       | 获取环境详情             |
+| `POST`   | `/v1/environments/{environment_id}`                    | UpdateEnvironment    | 更新环境                  |
+| `DELETE` | `/v1/environments/{environment_id}`                    | DeleteEnvironment    | 删除环境。返回 204。 |
+| `POST`   | `/v1/environments/{environment_id}/archive`            | ArchiveEnvironment   | 归档环境。使其变为**只读**；现有会话继续运行，新会话无法引用它。无法取消归档——这是终态。 |
 
-## Vaults
+## 保管库
 
-Vaults 用于存储由 Anthropic 代管的 MCP 凭证——支持自动刷新的 OAuth 凭证或静态 bearer token。通过 `vault_ids` 附加到 session。概念指南和凭证格式参见 `managed-agents-tools.md` §Vaults。
+保管库存储由 Anthropic 代为管理的 MCP 凭证——支持自动刷新的 OAuth 凭证，或静态 bearer 令牌。通过 `vault_ids` 附加到会话。概念指南和凭证结构参见 `managed-agents-tools.md` 的保管库章节。
 
-| 方法   | 路径                                             | 操作            | 描述                              |
+| 方法   | 路径                                             | 操作        | 描述                              |
 | -------- | ------------------------------------------------ | ---------------- | ---------------------------------------- |
-| `POST`   | `/v1/vaults`                                     | CreateVault      | 创建 vault                           |
-| `GET`    | `/v1/vaults`                                     | ListVaults       | 列出 vaults                              |
-| `GET`    | `/v1/vaults/{vault_id}`                          | GetVault         | 获取 vault 详情                        |
-| `POST`   | `/v1/vaults/{vault_id}`                          | UpdateVault      | 更新 vault                             |
-| `DELETE` | `/v1/vaults/{vault_id}`                          | DeleteVault      | 删除 vault                             |
-| `POST`   | `/v1/vaults/{vault_id}/archive`                  | ArchiveVault     | 归档 vault                            |
+| `POST`   | `/v1/vaults`                                     | CreateVault      | 创建保管库                           |
+| `GET`    | `/v1/vaults`                                     | ListVaults       | 列出保管库                              |
+| `GET`    | `/v1/vaults/{vault_id}`                          | GetVault         | 获取保管库详情                        |
+| `POST`   | `/v1/vaults/{vault_id}`                          | UpdateVault      | 更新保管库                             |
+| `DELETE` | `/v1/vaults/{vault_id}`                          | DeleteVault      | 删除保管库                             |
+| `POST`   | `/v1/vaults/{vault_id}/archive`                  | ArchiveVault     | 归档保管库                            |
 
-## Credentials
+## 凭证
 
-Credentials 是存储在 vault 内部的单个密钥。
+凭证是存储在保管库中的单个密钥。
 
-| 方法   | 路径                                                              | 操作              | 描述                  |
+| 方法   | 路径                                                              | 操作          | 描述                  |
 | -------- | ----------------------------------------------------------------- | ------------------ | ---------------------------- |
-| `POST`   | `/v1/vaults/{vault_id}/credentials`                               | CreateCredential   | 创建 credential          |
-| `GET`    | `/v1/vaults/{vault_id}/credentials`                               | ListCredentials    | 列出 vault 中的 credentials    |
-| `GET`    | `/v1/vaults/{vault_id}/credentials/{credential_id}`               | GetCredential      | 获取 credential 元数据      |
-| `POST`   | `/v1/vaults/{vault_id}/credentials/{credential_id}`               | UpdateCredential   | 更新 credential            |
-| `DELETE` | `/v1/vaults/{vault_id}/credentials/{credential_id}`               | DeleteCredential   | 删除 credential            |
-| `POST`   | `/v1/vaults/{vault_id}/credentials/{credential_id}/archive`       | ArchiveCredential  | 归档 credential           |
+| `POST`   | `/v1/vaults/{vault_id}/credentials`                               | CreateCredential   | 创建凭证          |
+| `GET`    | `/v1/vaults/{vault_id}/credentials`                               | ListCredentials    | 列出保管库中的凭证    |
+| `GET`    | `/v1/vaults/{vault_id}/credentials/{credential_id}`               | GetCredential      | 获取凭证元数据      |
+| `POST`   | `/v1/vaults/{vault_id}/credentials/{credential_id}`               | UpdateCredential   | 更新凭证            |
+| `DELETE` | `/v1/vaults/{vault_id}/credentials/{credential_id}`               | DeleteCredential   | 删除凭证            |
+| `POST`   | `/v1/vaults/{vault_id}/credentials/{credential_id}/archive`       | ArchiveCredential  | 归档凭证           |
+| `POST`   | `/v1/vaults/{vault_id}/credentials/{credential_id}/mcp_oauth_validate` | McpOauthValidate | 验证 MCP OAuth 凭证 |
 
-## Memory Stores
+## 记忆存储
 
-工作空间级别的持久化记忆，可跨 session 保留。通过 session 创建时在 `resources[]` 中添加 `{"type": "memory_store", "memory_store_id": ...}` 条目来挂载到 session。概念指南、FUSE 挂载的 agent 接口、前提条件和版本管理参见 `shared/managed-agents-memory.md`。
+工作区级别的持久记忆，跨会话保留。通过在 `resources[]` 中添加 `{"type": "memory_store", "memory_store_id": ...}` 条目附加到会话（仅在会话创建时）。概念指南、FUSE 挂载智能体接口、前置条件和版本控制参见 `shared/managed-agents-memory.md`。
 
-| 方法   | 路径                                             | 操作              | 描述                              |
+| 方法   | 路径                                             | 操作          | 描述                              |
 | -------- | ------------------------------------------------ | ------------------ | ---------------------------------------- |
-| `POST`   | `/v1/memory_stores`                              | CreateMemoryStore  | 创建 store（`name`、`description`、`metadata`） |
-| `GET`    | `/v1/memory_stores`                              | ListMemoryStores   | 列出 stores（`include_archived`、`created_at_{gte,lte}`） |
-| `GET`    | `/v1/memory_stores/{memory_store_id}`            | GetMemoryStore     | 获取 store 详情                        |
-| `POST`   | `/v1/memory_stores/{memory_store_id}`            | UpdateMemoryStore  | 更新 store                             |
-| `DELETE` | `/v1/memory_stores/{memory_store_id}`            | DeleteMemoryStore  | 删除 store                             |
-| `POST`   | `/v1/memory_stores/{memory_store_id}/archive`    | ArchiveMemoryStore | 归档 store。使其**只读**；已有 session 继续运行，新 session 无法引用它。不可 unarchive。 |
+| `POST`   | `/v1/memory_stores`                              | CreateMemoryStore  | 创建存储（`name`、`description`、`metadata`） |
+| `GET`    | `/v1/memory_stores`                              | ListMemoryStores   | 列出存储（`include_archived`、`created_at_{gte,lte}`） |
+| `GET`    | `/v1/memory_stores/{memory_store_id}`            | GetMemoryStore     | 获取存储详情                        |
+| `POST`   | `/v1/memory_stores/{memory_store_id}`            | UpdateMemoryStore  | 更新存储                             |
+| `DELETE` | `/v1/memory_stores/{memory_store_id}`            | DeleteMemoryStore  | 删除存储                             |
+| `POST`   | `/v1/memory_stores/{memory_store_id}/archive`    | ArchiveMemoryStore | 归档存储。使其变为**只读**；现有会话继续运行，新会话无法引用它。无法取消归档。 |
 
-## Memories
+## 记忆
 
-Store 中的单个文本文档（每个 ≤ 100KB）。`create` 在指定 `path` 创建，若路径已被占用则返回 `409`（`memory_path_conflict_error`，附带 `conflicting_memory_id`）；`update` 通过 `mem_...` ID 进行变更（重命名和/或内容）。只有 `update` 接受 `precondition`（`{"type": "content_sha256", "content_sha256": ...}`）——不匹配时返回 `409`（`memory_precondition_failed_error`）。List 接口接受 `view: "basic"|"full"`（控制是否填充 `content`；`retrieve` 默认为 `full`）。
+存储中的单个文本文档（每个不超过 100KB）。`create` 在指定 `path` 上创建，若路径已被占用则返回 `409`（`memory_path_conflict_error`，附带 `conflicting_memory_id`）；`update` 通过 `mem_...` ID 进行修改（重命名和/或内容）。仅 `update` 接受 `precondition`（`{"type": "content_sha256", "content_sha256": ...}`）——不匹配时返回 `409`（`memory_precondition_failed_error`）。列表端点接受 `view: "basic"|"full"`（控制是否填充 `content`；`retrieve` 默认为 `full`）。
 
-| 方法   | 路径                                                              | 操作          | 描述                              |
+| 方法   | 路径                                                              | 操作      | 描述                              |
 | -------- | ----------------------------------------------------------------- | -------------- | ---------------------------------------- |
-| `GET`    | `/v1/memory_stores/{memory_store_id}/memories`                    | ListMemories   | 返回 `Memory \| MemoryPrefix`；可按 `path_prefix`、`depth`、`order_by`/`order` 过滤 |
-| `POST`   | `/v1/memory_stores/{memory_store_id}/memories`                    | CreateMemory   | 在 `path` 创建（SDK：`memories.create`）；路径被占用时返回 `409 memory_path_conflict_error` |
-| `GET`    | `/v1/memory_stores/{memory_store_id}/memories/{memory_id}`        | GetMemory      | 读取一条 memory（默认 `view="full"`） |
-| `PATCH`  | `/v1/memory_stores/{memory_store_id}/memories/{memory_id}`        | UpdateMemory   | 通过 ID 修改 `content`、`path` 或两者；可选的 `precondition` |
-| `DELETE` | `/v1/memory_stores/{memory_store_id}/memories/{memory_id}`        | DeleteMemory   | 删除（可选的 `expected_content_sha256`） |
+| `GET`    | `/v1/memory_stores/{memory_store_id}/memories`                    | ListMemories   | 返回 `Memory | MemoryPrefix`；按 `path_prefix`、`depth`、`order_by`/`order` 过滤 |
+| `POST`   | `/v1/memory_stores/{memory_store_id}/memories`                    | CreateMemory   | 在 `path` 上创建（SDK：`memories.create`）；路径被占用时返回 `409 memory_path_conflict_error` |
+| `GET`    | `/v1/memory_stores/{memory_store_id}/memories/{memory_id}`        | GetMemory      | 读取单条记忆（默认 `view="full"`） |
+| `PATCH`  | `/v1/memory_stores/{memory_store_id}/memories/{memory_id}`        | UpdateMemory   | 按 ID 修改 `content`、`path` 或两者；可选 `precondition` |
+| `DELETE` | `/v1/memory_stores/{memory_store_id}/memories/{memory_id}`        | DeleteMemory   | 删除（可选 `expected_content_sha256`） |
 
-## Memory Versions
+## 记忆版本
 
-不可变的每次变更快照（`memver_...`）——审计和回滚的载体。`operation` ∈ `created` / `modified` / `deleted`。
+每次变更的不可变快照（`memver_...`）——审计和回滚的依据。`operation` 取值：`created` / `modified` / `deleted`。
 
-| 方法   | 路径                                                                          | 操作                 | 描述                              |
+| 方法   | 路径                                                                          | 操作             | 描述                              |
 | -------- | ----------------------------------------------------------------------------- | --------------------- | ---------------------------------------- |
-| `GET`    | `/v1/memory_stores/{memory_store_id}/memory_versions`                         | ListMemoryVersions    | 最新优先；可按 `memory_id`、`operation`、`session_id`、`api_key_id`、`created_at_{gte,lte}` 过滤 |
+| `GET`    | `/v1/memory_stores/{memory_store_id}/memory_versions`                         | ListMemoryVersions    | 最新优先；按 `memory_id`、`operation`、`session_id`、`api_key_id`、`created_at_{gte,lte}` 过滤 |
 | `GET`    | `/v1/memory_stores/{memory_store_id}/memory_versions/{version_id}`            | GetMemoryVersion      | 列表字段 + 完整 `content`             |
 | `POST`   | `/v1/memory_stores/{memory_store_id}/memory_versions/{version_id}/redact`     | RedactMemoryVersion   | 清除 `content`/`content_sha256`/`content_size_bytes`/`path`；保留操作者和时间戳 |
 
-## Files
+## 文件
 
-| 方法   | 路径                                             | 操作            | 描述                              |
+| 方法   | 路径                                             | 操作        | 描述                              |
 | -------- | ------------------------------------------------ | ---------------- | ---------------------------------------- |
 | `POST`   | `/v1/files`                            | UploadFile       | 上传文件                            |
 | `GET`    | `/v1/files`                            | ListFiles        | 列出文件                               |
@@ -170,33 +184,33 @@ Store 中的单个文本文档（每个 ≤ 100KB）。`create` 在指定 `path`
 | `GET`    | `/v1/files/{file_id}/content`          | DownloadFile     | 下载文件内容                    |
 | `DELETE` | `/v1/files/{file_id}`                  | DeleteFile       | 删除文件                            |
 
-## Skills
+## 技能
 
-| 方法   | 路径                                                            | 操作              | 描述                  |
+| 方法   | 路径                                                            | 操作          | 描述                  |
 | -------- | --------------------------------------------------------------- | ------------------ | ---------------------------- |
-| `POST`   | `/v1/skills`                                          | CreateSkill        | 创建 skill               |
-| `GET`    | `/v1/skills`                                          | ListSkills         | 列出 skills                  |
-| `GET`    | `/v1/skills/{skill_id}`                               | GetSkill           | 获取 skill 详情            |
-| `DELETE` | `/v1/skills/{skill_id}`                               | DeleteSkill        | 删除 skill               |
-| `POST`   | `/v1/skills/{skill_id}/versions`                      | CreateVersion      | 创建 skill version         |
-| `GET`    | `/v1/skills/{skill_id}/versions`                      | ListVersions       | 列出 skill versions          |
-| `GET`    | `/v1/skills/{skill_id}/versions/{version}`            | GetVersion         | 获取 skill version            |
-| `DELETE` | `/v1/skills/{skill_id}/versions/{version}`            | DeleteVersion      | 删除 skill version         |
+| `POST`   | `/v1/skills`                                          | CreateSkill        | 创建技能               |
+| `GET`    | `/v1/skills`                                          | ListSkills         | 列出技能                  |
+| `GET`    | `/v1/skills/{skill_id}`                               | GetSkill           | 获取技能详情            |
+| `DELETE` | `/v1/skills/{skill_id}`                               | DeleteSkill        | 删除技能               |
+| `POST`   | `/v1/skills/{skill_id}/versions`                      | CreateVersion      | 创建技能版本         |
+| `GET`    | `/v1/skills/{skill_id}/versions`                      | ListVersions       | 列出技能版本          |
+| `GET`    | `/v1/skills/{skill_id}/versions/{version}`            | GetVersion         | 获取技能版本            |
+| `DELETE` | `/v1/skills/{skill_id}/versions/{version}`            | DeleteVersion      | 删除技能版本         |
 
 ---
 
-## 请求/响应 Schema 快速参考
+## 请求/响应模式快速参考
 
 ### CreateAgent 请求体
 
-**始终从这里开始。** `model`、`system`、`tools`、`mcp_servers`、`skills` 是此对象的顶层字段——它们**不**放在 session 上。
+**始终从此处开始。** `model`、`system`、`tools`、`mcp_servers`、`skills` 是此对象的顶层字段——它们**不**放在会话上。
 
 ```json
 {
-  "name": "string（必填，1-256 字符）",
-  "model": "{{OPUS_ID}}（必填——裸字符串或 {id, speed} 对象）",
-  "description": "string（可选，最多 2048 字符）",
-  "system": "string（可选，最多 100,000 字符）",
+  "name": "string（必需，1-256 个字符）",
+  "model": "{{OPUS_ID}}（必需——裸字符串，或 {id, speed} 对象）",
+  "description": "string（可选，最多 2048 个字符）",
+  "system": "string（可选，最多 100,000 个字符）",
   "tools": [
     { "type": "agent_toolset_20260401" }
   ],
@@ -211,26 +225,34 @@ Store 中的单个文本文档（每个 ≤ 100KB）。`create` 在指定 `path`
       "url": "https://api.githubcopilot.com/mcp/"
     }
   ],
+  "multiagent": {
+    "type": "coordinator",
+    "agents": [
+      "agent_abc123",
+      { "type": "agent", "id": "agent_def456", "version": 4 },
+      { "type": "self" }
+    ]
+  },
   "metadata": {
-    "key": "value（最多 16 对，键 ≤64 字符，值 ≤512 字符）"
+    "key": "value（最多 16 对，键不超过 64 个字符，值不超过 512 个字符）"
   }
 }
 ```
 
-> 限制：`tools` 最多 50 个，`skills` 最多 64 个，`mcp_servers` 最多 20 个（名称唯一）。
+> 限制：`tools` 最多 128 个，`skills` 最多 20 个，`mcp_servers` 最多 20 个（名称需唯一）。`multiagent.agents` 1–20 个条目（字符串 ID | `{type:"agent",id,version?}` | `{type:"self"}`）——参见 `shared/managed-agents-multiagent.md`。
 
 ### CreateSession 请求体
 
 ```json
 {
-  "agent": "agent_abc123（必填——表示最新版本的字符串简写，或 {type: \"agent\", id, version} 对象）",
-  "environment_id": "env_abc123（必填）",
+  "agent": "agent_abc123（必需——使用最新版本的字符串简写，或 {type: \"agent\", id, version} 对象）",
+  "environment_id": "env_abc123（必需）",
   "title": "string（可选）",
   "resources": [
     {
       "type": "github_repository",
-      "url": "https://github.com/owner/repo（必填）",
-      "authorization_token": "ghp_...（必填）",
+      "url": "https://github.com/owner/repo（必需）",
+      "authorization_token": "ghp_...（必需）",
       "mount_path": "/workspace/repo（可选——默认为 /workspace/<repo-name>）",
       "checkout": { "type": "branch", "name": "main" }
     }
@@ -242,7 +264,7 @@ Store 中的单个文本文档（每个 ≤ 100KB）。`create` 在指定 `path`
 }
 ```
 
-> `agent` 字段只接受字符串 ID 或 `{type: "agent", id, version}`——`model`/`system`/`tools` 属于 agent，不在此处。
+> `agent` 字段仅接受字符串 ID 或 `{type: "agent", id, version}`——`model`/`system`/`tools` 在智能体上，不在此处。
 >
 > **`checkout`** 接受 `{type: "branch", name: "..."}` 或 `{type: "commit", sha: "..."}`。省略则使用仓库的默认分支。
 
@@ -250,7 +272,7 @@ Store 中的单个文本文档（每个 ≤ 100KB）。`create` 在指定 `path`
 
 ```json
 {
-  "name": "string（必填）",
+  "name": "string（必需）",
   "description": "string（可选）",
   "config": {
     "type": "cloud",
@@ -281,7 +303,20 @@ Store 中的单个文本文档（每个 ≤ 100KB）。`create` 在指定 `path`
 }
 ```
 
-### Tool Result Event
+### Define Outcome 事件
+
+```json
+{
+  "type": "user.define_outcome",
+  "description": "在 .xlsx 中为 Costco 构建 DCF 模型",
+  "rubric": { "type": "file", "file_id": "file_01..." },
+  "max_iterations": 5
+}
+```
+
+> `rubric` 为必需项：`{type: "text", content}` 或 `{type: "file", file_id}`。`max_iterations` 默认为 3，最大为 20。返回时附带 `outcome_id` + `processed_at`。参见 `shared/managed-agents-outcomes.md`。
+
+### 工具结果事件
 
 ```json
 {
@@ -296,47 +331,47 @@ Store 中的单个文本文档（每个 ≤ 100KB）。`create` 在指定 `path`
 
 ## 错误处理
 
-Managed Agents 接口使用标准的 Anthropic API 错误格式。错误以 HTTP 状态码和包含 `type`、`error`、`request_id` 的 JSON 响应体返回：
+托管智能体端点使用标准的 Anthropic API 错误格式。错误返回时附带 HTTP 状态码和一个包含 `type`、`error` 和 `request_id` 的 JSON 正文：
 
 ```json
 {
   "type": "error",
   "error": {
     "type": "invalid_request_error",
-    "message": "Description of what went wrong"
+    "message": "问题描述"
   },
   "request_id": "req_011CRv1W3XQ8XpFikNYG7RnE"
 }
 ```
 
-向 Anthropic 报告问题时请提供 `request_id`——它允许我们端到端追踪请求。内层的 `error.type` 为以下值之一：
+向 Anthropic 报告问题时请附带 `request_id`——它使我们能够端到端追踪请求。内部的 `error.type` 取值如下：
 
 | 状态码 | 错误类型 | 描述 |
 |---|---|---|
 | 400 | `invalid_request_error` | 请求格式错误或缺少必需参数 |
-| 401 | `authentication_error` | API key 无效或缺失 |
-| 403 | `permission_error` | 该 API key 没有此操作的权限 |
+| 401 | `authentication_error` | API 密钥无效或缺失 |
+| 403 | `permission_error` | API 密钥没有执行此操作的权限 |
 | 404 | `not_found_error` | 请求的资源不存在 |
-| 409 | `invalid_request_error` | 请求与资源的当前状态冲突（例如，向已归档的 session 发送消息） |
-| 413 | `request_too_large` | 请求体超过允许的最大大小 |
-| 429 | `rate_limit_error` | 请求过多——检查速率限制请求头以确定重试时机 |
-| 500 | `api_error` | 内部服务器错误 |
+| 409 | `invalid_request_error` | 请求与资源的当前状态冲突（例如，向已归档的会话发送消息） |
+| 413 | `request_too_large` | 请求体超出最大允许大小 |
+| 429 | `rate_limit_error` | 请求过多——检查速率限制头部以获取重试时机 |
+| 500 | `api_error` | 服务器内部错误 |
 | 529 | `overloaded_error` | 服务暂时过载——使用退避策略重试 |
 
-注意，`409 Conflict` 携带的 `error.type` 是 `"invalid_request_error"`（没有单独的 `conflict_error` 类型）；请同时检查 HTTP 状态码和 `message` 来区分冲突与其他无效请求。
+注意：`409 Conflict` 携带的 `error.type` 是 `"invalid_request_error"`（没有单独的 `conflict_error` 类型）；请同时检查 HTTP 状态码和 `message` 来区分冲突与其他无效请求。
 
 ---
 
 ## 速率限制
 
-Managed Agents 接口有按组织（per-organization）的每分钟请求数（RPM）限制，独立于你的 [Messages API token 限制](https://platform.claude.com/docs/en/api/rate-limits)。Session 内部的模型推理仍然受组织的标准 ITPM/OTPM 限制约束。
+托管智能体端点具有按组织的每分钟请求数（RPM）限制，独立于你的 [Messages API 令牌限制](https://platform.claude.com/docs/en/api/rate-limits)。会话内的模型推理仍从你组织的标准 ITPM/OTPM 限额中扣除。
 
-| 接口分组 | 范围 | RPM | 最大并发 |
+| 端点组 | 范围 | RPM | 最大并发数 |
 |---|---|---|---|
-| 创建操作（Agents、Sessions、Vaults） | 组织 | 60 | — |
-| 所有其他操作（Agents、Sessions、Vaults） | 组织 | 600 | — |
-| 所有操作（Environments） | 组织 | 60 | 5 |
+| 创建操作（智能体、会话、保管库） | 组织 | 300 | — |
+| 所有其他操作（智能体、会话、保管库） | 组织 | 600 | — |
+| 所有操作（环境） | 组织 | 60 | 5 |
 
-Files 和 Skills 接口使用基于 tier 的标准[速率限制](https://platform.claude.com/docs/en/api/rate-limits)。
+文件和技能端点使用标准的按等级划分的[速率限制](https://platform.claude.com/docs/en/api/rate-limits)。
 
-超出限制时，API 返回 `429` 及 `rate_limit_error`（响应结构参见[错误处理](#错误处理)），以及 `retry-after` 响应头指示需要等待多少秒后重试。Anthropic SDK 会读取此响应头并自动重试。
+超出限制时，API 返回 `429` 和 `rate_limit_error`（响应格式参见[错误处理](#错误处理)），以及一个 `retry-after` 头部，指示重试前需等待的秒数。Anthropic SDK 会读取此头部并自动重试。

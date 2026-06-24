@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Managed Agents onboarding flow'
-description: Interactive interview script that walks users through configuring a Managed Agent from scratch — selecting tools, skills, files, environment settings — and emits setup and runtime code
-ccVersion: 2.1.118
+description: 引导用户从零配置 Managed Agent 的交互式访谈脚本 —— 选择工具、技能、文件、环境设置 —— 并生成设置和运行时代码
+ccVersion: 2.1.132
 -->
 # Managed Agents — 引导流程
 
@@ -35,8 +35,8 @@ Claude Managed Agents 是一个托管式智能体（hosted agent）：Anthropic 
 
 | 模式 | 触发方式 | 示例 |
 |---|---|---|
-| 事件触发 | Webhook | GitHub PR push → CMA（GitHub 工具）→ Slack |
-| 定时调度 | Cron | 每日简报：浏览器 + GitHub + Jira → CMA → Slack |
+| 事件触发 | Webhook | GitHub PR push → CMA（GitHub 工具）→ Slack | # <------ MC maybe delete?
+| 定时调度 | Cron | 每日简报：浏览器 + GitHub + Jira → CMA → Slack | # <------ MC maybe delete?
 | 即发即忘 PR | 人工 | Slack 斜杠命令 → CMA（GitHub 工具）→ 通过 CI 的 PR |
 | 调研 + 仪表盘 | 人工 | 主题 → CMA（网页搜索 + `frontend-design` 技能）→ HTML 仪表盘 |
 
@@ -46,7 +46,7 @@ Claude Managed Agents 是一个托管式智能体（hosted agent）：Anthropic 
 
 三轮提问。每轮批量提问，不要逐个问。
 
-**第一轮 — 工具。** 从这里开始，这是最具体的部分。三种类型；询问用户想要哪些（可多选）：
+**第 A 轮 — 工具。** 从这里开始，这是最具体的部分。三种类型；询问用户想要哪些（可多选）：
 
 | 类型 | 说明 | 引导方式 |
 |---|---|---|
@@ -54,9 +54,9 @@ Claude Managed Agents 是一个托管式智能体（hosted agent）：Anthropic 
 | **MCP 工具** | 通过 `mcp_toolset` 接入的第三方集成（GitHub、Linear、Asana 等）。凭据存储在 vault 中，不在配置中明文出现。 | 询问需要哪些服务。对每个服务，引导用户提供 MCP 服务器 URL + vault 凭据。完整细节：`shared/managed-agents-tools.md` → MCP Servers + Vaults。 |
 | **自定义工具** | 用户自己的应用处理这些工具调用 —— 智能体触发 `agent.custom_tool_use`，应用发送结果消息回应。 | 对每个工具询问：名称、描述、输入 schema。处理事件的应用代码是**用户自己的**代码 —— 不要生成。完整细节：`shared/managed-agents-tools.md` → Custom Tools。 |
 
-**第二轮 — 技能、文件和仓库。** 智能体启动时手头有哪些资源。
+**第 B 轮 — 技能、文件和仓库。** 智能体启动时手头有哪些资源。
 
-*技能* —— 两种类型；工作方式相同 —— Claude 自动在相关场景下使用它们。每个智能体最多 64 个。
+*技能* —— 两种类型；工作方式相同 —— Claude 自动在相关场景下使用它们。每个智能体最多 20 个。
 - [ ] **预置 Agent 技能**：`xlsx`、`docx`、`pptx`、`pdf`。按名称引用。
 - [ ] **自定义技能**：通过 Skills API 上传到用户组织的技能。通过 `skill_id` + 可选 `version` 引用。如果技能尚不存在，引导用户完成 `POST /v1/skills` + `POST /v1/skills/{id}/versions`（beta header `skills-2025-10-02`）。完整细节：`shared/managed-agents-tools.md` → Skills + Skills API。
 
@@ -67,7 +67,7 @@ Claude Managed Agents 是一个托管式智能体（hosted agent）：Anthropic 
 
 以 `resources: [{type: "github_repository", url, authorization_token, ...}]` 形式生成。完整细节：`shared/managed-agents-environments.md` → GitHub Repositories。
 
-> ‼️ **创建 PR 还需要 GitHub MCP 服务器。** `github_repository` 仅提供文件系统访问 —— 要发起 PR，还需要在第一轮中附加 GitHub MCP 服务器，并通过 vault 提供凭据。工作流程是：编辑已挂载仓库中的文件 → 通过 `bash` 推送分支 → 通过 MCP 的 `create_pull_request` 工具创建 PR。
+> ‼️ **创建 PR 还需要 GitHub MCP 服务器。** `github_repository` 仅提供文件系统访问 —— 要发起 PR，还需要在第 A 轮中附加 GitHub MCP 服务器，并通过 vault 提供凭据。工作流程是：编辑已挂载仓库中的文件 → 通过 `bash` 推送分支 → 通过 MCP 的 `create_pull_request` 工具创建 PR。
 
 *文件* —— 需要在会话中预置哪些本地文件？对每个文件：
 - [ ] 通过 Files API 上传 → 保存 `file_id`
@@ -75,7 +75,7 @@ Claude Managed Agents 是一个托管式智能体（hosted agent）：Anthropic 
 
 以 `resources: [{type: "file", file_id, mount_path}]` 形式生成。最多 999 个文件资源。智能体工作目录默认为 `/workspace`。完整细节：`shared/managed-agents-environments.md` → Files API。
 
-**第三轮 — 环境 + 身份：**
+**第 C 轮 — 环境 + 身份：**
 - [ ] 网络：容器无限制访问互联网，还是锁定出站流量到特定主机？（如果锁定，MCP 服务器域名必须包含在 `allowed_hosts` 中，否则工具会静默失败。）
 - [ ] 名称？
 - [ ] 职责描述（一两句话 —— 会成为系统提示词）？
@@ -95,7 +95,7 @@ Claude Managed Agents 是一个托管式智能体（hosted agent）：Anthropic 
 **启动：**
 - [ ] 发送给智能体的第一条消息？
 
-会话创建会阻塞直到所有资源挂载完成。在发送启动消息之前先打开事件流。流使用 SSE 格式；在 `session.status_terminated` 时退出，或在 `session.status_idle` 且 stop_reason 为终态时退出 —— 即除 `requires_action` 之外的任何 stop_reason。`requires_action` 在会话等待工具确认或自定义工具结果时短暂出现（参见 `shared/managed-agents-client-patterns.md` 模式 5）。用量数据在 `span.model_request_end` 上返回。智能体生成的产物位于 `/mnt/session/outputs/` —— 通过 `files.list({scope_id: session.id, betas: ["managed-agents-2026-04-01"]})` 下载。
+会话创建会阻塞直到所有资源挂载完成。在发送启动消息之前先打开事件流。流使用 SSE 格式；在 `session.status_terminated` 时退出，或在 `session.status_idle` 且 `stop_reason` 为终态时退出 —— 即除 `requires_action` 之外的任何 stop_reason。`requires_action` 在会话等待工具确认或自定义工具结果时短暂出现（参见 `shared/managed-agents-client-patterns.md` 模式 5）。用量数据在 `span.model_request_end` 上返回。智能体生成的产物位于 `/mnt/session/outputs/` —— 通过 `files.list({scope_id: session.id, betas: ["managed-agents-2026-04-01"]})` 下载。
 
 ---
 
