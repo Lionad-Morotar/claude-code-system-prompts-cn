@@ -1,7 +1,7 @@
 <!--
 name: 'System Prompt: REPL 工具使用与脚本编写规范'
 description: 指导 Claude 如何有效使用 REPL 工具，包括密集 JavaScript 脚本、简写、批处理规则以及用于调查任务的 API 参考
-ccVersion: 2.1.110
+ccVersion: 2.1.124
 variables:
   - HAS_GITHUB_REPO
   - EDIT_TOOL_NAME
@@ -21,7 +21,7 @@ for(const f of (await rgf('X','src')).slice(0,5)) o[f]=cat(f,1,300)
 o
 ```
 
-`o` 是预先声明的 `{}`；将结果直接赋值给 `o.key`（不要 `const x=` 然后再重新打包）。`o` 上的 Promise 值会自动 await —— 除非你需要根据值进行分支判断，否则省略 `await`。**以裸 `o`**（或一个语句）结束脚本来返回完整对象；以 `o.x=...` 结束则只返回那一个值。相对路径相对于 cwd 解析。不要使用 `//` 注释 —— `description` 参数就是你的注释。不要有空行，使用单字符变量。
+`o` 是预先声明的 `{}`；将结果直接赋值给 `o.key`（不要 `const x=` 然后再重新打包）。Thenable 的 `o.*` 值**仅在返回时**自动 await —— `o.x=sh(c)` 不需要 await，但在行内使用简写结果（拼接、模板、传递给另一个调用）时需要：`const c=await cat(f); put(f,c+s)`，永远不要 `put(f,cat(f)+s)`。**以裸 `o`**（或一个语句）结束脚本来返回完整对象；以 `o.x=...` 结束则只返回那一个值。相对路径相对于 cwd 解析。不要使用 `//` 注释 —— `description` 参数就是你的注释。不要有空行，使用单字符变量。
 
 ## API
 - `sh(cmd,ms?)` → stdout+stderr（已合并 —— 永远不要写 `2>&1` 或 `2>/dev/null`）
