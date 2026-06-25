@@ -1,6 +1,6 @@
 # Claude Code 系统提示词（中文翻译）
 
-> **当前版本：** v2.1.145（2026 年 5 月 19 日）—— 182 个版本
+> **当前版本：** v2.1.146（2026 年 5 月 20 日）—— 183 个版本
 
 从 [Claude Code](https://docs.anthropic.com/en/docs/claude-code/overview) npm 包中提取的系统提示词。由社区维护，非 Anthropic 官方出品。
 
@@ -56,7 +56,7 @@
 | [skill-pre-meeting-checkin-event-brief.md](./system-prompts/skill-pre-meeting-checkin-event-brief.md) | 400+ | 会前检查事件简报：收集事件材料、最近线索上下文、待解决问题和简洁会议简报 |
 | [skill-agent-design-patterns.md](./system-prompts/skill-agent-design-patterns.md) | 5,600+ | 代理设计模式：多代理架构 |
 | [skill-team-onboarding-guide.md](./system-prompts/skill-team-onboarding-guide.md) | 1,000+ | 团队入手指南：协作设置 |
-| [skill-dream-nightly-schedule.md](./system-prompts/skill-dream-nightly-schedule.md) | 800+ | Dream 夜间调度：设置周期性记忆整合任务 |
+
 | [skill-verify-skill.md](./system-prompts/skill-verify-skill.md) | 3,700+ | 验证技能：安装后验证 |
 
 ### 数据/参考

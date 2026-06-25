@@ -1,11 +1,11 @@
 <!--
 name: 'Skill: Simplify'
 description: 简化代码的指令
-ccVersion: 2.1.116
+ccVersion: 2.1.146
 variables:
   - AGENT_TOOL_NAME
 -->
-# Simplify: 代码审查与清理
+# 代码审查与清理
 
 审查所有变更文件的可复用性、质量和效率。修复发现的任何问题。
 
