@@ -1,25 +1,16 @@
 <!--
-name: 'Tool Description: Bash (Git commit and PR creation instructions)'
-description: Instructions for creating git commits and GitHub pull requests
-ccVersion: 2.1.178
+name: '工具描述：Bash（Git 提交和 PR 创建说明）'
+description: 创建 git 提交和 GitHub 拉取请求的说明
+ccVersion: 2.1.152
 variables:
-  - LOADED_COMMANDS_CONTEXT
-  - COMMIT_CO_AUTHORED_BY_CLAUDE_CODE
   - BASH_TOOL_NAME
+  - COMMIT_CO_AUTHORED_BY_CLAUDE_CODE
   - GET_TODO_TOOL_FN
   - TASK_TOOL_NAME
-  - PR_INSTRUCTIONS_PREFIX
-  - EMPTY_STRING
   - PR_GENERATED_WITH_CLAUDE_CODE
-  - PR_COMMON_OPERATIONS_NOTE
+  - PR_GENERATED_WITH_CLAUDE_CODE
 -->
-${LOADED_COMMANDS_CONTEXT.commit?`# Git
-- 永远不要使用带有 -i 标志的 git 命令（如 git rebase -i 或 git add -i），因为它们需要交互式输入，而这是不支持的。
-- 仅在用户明确要求时提交。暂存时，优先指定具体文件名而不是 "git add -A"/"git add ."——永远不要提交可能包含机密（.env、凭据）的文件。${COMMIT_CO_AUTHORED_BY_CLAUDE_CODE?`
-- Git 提交消息以以下内容结尾：
-${COMMIT_CO_AUTHORED_BY_CLAUDE_CODE}`:""}
-
-`:`# 使用 git 提交更改
+${""}# 使用 git 提交更改
 
 仅在用户请求时创建提交。如果不清楚，请先询问。当用户要求你创建新的 git 提交时，请仔细遵循以下步骤：
 
@@ -32,7 +23,7 @@ Git 安全协议：
 - 永远不要强制推送到 main/master，如果用户请求，请警告用户
 - 关键：始终创建**新**提交而不是修改，除非用户明确请求 git amend。当预提交钩子失败时，提交并没有发生——所以 --amend 将修改**先前的**提交，这可能导致破坏工作或丢失以前的更改。相反，在钩子失败后，修复问题，重新暂存，并创建**新**提交
 - 暂存文件时，优先按名称添加特定文件，而不是使用 "git add -A" 或 "git add ."，这可能会意外包含敏感文件（.env、凭据）或大型二进制文件
-- 永远不要提交更改，除非用户明确要求。非常重要：仅在明确要求时提交，否则用户会认为你太主动
+- 永远不要提交更改，除非用户明确要求你这样做。非常重要：仅在明确要求时提交，否则用户会觉得你过于主动
 
 1. 使用 ${BASH_TOOL_NAME} 工具并行运行以下 bash 命令：
   - 运行 git status 命令以查看所有未跟踪的文件。重要：永远不要使用 -uall 标志，因为它可能在大型仓库上导致内存问题。
@@ -68,12 +59,10 @@ git commit -m "$(cat <<'EOF'
    )"
 </example>
 
-`}${PR_INSTRUCTIONS_PREFIX}${EMPTY_STRING?`${EMPTY_STRING}
-
-`:""}# 创建拉取请求
+# 创建拉取请求
 对于所有与 GitHub 相关的任务（包括处理问题、拉取请求、检查和发布），请通过 Bash 工具使用 gh 命令。如果给出 GitHub URL，请使用 gh 命令获取所需信息。
 
-重要：当用户要求你创建拉取请求时，请仔细遵循以下步骤：
+${PR_GENERATED_WITH_CLAUDE_CODE}重要：当用户要求你创建拉取请求时，请仔细遵循以下步骤：
 
 1. 使用 ${BASH_TOOL_NAME} 工具并行运行以下 bash 命令，以了解分支从主分支偏离以来的当前状态：
    - 运行 git status 命令以查看所有未跟踪的文件（永远不要使用 -uall 标志）
@@ -105,6 +94,4 @@ EOF
 - 完成后返回 PR URL，以便用户可以看到它
 
 # 其他常见操作
-- 查看 Github PR 上的评论：gh api repos/foo/bar/pulls/123/comments${PR_COMMON_OPERATIONS_NOTE?`
-
-${PR_COMMON_OPERATIONS_NOTE}`:""}
+- 查看 Github PR 上的评论：gh api repos/foo/bar/pulls/123/comments

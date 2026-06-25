@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Java'
 description: Java SDK reference including installation, client initialization, basic requests, streaming, and beta tool use
-ccVersion: 2.1.128
+ccVersion: 2.1.152
 -->
 # Claude API — Java
 
@@ -15,14 +15,14 @@ Maven：
 <dependency>
     <groupId>com.anthropic</groupId>
     <artifactId>anthropic-java</artifactId>
-    <version>2.17.0</version>
+    <version>2.34.0</version>
 </dependency>
 ```
 
 Gradle：
 
 ```groovy
-implementation("com.anthropic:anthropic-java:2.17.0")
+implementation("com.anthropic:anthropic-java:2.34.0")
 ```
 
 ## 客户端初始化
@@ -51,7 +51,7 @@ import com.anthropic.models.messages.Model;
 
 MessageCreateParams params = MessageCreateParams.builder()
     .model(Model.CLAUDE_OPUS_4_6)
-    .maxTokens(1024L)
+    .maxTokens(16000L)
     .addUserMessage("What is the capital of France?")
     .build();
 
@@ -71,7 +71,7 @@ import com.anthropic.models.messages.RawMessageStreamEvent;
 
 MessageCreateParams params = MessageCreateParams.builder()
     .model(Model.CLAUDE_OPUS_4_6)
-    .maxTokens(1024L)
+    .maxTokens(64000L)
     .addUserMessage("Write a haiku")
     .build();
 
@@ -142,7 +142,7 @@ static class GetWeather implements Supplier<String> {
 BetaToolRunner toolRunner = client.beta().messages().toolRunner(
     MessageCreateParams.builder()
         .model("{{OPUS_ID}}")
-        .maxTokens(1024L)
+        .maxTokens(16000L)
         .putAdditionalHeader("anthropic-beta", "structured-outputs-2025-11-13")
         .addTool(GetWeather.class)
         .addUserMessage("What's the weather in San Francisco?")
@@ -209,7 +209,7 @@ Tool tool = Tool.builder()
 
 MessageCreateParams params = MessageCreateParams.builder()
     .model(Model.CLAUDE_SONNET_4_6)
-    .maxTokens(1024L)
+    .maxTokens(16000L)
     .addTool(tool)
     .addUserMessage("Weather in Paris?")
     .build();
@@ -307,7 +307,7 @@ record BookList(List<Book> books) {}
 
 StructuredMessageCreateParams<BookList> params = MessageCreateParams.builder()
     .model(Model.CLAUDE_SONNET_4_6)
-    .maxTokens(2048L)
+    .maxTokens(16000L)
     .outputConfig(BookList.class)  // 返回类型化的构建器
     .addUserMessage("List 3 classic novels")
     .build();
@@ -364,7 +364,7 @@ import com.anthropic.models.messages.CodeExecutionTool20260120;
 .addTool(CodeExecutionTool20260120.builder().build())
 ```
 
-还有：`WebFetchTool20260209`、`MemoryTool20250818`、`ToolSearchToolBm25_20251119`、`ToolSearchToolRegex20251119`。对于顾问工具，使用 beta 命名空间中的 `BetaAdvisorTool20260301`。
+还有：`WebFetchTool20260209`、`MemoryTool20250818`、`ToolSearchToolBm25_20251119`。对于顾问工具，使用 beta 命名空间中的 `BetaAdvisorTool20260301`。
 
 ### Beta 命名空间（MCP、压缩）
 

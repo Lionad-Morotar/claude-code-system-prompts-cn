@@ -1,7 +1,10 @@
 <!--
 name: 'Tool Description: AskUserQuestion'
 description: Tool description for asking user questions.
-ccVersion: 2.0.77
+ccVersion: 2.1.152
+variables:
+  - ENTER_PLAN_MODE_TOOL_NAME
+  - EXIT_PLAN_MODE_TOOL_NAME
 -->
 在执行期间需要向用户提问时使用此工具。这允许你：
 1. 收集用户偏好或要求
@@ -14,4 +17,4 @@ ccVersion: 2.0.77
 - 使用 multiSelect: true 允许为问题选择多个答案
 - 如果你推荐特定选项，请将该选项作为列表中的第一个选项，并在标签末尾添加 "（推荐）"
 
-计划模式说明：在计划模式中，使用此工具在最终确定计划之前阐明要求或在方法之间进行选择。不要使用此工具来问 "我的计划准备好了吗？" 或 "我应该继续吗？" - 使用 ExitPlanMode 进行计划批准。
+计划模式说明：要切换到计划模式，请使用 ${ENTER_PLAN_MODE_TOOL_NAME}（而非此工具）。进入计划模式后，在最终确定计划之前，使用此工具阐明要求或在方法之间进行选择。不要使用此工具来问"我的计划准备好了吗？"、"我应该继续吗？"或以其他方式在问题中引用"计划"——在你调用 ${EXIT_PLAN_MODE_TOOL_NAME} 进行批准之前，用户无法看到该计划。

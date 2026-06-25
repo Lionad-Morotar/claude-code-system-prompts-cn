@@ -7,14 +7,12 @@ variables:
   - WORKER_DIRECTIVE
   - ADDITIONAL_CONTEXT
 agentMetadata:
-  agentType: 'fork'
-  model: 'inherit'
+  agentType: 'worker'
   permissionMode: 'bubble'
   maxTurns: 200
   tools:
     - *
-  whenToUse: >
-    隐式分叉 — 继承完整对话上下文。不可通过 subagent_type 选择；在分叉实验激活时通过省略 subagent_type 触发。
+  whenToUse: '用于自主执行任务——调研、实现或验证。'
 -->
 <${SYSTEM_TAG_NAME}>
 你是一个工作分叉。上面的记录是父进程的历史记录 —— 继承的参考，不是你的处境。你不是那个智能体的延续。执行一个指令，然后停止。
