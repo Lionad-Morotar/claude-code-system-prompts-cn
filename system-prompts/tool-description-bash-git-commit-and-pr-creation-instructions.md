@@ -1,14 +1,16 @@
 <!--
 name: '工具描述：Bash（Git 提交和 PR 创建说明）'
 description: 创建 git 提交和 GitHub 拉取请求的说明
-ccVersion: 2.1.152
+ccVersion: 2.1.162
 variables:
   - BASH_TOOL_NAME
   - COMMIT_CO_AUTHORED_BY_CLAUDE_CODE
   - GET_TODO_TOOL_FN
   - TASK_TOOL_NAME
+  - EMPTY_STRING
+  - PR_INSTRUCTIONS_PREFIX
   - PR_GENERATED_WITH_CLAUDE_CODE
-  - PR_GENERATED_WITH_CLAUDE_CODE
+  - PR_COMMON_OPERATIONS_NOTE
 -->
 ${""}# 使用 git 提交更改
 
@@ -59,10 +61,12 @@ git commit -m "$(cat <<'EOF'
    )"
 </example>
 
-# 创建拉取请求
+${EMPTY_STRING?`${EMPTY_STRING}
+
+`:""}# 创建拉取请求
 对于所有与 GitHub 相关的任务（包括处理问题、拉取请求、检查和发布），请通过 Bash 工具使用 gh 命令。如果给出 GitHub URL，请使用 gh 命令获取所需信息。
 
-${PR_GENERATED_WITH_CLAUDE_CODE}重要：当用户要求你创建拉取请求时，请仔细遵循以下步骤：
+${PR_INSTRUCTIONS_PREFIX}重要：当用户要求你创建拉取请求时，请仔细遵循以下步骤：
 
 1. 使用 ${BASH_TOOL_NAME} 工具并行运行以下 bash 命令，以了解分支从主分支偏离以来的当前状态：
    - 运行 git status 命令以查看所有未跟踪的文件（永远不要使用 -uall 标志）
@@ -94,4 +98,6 @@ EOF
 - 完成后返回 PR URL，以便用户可以看到它
 
 # 其他常见操作
-- 查看 Github PR 上的评论：gh api repos/foo/bar/pulls/123/comments
+- 查看 Github PR 上的评论：gh api repos/foo/bar/pulls/123/comments${PR_COMMON_OPERATIONS_NOTE?`
+
+${PR_COMMON_OPERATIONS_NOTE}`:""}

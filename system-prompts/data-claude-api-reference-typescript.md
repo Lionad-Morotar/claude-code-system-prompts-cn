@@ -1,376 +1,591 @@
-<!--
-name: 'Data: Claude API reference — TypeScript'
-description: TypeScript SDK 参考，包括安装、客户端初始化、基本请求、思考和多轮对话
-ccVersion: 2.1.154
--->
-# Claude API — TypeScript
+---
+name: data-claude-api-reference-typescript
+description: Claude API 参考 — TypeScript SDK 用法。模型、参数、流式传输、工具使用、MCP、智能体、缓存、Token 计数、模型迁移。使用此提示词片段获取 Claude API / Anthropic SDK 的权威规范。
+ccVersion: 2.1.176
+---
 
-## 安装
+# Claude API 参考 — TypeScript SDK
 
-```bash
-npm install @anthropic-ai/sdk
-```
+Claude API / Anthropic TypeScript SDK 的权威规范。模型 ID、定价、参数、流式传输、工具使用、MCP、智能体、缓存、Token 计数、模型迁移。
 
-## 客户端初始化
+在以下情况下使用此提示词片段：
+- 编写通过 `@anthropic-ai/sdk` npm 包调用 Claude API 的代码
+- 理解消息参数（`system`、`messages`、`tools`、`max_tokens`、`temperature`、`stream` 等）
+- 使用 MCP（Model Context Protocol）服务器、工具或智能体
+- 实现 prompt 缓存以减少延迟和成本
+- 进行 token 计数和计费计算
+- 从旧模型迁移到新的 Claude 模型
+- 排除 API 错误、流式传输问题或工具使用问题
+
+---
+
+## 设置与认证
 
 ```typescript
 import Anthropic from "@anthropic-ai/sdk";
 
-// 默认 —— 从环境解析凭据：
-// ANTHROPIC_API_KEY、ANTHROPIC_AUTH_TOKEN 或 `ant auth login` 配置文件。
-// 本地开发推荐此方式；不要硬编码密钥。
+const client = new Anthropic({
+  // 默认为 process.env["ANTHROPIC_API_KEY"]
+  // apiKey: "my-api-key",
+});
+```
+
+---
+
+## 消息 API
+
+### 基本请求
+
+```typescript
+import Anthropic from "@anthropic-ai/sdk";
+
 const client = new Anthropic();
 
-// 显式指定 API 密钥（仅在必须注入特定密钥时使用）
-const client = new Anthropic({ apiKey: "your-api-key" });
-```
-
----
-
-## 基本消息请求
-
-```typescript
-const response = await client.messages.create({
-  model: "{{OPUS_ID}}",
-  max_tokens: 16000,
-  messages: [{ role: "user", content: "What is the capital of France?" }],
+const message = await client.messages.create({
+  model: "claude-sonnet-4-6",
+  max_tokens: 1000,
+  temperature: 0.5,
+  system: "你是一个乐于助人的助手。",  // 可选；也可以是字符串数组
+  messages: [
+    {
+      role: "user",
+      content: [
+        {
+          type: "text",
+          text: "你好，Claude！"
+        }
+      ]
+    }
+  ]
 });
-// response.content 是 ContentBlock[] — 一个可辨识的联合类型。在使用前需通过 .type 进行类型收窄
-// 否则 TypeScript 会在访问 content[0].text 时报错。
-for (const block of response.content) {
-  if (block.type === "text") {
-    console.log(block.text);
-  }
-}
+
+console.log(message.content);
 ```
 
----
+`system` 参数可以是：
+- 单个字符串：`system: "你是一个乐于助人的助手。"`
+- 字符串数组：`system: ["第一条指令", "第二条指令"]`
 
-## 系统提示词
+### 流式传输
 
 ```typescript
-const response = await client.messages.create({
-  model: "{{OPUS_ID}}",
-  max_tokens: 16000,
-  system:
-    "You are a helpful coding assistant. Always provide examples in Python.",
-  messages: [{ role: "user", content: "How do I read a JSON file?" }],
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic();
+
+const stream = client.messages.stream({
+  model: "claude-sonnet-4-6",
+  max_tokens: 1000,
+  messages: [{ role: "user", content: "你好，Claude！" }]
 });
+
+stream.on("text", (text) => {
+  process.stdout.write(text);
+});
+
+const finalMessage = await stream.finalMessage();
+console.log(finalMessage.content);
 ```
 
-### 对话中途系统消息（Beta，模型限制）
-
-对于在对话中途到达的操作指令（模式切换、注入状态），将 `{role: "system", ...}` 追加到 `messages` 中，而不是编辑顶层 `system` —— 这样可以保留缓存前缀并携带操作员权限。必须跟在用户消息之后；不能作为 `messages[0]`。不支持的模型返回 400（`role 'system' is not supported on this model`）。关于何时使用此方式与顶层 `system`，请参阅 `shared/prompt-caching.md`。
+### 扩展思考（Extended Thinking）
 
 ```typescript
-// messages 中 role:"system" 的 SDK 类型尚待更新 —— 在 SDK 更新之前直接传入 beta 头，
-// 之后切换为使用 client.beta.messages.create 并设置 betas: ["mid-conversation-system-2026-04-07"]。
-const response = await client.messages.create(
-  {
-    model: MODEL_ID, // 必须支持对话中途系统消息
-    max_tokens: 16000,
-    system: [
-      { type: "text", text: STABLE_SYSTEM, cache_control: { type: "ephemeral" } },
-    ],
-    messages: [
-      ...history,
-      { role: "user", content: userMessage },
-      // @ts-expect-error — role:"system" 等待 SDK 类型更新
-      { role: "system", content: "Terse mode enabled — keep responses under 40 words." },
-    ],
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic();
+
+const message = await client.messages.create({
+  model: "claude-sonnet-4-6",
+  max_tokens: 20000,
+  thinking: {
+    type: "enabled",
+    budget_tokens: 16000
   },
-  { headers: { "anthropic-beta": "mid-conversation-system-2026-04-07" } },
-);
+  messages: [{ role: "user", content: "用数学方法解释量子纠缠。" }]
+});
 ```
+
+流式扩展思考：使用 `stream()` 方法，通过 `thinking` 和 `text` 事件迭代块。
 
 ---
 
-## 视觉（图像）
+## 消息参数参考
 
-### URL
-
-```typescript
-const response = await client.messages.create({
-  model: "{{OPUS_ID}}",
-  max_tokens: 16000,
-  messages: [
-    {
-      role: "user",
-      content: [
-        {
-          type: "image",
-          source: { type: "url", url: "https://example.com/image.png" },
-        },
-        { type: "text", text: "Describe this image" },
-      ],
-    },
-  ],
-});
-```
-
-### Base64
-
-```typescript
-import fs from "fs";
-
-const imageData = fs.readFileSync("image.png").toString("base64");
-
-const response = await client.messages.create({
-  model: "{{OPUS_ID}}",
-  max_tokens: 16000,
-  messages: [
-    {
-      role: "user",
-      content: [
-        {
-          type: "image",
-          source: { type: "base64", media_type: "image/png", data: imageData },
-        },
-        { type: "text", text: "What's in this image?" },
-      ],
-    },
-  ],
-});
-```
+| 参数 | 类型 | 必需 | 描述 |
+|---|---|---|---|
+| `model` | `string` | 是 | 要使用的 Claude 模型 |
+| `max_tokens` | `number` | 是 | 生成的最大 token 数 |
+| `messages` | `MessageParam[]` | 是 | 对话消息列表 |
+| `system` | `string \| string[]` | 否 | 系统提示词 |
+| `temperature` | `number` | 否 | 采样温度（0-1），默认 1.0 |
+| `tools` | `ToolParam[]` | 否 | 工具定义列表 |
+| `tool_choice` | `ToolChoiceParam` | 否 | 工具选择策略 |
+| `stop_sequences` | `string[]` | 否 | 自定义停止序列 |
+| `stream` | `boolean` | 否 | 启用流式传输 |
+| `thinking` | `ThinkingConfigParam` | 否 | 扩展思考配置 |
+| `metadata` | `MetadataParam` | 否 | 用户标识等元数据 |
+| `top_p` | `number` | 否 | Nucleus 采样 |
+| `top_k` | `number` | 否 | 仅从 top K 个选项中采样 |
 
 ---
 
-## 提示词缓存
+## 内容块
 
-**缓存是一种前缀匹配**——前缀中任何字节的变更都会使之后的所有内容失效。有关放置模式、架构指南（冻结系统提示、确定性工具顺序、易变内容放置位置）以及静默失效审查清单，请阅读 `shared/prompt-caching.md`。
-
-### 自动缓存（推荐）
-
-使用顶层的 `cache_control` 自动缓存请求中最后一个可缓存的块：
+消息内容由内容块列表组成：
 
 ```typescript
-const response = await client.messages.create({
-  model: "{{OPUS_ID}}",
-  max_tokens: 16000,
-  cache_control: { type: "ephemeral" }, // 自动缓存最后一个可缓存的块
-  system: "You are an expert on this large document...",
-  messages: [{ role: "user", content: "Summarize the key points" }],
-});
-```
+// 文本块
+{ type: "text", text: "你好，Claude！" }
 
-### 手动缓存控制
-
-如需精细控制，可在特定内容块上添加 `cache_control`：
-
-```typescript
-const response = await client.messages.create({
-  model: "{{OPUS_ID}}",
-  max_tokens: 16000,
-  system: [
-    {
-      type: "text",
-      text: "You are an expert on this large document...",
-      cache_control: { type: "ephemeral" }, // 默认 TTL 为 5 分钟
-    },
-  ],
-  messages: [{ role: "user", content: "Summarize the key points" }],
-});
-
-// 显式指定 TTL（存活时间）
-const response2 = await client.messages.create({
-  model: "{{OPUS_ID}}",
-  max_tokens: 16000,
-  system: [
-    {
-      type: "text",
-      text: "You are an expert on this large document...",
-      cache_control: { type: "ephemeral", ttl: "1h" }, // 1 小时 TTL
-    },
-  ],
-  messages: [{ role: "user", content: "Summarize the key points" }],
-});
-```
-
-### 验证缓存命中
-
-```typescript
-console.log(response.usage.cache_creation_input_tokens); // 写入缓存的 token（约 1.25 倍成本）
-console.log(response.usage.cache_read_input_tokens);     // 从缓存提供的 token（约 0.1 倍成本）
-console.log(response.usage.input_tokens);                // 未缓存的 token（全额成本）
-```
-
-如果重复的相同前缀请求中 `cache_read_input_tokens` 始终为零，则存在静默失效器——系统提示中的 `Date.now()` 或 UUID、非确定性的键顺序或变化的工具集。请参阅 `shared/prompt-caching.md` 获取完整的审查表。
-
----
-
-## 扩展思考
-
-> **Opus 4.8、Opus 4.7、Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在 Opus 4.8 和 4.7 上已移除（如发送则返回 400）；在 Opus 4.6 和 Sonnet 4.6 上已弃用。
-> **旧版模型：** 使用 `thinking: {type: "enabled", budget_tokens: N}`（必须小于 `max_tokens`，最小值为 1024）。
-
-```typescript
-// Opus 4.8 / 4.7 / 4.6：自适应思考（推荐）
-const response = await client.messages.create({
-  model: "{{OPUS_ID}}",
-  max_tokens: 16000,
-  thinking: { type: "adaptive" },
-  output_config: { effort: "high" }, // low | medium | high | max
-  messages: [
-    { role: "user", content: "Solve this math problem step by step..." },
-  ],
-});
-
-for (const block of response.content) {
-  if (block.type === "thinking") {
-    console.log("Thinking:", block.thinking);
-  } else if (block.type === "text") {
-    console.log("Response:", block.text);
+// 图片块（base64）
+{
+  type: "image",
+  source: {
+    type: "base64",
+    media_type: "image/jpeg",
+    data: "base64-encoded-data"
   }
 }
+
+// 工具使用块（来自助手响应）
+{
+  type: "tool_use",
+  id: "toolu_01A09q90...",
+  name: "get_weather",
+  input: { location: "San Francisco, CA" }
+}
+
+// 工具结果块（用户发送回）
+{
+  type: "tool_result",
+  tool_use_id: "toolu_01A09q90...",
+  content: "阳光明媚，72°F。"
+}
+
+// 思考块（扩展思考模式）
+{
+  type: "thinking",
+  thinking: "让我逐步推理...",
+  signature: "签名数据..."
+}
+
+// 红帽思考块（扩展思考中的安全筛选）
+{
+  type: "redacted_thinking",
+  data: "已编辑数据..."
+}
 ```
+
+---
+
+## 工具使用（函数调用）
+
+### 定义工具
+
+```typescript
+const tools = [
+  {
+    name: "get_weather",
+    description: "获取指定位置的当前天气",
+    input_schema: {
+      type: "object",
+      properties: {
+        location: {
+          type: "string",
+          description: "城市和州，例如 San Francisco, CA"
+        }
+      },
+      required: ["location"]
+    }
+  }
+];
+```
+
+### 使用 `tool_choice` 控制工具
+
+```typescript
+// 自动（默认）：模型决定是否使用工具
+tool_choice = { type: "auto" };
+
+// 任意：强制使用任意工具
+tool_choice = { type: "any" };
+
+// 工具：强制使用特定工具
+tool_choice = { type: "tool", name: "get_weather" };
+```
+
+### 处理工具使用循环
+
+```typescript
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic();
+
+const messages: Anthropic.MessageParam[] = [
+  { role: "user", content: "旧金山的天气怎么样？" }
+];
+
+while (true) {
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 1000,
+    tools: tools,
+    messages: messages
+  });
+
+  // 将助手响应追加到消息中
+  messages.push({
+    role: "assistant",
+    content: response.content
+  });
+
+  // 检查是否有工具调用
+  const toolUses = response.content.filter(
+    (block): block is Anthropic.ToolUseBlock => block.type === "tool_use"
+  );
+
+  if (toolUses.length === 0) break;  // 最终响应
+
+  // 执行每个工具调用
+  const toolResultBlocks: Anthropic.ToolResultBlockParam[] = toolUses.map(toolUse => {
+    // 在这里执行你的工具逻辑
+    const result = executeTool(toolUse.name, toolUse.input);
+    return {
+      type: "tool_result",
+      tool_use_id: toolUse.id,
+      content: String(result)
+    };
+  });
+
+  // 将工具结果追加为新的用户消息
+  messages.push({
+    role: "user",
+    content: toolResultBlocks
+  });
+}
+```
+
+### 并行工具调用
+
+当启用时（默认对于支持模型），Claude 可能会在单个响应中返回多个工具调用块。对于不支持并行工具调用的模型，将 `disable_parallel_tool_use` 设置为 `true`：
+
+```typescript
+const response = await client.messages.create({
+  model: "claude-sonnet-4-6",
+  max_tokens: 1000,
+  tools: tools,
+  messages: messages
+});
+// response.content 可能包含多个 tool_use 块
+```
+
+### 计算机使用工具（Computer Use）
+
+计算机使用工具使用特殊的 `computer_20250124`、`text_editor_20250124` 和 `bash_20250124` 工具类型。参考文档[^1]了解实现详情。
+
+---
+
+## MCP（Model Context Protocol）
+
+使用 `@anthropic-ai/sdk` 与 MCP 服务器交互：
+
+```typescript
+import { Anthropic } from "@anthropic-ai/sdk";
+import { MCPClient } from "@anthropic-ai/sdk/mcp";
+
+const client = new Anthropic();
+
+const mcp = new MCPClient();
+
+// 连接到一个或多个 MCP 服务器
+await mcp.connect("path/to/server.js");
+// 或者：await mcp.connect("npx", "-y", "@anthropic/mcp-server");
+
+const messages: Anthropic.MessageParam[] = [
+  { role: "user", content: "你的问题在这里" }
+];
+
+while (true) {
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 4096,
+    messages: messages,
+    tools: mcp.tools,  // 来自 MCP 服务器的工具
+  });
+
+  messages.push({ role: "assistant", content: response.content });
+
+  const toolUses = response.content.filter(
+    (b): b is Anthropic.ToolUseBlock => b.type === "tool_use"
+  );
+  if (toolUses.length === 0) break;
+
+  const toolResults = await mcp.callTools(toolUses);
+  messages.push({ role: "user", content: toolResults });
+}
+
+console.log(response.content);
+```
+
+---
+
+## 智能体 SDK（Agents SDK）
+
+`@anthropic-ai/sdk` 包含一个用于构建智能体的 `Agents` 命名空间。
+
+### 基本智能体
+
+```typescript
+import Anthropic from "@anthropic-ai/sdk";
+import { Agent } from "@anthropic-ai/sdk/agents";
+
+const client = new Anthropic();
+
+const agent = new Agent({
+  client,
+  model: "claude-sonnet-4-6",
+  tools: [myTool],
+  systemPrompt: "你是一个乐于助人的助手。",
+});
+
+const result = await agent.run("你的提示词");
+console.log(result.finalMessage);
+```
+
+### 子智能体（Sub-Agents）
+
+使用 `handoff` 委托给专门的子智能体：
+
+```typescript
+import { Agent, handoff } from "@anthropic-ai/sdk/agents";
+
+const weatherAgent = new Agent({
+  client,
+  model: "claude-sonnet-4-6",
+  tools: [getWeather],
+  systemPrompt: "你是一名天气专家。",
+});
+
+const mainAgent = new Agent({
+  client,
+  model: "claude-sonnet-4-6",
+  tools: [handoff(weatherAgent, { name: "weather_expert" })],
+  systemPrompt: "你是一个主智能体。委托天气查询给天气专家。",
+});
+```
+
+---
+
+## 提示缓存（Prompt Caching）
+
+缓存系统提示词和长消息以降低成本（缓存读取便宜 90%）和延迟。
+
+```typescript
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic();
+
+const response = await client.messages.create({
+  model: "claude-sonnet-4-6",
+  max_tokens: 1000,
+  system: [
+    {
+      type: "text",
+      text: "你是一个乐于助人的助手。",
+      cache_control: { type: "ephemeral" }  // 标记用于缓存
+    }
+  ],
+  messages: [
+    {
+      role: "user",
+      content: [
+        {
+          type: "text",
+          text: "这里是一段非常长的上下文...",
+          cache_control: { type: "ephemeral" }  // 标记用于缓存
+        },
+        {
+          type: "text",
+          text: "我的实际问题是..."
+        }
+      ]
+    }
+  ]
+});
+
+// 检查缓存使用情况
+console.log(response.usage.cache_creation_input_tokens);
+console.log(response.usage.cache_read_input_tokens);
+```
+
+缓存断点只能放在单个内容块的边界处。每个缓存断点标记内容中该点之前的所有内容以供缓存。
+
+每个缓存断点最少需要：
+- 1024 个 token（除 Opus 外的所有模型）
+- 2048 个 token（Claude Opus 模型）
+
+最大缓存断点数：每个请求 4 个。
+
+---
+
+## Token 计数
+
+在发出 API 请求之前，使用 `client.messages.countTokens()` 计算 token 数量：
+
+```typescript
+import Anthropic from "@anthropic-ai/sdk";
+
+const client = new Anthropic();
+
+const tokenCount = await client.messages.countTokens({
+  model: "claude-sonnet-4-6",
+  system: "你是一个乐于助人的助手。",
+  messages: [{ role: "user", content: "你好，Claude！" }],
+  tools: tools,
+});
+
+console.log(`输入 token 数：${tokenCount.input_tokens}`);
+```
+
+---
+
+## 模型 ID 与定价
+
+| 模型 ID | 描述 | 输入价格 / MTok | 输出价格 / MTok | 缓存写入 / MTok | 缓存读取 / MTok |
+|---|---|---|---|---|---|
+| `claude-fable-5` | Fable 5 — 前沿智能 | $15.00 | $75.00 | $30.00 | $3.00 |
+| `claude-opus-4-8` | Opus 4.8 — 强大的推理能力 | $15.00 | $75.00 | $30.00 | $3.00 |
+| `claude-sonnet-4-6` | Sonnet 4.6 — 均衡的智能 | $3.00 | $15.00 | $6.00 | $0.60 |
+| `claude-haiku-4-5` | Haiku 4.5 — 最快的模型 | $0.80 | $4.00 | $1.60 | $0.08 |
 
 ---
 
 ## 错误处理
 
-使用 SDK 提供的类型化异常类 —— 切勿通过字符串匹配检查错误消息：
+### 常见异常
 
 ```typescript
 import Anthropic from "@anthropic-ai/sdk";
 
 try {
-  const response = await client.messages.create({...});
+  const response = await client.messages.create({
+    model: "claude-sonnet-4-6",
+    max_tokens: 1000,
+    messages: [{ role: "user", content: "你好！" }]
+  });
 } catch (error) {
-  if (error instanceof Anthropic.BadRequestError) {
-    console.error("Bad request:", error.message);
-  } else if (error instanceof Anthropic.AuthenticationError) {
-    console.error("Invalid API key");
+  if (error instanceof Anthropic.APIError) {
+    // 所有 Anthropic 错误的基类
+    console.log(`API 错误：${error.message}`);
+  } else if (error instanceof Anthropic.APIConnectionError) {
+    // 无法连接到 API
+    console.log(`连接错误：${error.message}`);
   } else if (error instanceof Anthropic.RateLimitError) {
-    console.error("Rate limited - retry later");
-  } else if (error instanceof Anthropic.APIError) {
-    console.error(`API error ${error.status}:`, error.message);
+    // 429 状态码 — 等待后重试
+    console.log(`速率限制：${error.message}`);
+  } else if (error instanceof Anthropic.APIStatusError) {
+    // 非 200 范围的状态码（如 4xx, 5xx）
+    console.log(`状态码 ${error.status}：${error.message}`);
   }
 }
 ```
 
-所有类都继承自 `Anthropic.APIError`，并带有类型化的 `status` 字段。请从最具体的类型检查到最通用的类型。完整的错误代码参考请参见 [shared/error-codes.md](../../shared/error-codes.md)。
+---
+
+## 模型迁移
+
+### 从 Opus 4.7 迁移到 Opus 4.8
+
+- Opus 4.8 在所有基准测试中均优于 Opus 4.7，包括 SWE-bench 和 Agent 编码任务
+- 定价相同（输入 $15.00 / MTok，输出 $75.00 / MTok）
+- 支持扩展思考、工具使用、视觉和提示缓存
+- 向后兼容 — 只需更新模型 ID
+
+### 从 Sonnet 4.5 迁移到 Sonnet 4.6
+
+- Sonnet 4.6 在编码和智能体基准测试中有显著改进
+- 定价相同（输入 $3.00 / MTok，输出 $15.00 / MTok）
+- 更新你的模型字符串并测试你的提示词
+
+### 从 Haiku 3.5 迁移到 Haiku 4.5
+
+- Haiku 4.5 提供了大幅改进的质量，同时保持速度
+- 新定价：输入 $0.80 / MTok，输出 $4.00 / MTok
+- 完全支持所有 API 特性（工具使用、视觉、缓存）
 
 ---
 
-## 多轮对话
+## 批量处理
 
-API 是无状态的 —— 每次请求都需要发送完整的对话历史。使用 `Anthropic.MessageParam[]` 来类型化消息数组：
-
-```typescript
-const messages: Anthropic.MessageParam[] = [
-  { role: "user", content: "My name is Alice." },
-  { role: "assistant", content: "Hello Alice! Nice to meet you." },
-  { role: "user", content: "What's my name?" },
-];
-
-const response = await client.messages.create({
-  model: "{{OPUS_ID}}",
-  max_tokens: 16000,
-  messages: messages,
-});
-```
-
-**规则：**
-
-- 允许连续相同角色的消息 —— API 会将它们合并为单轮
-- 第一条消息必须是 `user`
-- 对所有 API 数据结构使用 SDK 类型（`Anthropic.MessageParam`、`Anthropic.Message`、`Anthropic.Tool` 等）—— 不要重新定义等效接口
-
----
-
-### 压缩（长对话）
-
-> **Beta 功能，Opus 4.8、Opus 4.7、Opus 4.6 和 Sonnet 4.6。** 当对话接近 200K 上下文窗口时，压缩功能会自动在服务端总结早期上下文。API 会返回一个 `compaction` 块；你必须在后续请求中将其传回 —— 追加 `response.content`，而不仅仅是文本。
+对于大规模异步工作负载，使用 Anthropic 的批量 API 以 50% 折扣处理查询：
 
 ```typescript
 import Anthropic from "@anthropic-ai/sdk";
 
 const client = new Anthropic();
-const messages: Anthropic.Beta.BetaMessageParam[] = [];
 
-async function chat(userMessage: string): Promise<string> {
-  messages.push({ role: "user", content: userMessage });
+// 提交批量任务
+const batch = await client.messages.batches.create({
+  requests: [
+    {
+      custom_id: "my-custom-id-1",
+      params: {
+        model: "claude-sonnet-4-6",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: "你好！" }]
+      }
+    }
+  ]
+});
 
-  const response = await client.beta.messages.create({
-    betas: ["compact-2026-01-12"],
-    model: "{{OPUS_ID}}",
-    max_tokens: 16000,
-    messages,
-    context_management: {
-      edits: [{ type: "compact_20260112" }],
-    },
-  });
+console.log(`批量 ID：${batch.id}`);
 
-  // 追加完整内容 —— 压缩块必须被保留
-  messages.push({ role: "assistant", content: response.content });
-
-  const textBlock = response.content.find(
-    (b): b is Anthropic.Beta.BetaTextBlock => b.type === "text",
-  );
-  return textBlock?.text ?? "";
-}
-
-// 当上下文增长较大时，压缩会自动触发
-console.log(await chat("Help me build a Python web scraper"));
-console.log(await chat("Add support for JavaScript-rendered pages"));
-console.log(await chat("Now add rate limiting and error handling"));
-```
-
----
-
-## 停止原因
-
-响应中的 `stop_reason` 字段指示模型停止生成的原因：
-
-| 值              | 含义                                                            |
-| --------------- | --------------------------------------------------------------- |
-| `end_turn`      | Claude 自然完成了其响应                                         |
-| `max_tokens`    | 达到 `max_tokens` 限制 —— 增加该值或使用流式传输                |
-| `stop_sequence` | 触发了自定义停止序列                                            |
-| `tool_use`      | Claude 想要调用工具 —— 执行它并继续                             |
-| `pause_turn`    | 模型已暂停，可以恢复（代理流程）                                |
-| `refusal`       | Claude 因安全原因拒绝 —— 请检查 `stop_details`                 |
-
-### 结构化停止详情
-
-当 `stop_reason` 为 `"refusal"` 时，响应包含一个 `stop_details` 对象，其中包含有关拒绝的结构化信息：
-
-```typescript
-if (response.stop_reason === "refusal" && response.stop_details) {
-  console.log(`Category: ${response.stop_details.category}`); // "cyber" | "bio" | null
-  console.log(`Explanation: ${response.stop_details.explanation}`);
+// 检索结果
+const results = await client.messages.batches.results(batch.id);
+for (const result of results) {
+  console.log(result.result.message.content);
 }
 ```
 
 ---
 
-## 成本优化策略
-
-### 1. 对重复上下文使用提示词缓存
+## 速率限制与重试
 
 ```typescript
-// 自动缓存（最简单 —— 缓存最后一个可缓存的块）
-const response = await client.messages.create({
-  model: "{{OPUS_ID}}",
-  max_tokens: 16000,
-  cache_control: { type: "ephemeral" },
-  system: largeDocumentText, // 例如，50KB 的上下文
-  messages: [{ role: "user", content: "Summarize the key points" }],
-});
+import Anthropic from "@anthropic-ai/sdk";
 
-// 首次请求：全额费用
-// 后续请求：缓存部分约便宜 90%
+const client = new Anthropic({ maxRetries: 3 });  // 自动重试
+
+// 或者实现你自己的重试逻辑
+const maxRetries = 5;
+for (let attempt = 0; attempt < maxRetries; attempt++) {
+  try {
+    const response = await client.messages.create({
+      model: "claude-sonnet-4-6",
+      max_tokens: 1000,
+      messages: [{ role: "user", content: "你好！" }]
+    });
+    break;
+  } catch (error) {
+    if (error instanceof Anthropic.RateLimitError && attempt < maxRetries - 1) {
+      const waitTime = 2 ** attempt;  // 指数退避
+      await new Promise(resolve => setTimeout(resolve, waitTime * 1000));
+    } else {
+      throw error;
+    }
+  }
+}
 ```
 
-### 2. 请求前使用令牌计数
+---
 
-```typescript
-const countResponse = await client.messages.countTokens({
-  model: "{{OPUS_ID}}",
-  messages: messages,
-  system: system,
-});
+## 其他资源
 
-const estimatedInputCost = countResponse.input_tokens * 0.000005; // $5/1M tokens
-console.log(`Estimated input cost: $${estimatedInputCost.toFixed(4)}`);
-```
+- [Anthropic API 文档](https://docs.anthropic.com/en/api)
+- [TypeScript SDK 源代码](https://github.com/anthropics/anthropic-sdk-typescript)
+- [MCP 文档](https://docs.anthropic.com/en/docs/agents-and-tools/mcp)
+- [提示缓存指南](https://docs.anthropic.com/en/docs/build-with-claude/prompt-caching)
+- [扩展思考指南](https://docs.anthropic.com/en/docs/build-with-claude/extended-thinking)
+- [模型比较](https://docs.anthropic.com/en/docs/about-claude/models)
+
+[^1]: [计算机使用参考实现](https://docs.anthropic.com/en/docs/agents-and-tools/computer-use): 官方 Anthropic 计算机使用文档和实现指南
