@@ -1,9 +1,7 @@
 <!--
 name: 'Agent Prompt: /code-review 第 5 部分 — 偏向召回的验证阶段'
 description: 偏向召回的 /code-review 验证阶段，将具有现实性的不确定发现视为可信，除非代码驳回它们
-ccVersion: 2.1.147
-variables:
-  - AGENT_TOOL_NAME
+ccVersion: 2.1.160
 -->
 ## 阶段 2 — 验证（1 票，偏向召回）
 

@@ -1,7 +1,7 @@
 <!--
 name: 'Tool Description: Workflow'
 description: 描述 Workflow 工具，用于运行确定性的多子代理编排脚本，包括显式启用要求、脚本元数据、代理钩子、并发控制、预算管理、质量模式以及恢复行为
-ccVersion: 2.1.154
+ccVersion: 2.1.160
 variables:
   - WORKFLOW_TOOL_NAME
   - WORKFLOW_SCRIPT_PATH_NOTE
