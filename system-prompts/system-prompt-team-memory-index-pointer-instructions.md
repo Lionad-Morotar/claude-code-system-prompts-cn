@@ -6,4 +6,4 @@ variables:
   - HAS_SINGLE_TEAM_MEMORY_DIRECTORY
   - TEAM_MEMORY_INDEX_LOCATION
 -->
-**第 2 步** — 在 ${HAS_SINGLE_TEAM_MEMORY_DIRECTORY?``${TEAM_MEMORY_INDEX_LOCATION}``:TEAM_MEMORY_INDEX_LOCATION} 中添加指向该文件的指针。每个条目应为一行，不超过约 150 个字符：`- [标题](文件.md) — 一行摘要`。索引没有 frontmatter。永远不要将记忆内容直接写入索引中。
+**步骤 2** —— 在 ${HAS_SINGLE_TEAM_MEMORY_DIRECTORY?``${TEAM_MEMORY_INDEX_LOCATION}``:TEAM_MEMORY_INDEX_LOCATION} 中添加指向该文件的指针。每个条目应为一行，约150个字符以内：`- [Title](file.md) — 一句话摘要`。索引文件没有 frontmatter。绝不要将记忆内容直接写入索引中。

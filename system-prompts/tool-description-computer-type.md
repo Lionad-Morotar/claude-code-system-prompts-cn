@@ -1,6 +1,6 @@
 <!--
 name: 'Tool Description: Computer type'
-description: Describes the type tool for typing text via keyboard input
+description: Describes the computer-use type tool for entering text into the focused allowlisted application
 ccVersion: 2.1.173
 -->
-通过键盘输入文本。模拟用户在键盘上逐字输入文本内容。适用于填写表单、输入命令或在文本编辑器中输入内容。与简单的文本粘贴不同，此工具会模拟实际的按键事件，因此能触发应用的输入处理逻辑。
+将文本键入到当前拥有键盘焦点的任何目标中。调用此工具时，最前台的应用程序必须在会话允许列表（allowlist）中，否则此工具会返回错误且不执行任何操作。支持换行符。对于键盘快捷键，请改用 `key`。

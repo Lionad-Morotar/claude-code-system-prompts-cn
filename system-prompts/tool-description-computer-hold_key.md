@@ -1,6 +1,6 @@
 <!--
 name: 'Tool Description: Computer hold_key'
-description: Describes the hold_key tool for pressing and holding a keyboard key
+description: Describes the computer-use hold_key tool for pressing and holding keys or key combinations with allowlist and system-combo checks
 ccVersion: 2.1.173
 -->
-按住一个键盘按键不放。模拟用户持续按住某个键的行为，通常与后续的按键操作或鼠标操作配合使用。适用于需要组合键或持续按键的场景，如 Shift+点击进行多选、或按住修饰键（modifier key）执行特定操作。
+按住一个键或组合键指定的时长，然后释放。调用此工具时，最前台的应用程序必须在会话允许列表（allowlist）中，否则此工具会返回错误且不执行任何操作。系统级组合键需要 `systemKeyCombos` 授权。

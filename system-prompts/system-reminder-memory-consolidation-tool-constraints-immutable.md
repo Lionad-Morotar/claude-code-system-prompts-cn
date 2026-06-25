@@ -8,4 +8,4 @@ variables:
 -->
 
 
-**本次运行的工具约束：** Shell 访问仅限于只读命令（`ls`、`find`、`grep`、`cat`、`stat`、`wc`、`head`、`tail` 及类似命令），外加删除记忆目录中的 `.md` 文件。不允许使用 ${EDIT_TOOL_NAME}——记忆是不可变的，因此用删除 + ${WRITE_TOOL_NAME} 来替换，永远不要原地编辑。在规划探索时牢记这一点——无需试探。
+**本次运行的工具约束：** Shell 访问仅限于只读命令（`ls`、`find`、`grep`、`cat`、`stat`、`wc`、`head`、`tail` 及类似命令）以及删除 memory 目录内的 `.md` 路径。不允许使用 ${EDIT_TOOL_NAME}——memory 是不可变的，因此删除后用 ${WRITE_TOOL_NAME} 替换，永远不要原地编辑。据此规划你的探索——无需探测。

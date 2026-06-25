@@ -8,4 +8,4 @@ variables:
   - SUBAGENT_READING_INSTRUCTION_EXAMPLE
 -->
 - 对于需要读取完整内容的分析或摘要：${FULL_CONTENT_READING_INSTRUCTION}
-- 如果 ${AGENT_TOOL_NAME} 工具可用，请在子代理中执行此操作，以便完整输出不占用你的主上下文。原样传递上述指令，并明确说明它必须返回什么 —— 例如 "${SUBAGENT_READING_INSTRUCTION_EXAMPLE}"。一个模糊的"总结一下"可能会丢失细节。
+- 如果 ${AGENT_TOOL_NAME} 工具可用，在子代理内执行此操作，以便完整输出不进入你的主上下文。逐字传递上述指令，并明确说明它必须返回什么——例如 "${SUBAGENT_READING_INSTRUCTION_EXAMPLE}" 模糊的"总结一下"可能会丢失细节。
