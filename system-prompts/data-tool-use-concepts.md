@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Tool use concepts'
 description: Claude API 工具使用的概念基础，包括工具定义、工具选择和最佳实践
-ccVersion: 2.1.154
+ccVersion: 2.1.157
 -->
 # 工具使用概念
 

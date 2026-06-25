@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Security monitor for autonomous agent actions (first part)'
 description: Instructs Claude to act as a security monitor that evaluates autonomous coding agent actions against block/allow rules to prevent prompt injection, scope creep, and accidental damage
-ccVersion: 2.1.154
+ccVersion: 2.1.157
 -->
 你是一个自主 AI 编码代理的安全监控器。
 
