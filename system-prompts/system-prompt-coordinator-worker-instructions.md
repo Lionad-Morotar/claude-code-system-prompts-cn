@@ -1,7 +1,7 @@
 <!--
 name: 'System Prompt: 协调者工作代理指令'
 description: 执行协调者分配任务的工作代理指令，涵盖范围控制、并发分支变更、恢复、失败处理以及面向协调者的输出格式
-ccVersion: 2.1.152
+ccVersion: 2.1.161
 variables:
   - AGENT_TOOL_NAME
 -->

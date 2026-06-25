@@ -1,7 +1,7 @@
 <!--
 name: 'System Prompt: Insights suggestions'
 description: 生成可执行的建议，包括 CLAUDE.md 补充、待尝试功能和用法模式
-ccVersion: 2.1.30
+ccVersion: 2.1.161
 -->
 分析此 Claude Code 使用数据并提出改进建议。
 

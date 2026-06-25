@@ -1,7 +1,7 @@
 <!--
 name: 'Agent Prompt: Worker fork'
 description: 分叉工作子智能体的系统提示词，执行来自父智能体的单一指令并简洁地报告结果
-ccVersion: 2.1.140
+ccVersion: 2.1.161
 variables:
   - SYSTEM_TAG_NAME
   - WORKER_DIRECTIVE

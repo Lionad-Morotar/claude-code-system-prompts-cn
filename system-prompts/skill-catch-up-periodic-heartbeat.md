@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: /catch-up periodic heartbeat'
 description: /catch-up 定期心跳的技能定义，扫描当前优先级、筛选可操作的变更、报告简短摘要，并更新 catch-up 状态
-ccVersion: 2.1.119
+ccVersion: 2.1.161
 -->
 ---
 name: catch-up
