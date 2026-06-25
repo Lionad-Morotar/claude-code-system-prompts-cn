@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Streaming reference — TypeScript'
-description: TypeScript streaming reference including basic streaming and handling different content types
-ccVersion: 2.1.111
+description: TypeScript 流式传输参考，包含基础流式传输和处理不同内容类型
+ccVersion: 2.1.154
 -->
 # 流式传输 — TypeScript
 
@@ -10,7 +10,7 @@ ccVersion: 2.1.111
 ```typescript
 const stream = client.messages.stream({
   model: "{{OPUS_ID}}",
-  max_tokens: 1024,
+  max_tokens: 64000,
   messages: [{ role: "user", content: "Write a story" }],
 });
 
@@ -28,12 +28,12 @@ for await (const event of stream) {
 
 ## 处理不同的内容类型
 
-> **Opus 4.7 / Opus 4.6:** 使用 `thinking: {type: "adaptive"}`。对于旧版模型，请改用 `thinking: {type: "enabled", budget_tokens: N}`。
+> **Opus 4.8 / Opus 4.7 / Opus 4.6:** 使用 `thinking: {type: "adaptive"}`。对于旧版模型，请改用 `thinking: {type: "enabled", budget_tokens: N}`。
 
 ```typescript
 const stream = client.messages.stream({
   model: "{{OPUS_ID}}",
-  max_tokens: 16000,
+  max_tokens: 64000,
   thinking: { type: "adaptive" },
   messages: [{ role: "user", content: "Analyze this problem" }],
 });
@@ -66,9 +66,9 @@ for await (const event of stream) {
 
 ---
 
-## 使用工具运行器进行流式传输
+## 使用工具运行器进行流式传输（Tool Runner）
 
-在工具运行器中使用 `stream: true`。外层循环遍历工具运行器的迭代（消息），内层循环处理流事件：
+使用工具运行器并设置 `stream: true`。外层循环遍历工具运行器的迭代（消息），内层循环处理流事件：
 
 ```typescript
 import Anthropic from "@anthropic-ai/sdk";
@@ -88,7 +88,7 @@ const getWeather = betaZodTool({
 
 const runner = client.beta.messages.toolRunner({
   model: "{{OPUS_ID}}",
-  max_tokens: 4096,
+  max_tokens: 64000,
   tools: [getWeather],
   messages: [
     { role: "user", content: "What's the weather in Paris and London?" },
@@ -123,7 +123,7 @@ for await (const messageStream of runner) {
 ```typescript
 const stream = client.messages.stream({
   model: "{{OPUS_ID}}",
-  max_tokens: 1024,
+  max_tokens: 64000,
   messages: [{ role: "user", content: "Hello" }],
 });
 
@@ -160,7 +160,7 @@ console.log(`Tokens used: ${finalMessage.usage.output_tokens}`);
 
 ## 原始 SSE 格式
 
-如果使用原始 HTTP（而非 SDK），流将返回服务器发送事件：
+如果使用原始 HTTP（而非 SDK），流将返回服务器发送事件（Server-Sent Events）：
 
 ```
 event: message_start

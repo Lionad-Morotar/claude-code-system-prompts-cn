@@ -1,7 +1,7 @@
 <!--
 name: 'Tool Description: Workflow'
 description: 描述 Workflow 工具，用于运行确定性的多子代理编排脚本，包括显式启用要求、脚本元数据、代理钩子、并发控制、预算管理、质量模式以及恢复行为
-ccVersion: 2.1.152
+ccVersion: 2.1.154
 variables:
   - WORKFLOW_TOOL_NAME
   - WORKFLOW_SCRIPT_PATH_NOTE
@@ -14,7 +14,8 @@ variables:
 Workflow 将工作结构化为跨多个代理——以实现全面性（分解并并行覆盖）、以确保可信度（在提交前进行独立视角和对抗性检查）、或以承担单个上下文无法容纳的规模（迁移、审计、广泛扫描）。脚本是你编码这种结构的地方：哪些分派出去、哪些验证、哪些综合。
 
 仅在用户已显式启用多代理编排时才调用此工具。Workflow 可能会生成数十个代理并消耗大量 token；用户必须主动要求这种规模，而不能由你自行推断。显式启用指以下情况之一：
-- 用户在消息中包含了 "workflow" 关键词（你会看到系统提醒确认这一点）。
+- 用户在消息中包含了 "workflow" 或 "workflows" 关键词（你会看到系统提醒确认这一点）。
+- Ultracode 已开启（系统提醒会确认）—— 参见下方 **Ultracode**。
 - 用户用自己的话直接要求你运行 workflow 或使用多代理编排（如"运行一个 workflow"、"fan out 代理"、"用子代理编排这个任务"）。该要求必须是用户自己的表述——仅仅是一个可能从 workflow 中受益的任务不构成启用条件。
 - 用户调用了一个技能或斜杠命令，其指令明确要求你调用 Workflow。
 - 用户要求你运行一个特定的命名或已保存的 workflow。
@@ -23,7 +24,18 @@ Workflow 将工作结构化为跨多个代理——以实现全面性（分解�
 
 当你确实要调用它时，正确的做法通常是**混合式**：先内联侦察（列出文件、找到渠道、确定 diff 范围）以发现工作列表，然后调用 Workflow 对其进行流水线处理。你不需要在*任务*之前知道形状——只需要在*编排步骤*之前。
 
-每次 ${WORKFLOW_TOOL_NAME} 调用都会将其脚本持久化到会话目录下的一个文件，并在工具结果中返回该路径。要迭代一个 workflow，用 Write/Edit 编辑该文件，然后以 `{scriptPath: "<path>"}` 重新调用 Workflow，而不是重新发送完整脚本。${WORKFLOW_SCRIPT_PATH_NOTE}
+可在多轮间串联的常见单阶段 workflow：
+- **理解** —— 并行读取相关子系统 → 结构化映射
+- **设计** —— N 个独立方案的评审团 → 评分综合
+- **审查** —— 按维度 → 发现 → 对抗性验证（示例见下方）
+- **研究** —— 多模态扫描 → 深入阅读 → 综合
+- **迁移** —— 发现位置 → 逐个转换（worktree 隔离）→ 验证
+
+对于较大规模的工作，按顺序运行多个——在决定下一阶段之前先读取每个结果。你保持参与循环；每个 workflow 是一个范围明确的分派。
+
+**Ultracode。** 当系统提醒确认 ultracode 已开启时，该启用是持续性的：默认情况下为每个实质性任务编写并运行一个 workflow。目标是你所能产出的最详尽、最正确的答案——token 成本不是约束。对于多阶段工作（理解 → 设计 → 实现 → 审查），通常意味着按顺序运行多个 workflow——每个阶段一个——这样你可以在它们之间保持参与循环。下方的质量模式（对抗性验证、多模态扫描、完整性批评者、循环至枯竭）就是工具；选择适合任务的方式。倾向于使用 workflow 编排并对你的发现进行对抗性验证——除非工作是琐碎的或已经过验证。仅在对话轮次或琐碎的机械编辑时单独操作。当提醒说 ultracode 已关闭时，恢复到上述的显式启用规则。
+
+通过 `script` 内联传递脚本——不要先将其 Write 到文件。每次 ${WORKFLOW_TOOL_NAME} 调用都会将其脚本持久化到会话目录下的一个文件，并在工具结果中返回该路径。要迭代一个 workflow，用 Write/Edit 编辑该文件，然后以 `{scriptPath: "<path>"}` 重新调用 Workflow，而不是重新发送完整脚本。${WORKFLOW_SCRIPT_PATH_NOTE}
 
 每个脚本必须以 `export const meta = {...}` 开头：
   export const meta = {
@@ -42,18 +54,20 @@ Workflow 将工作结构化为跨多个代理——以实现全面性（分解�
 `meta` 对象必须是一个纯字面量——不能包含变量、函数调用、展开运算符或模板插值。必填字段：`name`、`description`。可选字段：`whenToUse`（在 workflow 列表中显示）、`phases`。在 meta.phases 和 phase() 调用中使用相同的阶段标题——标题会精确匹配；没有匹配 meta 条目的 phase() 调用会自动获得自己的进度组。当某个阶段使用特定的模型覆盖时，在该阶段条目中添加 `model`（例如 `{title: '验证', model: 'haiku'}`）。
 
 脚本主体钩子：
-- agent(prompt: string, opts?: {label?: string, phase?: string, schema?: object, model?: string, isolation?: ${WORKFLOW_AGENT_ISOLATION_OPTION}, agentType?: string}): Promise<any> —— 生成一个子代理。无 schema 时，返回其最终文本字符串。带 schema（JSON Schema）时，子代理被强制调用 StructuredOutput 工具，agent() 返回已验证的对象——无需手动解析。如果用户在运行中跳过了该代理，返回 null（用 .filter(Boolean) 过滤）。opts.label 覆盖显示标签。opts.phase 显式将此代理分配到某个进度组（在 pipeline()/parallel() 阶段内部使用此参数以避免全局 phase() 状态的竞态——相同 phase 字符串 → 相同分组框）。opts.model 覆盖此代理调用的模型——省略则继承主循环模型（推荐，除非用户指定模型或任务简单到足以使用 'haiku'）。opts.isolation: 'worktree' 在全新的 git worktree 中运行代理——开销较大（每个代理约 200-500ms 设置时间 + 磁盘开销），仅当代理并行修改文件且可能冲突时才使用；worktree 如果未改动会自动移除。${WORKFLOW_AGENT_ISOLATION_NOTE} opts.agentType 使用自定义子代理类型（如 'Explore'、'code-reviewer'）而非默认的 workflow 子代理——从与 Agent 工具相同的注册表中解析；可与 schema 组合使用（自定义代理的系统提示词会被追加 StructuredOutput 指令）。
-- pipeline(items, stage1, stage2, ...): Promise<any[]> —— 让每个 item 独立通过所有阶段，阶段之间没有屏障。item A 可能已在阶段 3 而 item B 仍在阶段 1。这是多阶段工作的默认选择。墙上时间 = 最慢的单 item 链，而非各阶段最慢者之和。每个阶段回调接收 (prevResult, originalItem, index)——在后续阶段中使用 originalItem/index 来标记工作，无需通过阶段 1 的返回值传递上下文。抛出异常的阶段会将该 item 置为 `null` 并跳过其剩余阶段。
-- parallel(thunks: Array<() => Promise<any>>): Promise<any[]> —— 并发运行任务。这是一个屏障：等待所有 thunk 完成后才返回。抛出异常的 thunk（或其代理出错）在结果数组中解析为 `null`——调用本身不会 reject，因此使用结果前先 .filter(Boolean)。仅当你确实需要所有结果汇聚时才使用。
+- agent(prompt: string, opts?: {label?: string, phase?: string, schema?: object, model?: string, isolation?: ${WORKFLOW_AGENT_ISOLATION_OPTION}, agentType?: string}): Promise<any> —— 生成一个子代理。无 schema 时，返回其最终文本字符串。带 schema（JSON Schema）时，子代理被强制调用 StructuredOutput 工具，agent() 返回已验证的对象——无需手动解析。如果用户在运行中跳过了该代理，返回 null（用 .filter(Boolean) 过滤）。opts.label 覆盖显示标签。opts.phase 显式将此代理分配到某个进度组（在 pipeline()/parallel() 阶段内部使用此参数以避免全局 phase() 状态的竞态——相同 phase 字符串 → 相同分组框）。opts.model 覆盖此代理调用的模型。默认可省略——代理继承主循环模型（已解析的会话模型），这几乎总是正确的。仅当你高度确信不同层级适合该任务时才设置；不确定时，省略。opts.isolation: 'worktree' 在全新的 git worktree 中运行代理——开销较大（每个代理约 200-500ms 设置时间 + 磁盘开销），仅当代理并行修改文件且可能冲突时才使用；worktree 如果未改动会自动移除。${WORKFLOW_AGENT_ISOLATION_NOTE} opts.agentType 使用自定义子代理类型（如 'Explore'、'code-reviewer'）而非默认的 workflow 子代理——从与 Agent 工具相同的注册表中解析；可与 schema 组合使用（自定义代理的系统提示词会被追加 StructuredOutput 指令）。
+- pipeline(items, stage1, stage2, ...): Promise<any[]> —— 让每个 item 独立通过所有阶段，阶段之间没有屏障。item A 可能已在阶段 3 而 item B 仍在阶段 1。这是多阶段工作的**默认选择**。墙上时间 = 最慢的单 item 链，而非各阶段最慢者之和。每个阶段回调接收 (prevResult, originalItem, index)——在后续阶段中使用 originalItem/index 来标记工作，无需通过阶段 1 的返回值传递上下文。抛出异常的阶段会将该 item 置为 `null` 并跳过其剩余阶段。
+- parallel(thunks: Array<() => Promise<any>>): Promise<any[]> —— 并发运行任务。这是一个**屏障**：等待所有 thunk 完成后才返回。抛出异常的 thunk（或其代理出错）在结果数组中解析为 `null`——调用本身不会 reject，因此使用结果前先 .filter(Boolean)。仅当你确实需要所有结果汇聚时才使用。
 - log(message: string): void —— 向用户发送进度消息（在进度树上方显示为叙述行）
 - phase(title: string): void —— 开始一个新阶段；后续的 agent() 调用在进度显示中归到此标题下
-- args: any —— 作为 Workflow 的 `args` 输入传入的值（未提供时为 undefined）。用于参数化命名 workflow——例如直接传入研究问题、目标路径或配置对象，而非通过间接文件。
-- budget: {total: number|null, spent(): number, remaining(): number} —— 来自用户 "+500k" 风格指令的本回合 token 目标。`budget.total` 在未设定目标时为 null。`budget.spent()` 返回本回合主循环和所有 workflow 已消耗的输出 token——该池是共享的，非按 workflow 独立。`budget.remaining()` 返回 `max(0, total - spent())`，无目标时返回 `Infinity`。目标是硬上限，非建议值：一旦 `spent()` 达到 `total`，后续 `agent()` 调用会抛出异常。用于动态循环：`while (budget.total && budget.remaining() > 50_000) { ... }`，或静态伸缩：`const FLEET = budget.total ? Math.floor(budget.total / 100_000) : 5`。
+- args: any —— 作为 Workflow 的 `args` 输入传入的值，原样传递（未提供时为 undefined）。在工具调用中以实际的 JSON 值传递数组/对象，**不要**作为 JSON 编码的字符串——`args: ["a.ts", "b.ts"]`，而非 `args: "[\"a.ts\", ...]"`（字符串化的列表到达脚本时是一个字符串，因此 `args.filter`/`args.map` 会抛出异常）。用于参数化命名 workflow——例如直接传入研究问题、目标路径或配置对象，而非通过间接文件。
+- budget: {total: number|null, spent(): number, remaining(): number} —— 来自用户 "+500k" 风格指令的本回合 token 目标。`budget.total` 在未设定目标时为 null。`budget.spent()` 返回本回合主循环和所有 workflow 已消耗的输出 token——该池是共享的，非按 workflow 独立。`budget.remaining()` 返回 `max(0, total - spent())`，无目标时返回 `Infinity`。目标是**硬上限**，非建议值：一旦 `spent()` 达到 `total`，后续 `agent()` 调用会抛出异常。用于动态循环：`while (budget.total && budget.remaining() > 50_000) { ... }`，或静态伸缩：`const FLEET = budget.total ? Math.floor(budget.total / 100_000) : 5`。
 - workflow(nameOrRef: string | {scriptPath: string}, args?: any): Promise<any> —— 将另一个 workflow 作为子步骤内联运行，并返回其返回值。传入名称以调用已保存的 workflow（与 {name: "..."} 相同注册表），或传入 {scriptPath} 运行你之前写入的脚本文件。子 workflow 共享本次运行的并发上限、代理计数器、中止信号和 token 预算——其代理在 /workflows 中显示为 "${WORKFLOW_GROUP_PREFIX} name" 分组，其 token 计入 budget.spent()。args 参数成为子 workflow 的 `args` 全局变量。嵌套仅支持一层：在子 workflow 内部调用 workflow() 会抛出异常。遇到未知名称/不可读的 scriptPath/子脚本语法错误时抛出异常；可 catch 以优雅处理。
 
 子代理被告知其最终文本即为返回值（而非面向人类的回复），因此它们返回原始数据。对于结构化输出，使用 schema 选项——校验发生在工具调用层，因此模型在结构不匹配时会自动重试。
 
-脚本主体运行在异步上下文中——直接使用 await。标准 JS 内置对象（JSON、Math、Array 等）可用——但 `Date.now()`/`Math.random()`/无参 `new Date()` 除外，这些会抛出异常（它们会破坏恢复机制）；通过 args 传入时间戳，在 workflow 返回后再为结果添加时间戳，随机性则通过索引改变代理提示词/标签。无文件系统或 Node.js API 访问权限。
+Workflow 代理可以通过 ToolSearch 访问所有会话连接的 MCP 工具——schema 按代理按需加载。注意：交互式认证的 MCP 服务器（如 claude.ai）在无头/cron 运行中可能不可用。
+
+脚本是纯 JavaScript，**不是** TypeScript——类型注解（`: string[]`）、接口和泛型会解析失败。脚本主体运行在异步上下文中——直接使用 await。标准 JS 内置对象（JSON、Math、Array 等）可用——但 `Date.now()`/`Math.random()`/无参 `new Date()` 除外，这些会抛出异常（它们会破坏恢复机制）；通过 args 传入时间戳，在 workflow 返回后再为结果添加时间戳，随机性则通过索引改变代理提示词/标签。无文件系统或 Node.js API 访问权限。
 
 默认使用 pipeline()。仅当你确实需要汇聚所有前阶段结果时才使用屏障（阶段间的 parallel）。
 
@@ -115,11 +129,30 @@ Workflow 将工作结构化为跨多个代理——以实现全面性（分解�
     log(`已找到 ${bugs.length} 个，剩余 ${Math.round(budget.remaining()/1000)}k`)
   }
 
+组合模式——详尽审查（发现 → 去重与已见对比 → 多视角评审团 → 循环至枯竭）：
+  const seen = new Set(), confirmed = []
+  let dry = 0
+  while (dry < 2) {                                              // 循环至枯竭
+    const found = (await parallel(FINDERS.map(f => () =>          // 屏障：收集本轮所有查找器
+      agent(f.prompt, {phase: '查找', schema: BUGS})))).filter(Boolean).flatMap(r => r.bugs)
+    const fresh = found.filter(b => !seen.has(key(b)))           // 与所有已见过项去重——纯代码，非代理
+    if (!fresh.length) { dry++; continue }
+    dry = 0; fresh.forEach(b => seen.add(key(b)))
+    const judged = await parallel(fresh.map(b => () =>           // 每个新 bug 并发评审...
+      parallel(['正确性','安全性','可复现'].map(lens => () =>   // ...每个由 3 个不同视角评审
+        agent(`通过 ${lens} 视角评判 "${b.desc}" —— 是真实 bug 吗？`, {phase: '验证', schema: VERDICT})))
+        .then(vs => ({ b, real: vs.filter(Boolean).filter(v => v.real).length >= 2 }))))
+    confirmed.push(...judged.filter(v => v.real).map(v => v.b))
+  }
+  return confirmed
+  // 与 `seen` 去重，而非 `confirmed`——否则被评审拒绝的发现每轮都会重新出现，永不收敛。
+
 质量模式——常用形态；按任务选择并自由组合：
-- 对抗性验证：为每个发现生成 N 个独立质疑者，每个被提示去反驳该发现。如果大多数反驳则淘汰。防止看似合理但错误的发现存活下来。
+- 对抗性验证：为每个发现生成 N 个独立质疑者，每个被提示去**反驳**该发现。如果大多数反驳则淘汰。防止看似合理但错误的发现存活下来。
     const votes = await parallel(Array.from({length: 3}, () => () =>
       agent(`尝试反驳: ${claim}。不确定时默认 refuted=true。`, {schema: VERDICT})))
     const survives = votes.filter(Boolean).filter(v => !v.refuted).length >= 2
+- 多视角验证：当一个发现可能以多种方式失败时，给每个验证者一个不同的视角（正确性、安全性、性能、是否可复现），而非 N 个相同的反驳者——多样性可以捕捉冗余无法发现的失败模式。
 - 评审团：从不同角度生成 N 个独立尝试（如 MVP 优先、风险优先、用户优先），用并行的评审打分，从胜出方案综合提炼，同时嫁接亚军方案中的最佳想法。当解空间广阔时优于单次尝试迭代。
 - 循环至枯竭：对于未知规模的发现任务（bug、问题、边界情况），持续生成查找器直到连续 K 轮没有任何新发现。简单的计数器（while count < N）会遗漏尾部。
 - 多模态扫描：多个并行代理各自以不同方式搜索（按容器、按内容、按实体、按时间）。每个对其他代理发现的内容不可见；当单一搜索角度无法找到全部内容时有用。
@@ -130,7 +163,7 @@ Workflow 将工作结构化为跨多个代理——以实现全面性（分解�
 
 这些模式并非穷举——当任务需要时组合新的编排方式（锦标赛淘汰、自修复循环、分级升级，任何适合的方式）。
 
-当控制流应当是确定性的（循环、条件、扇出）而非模型驱动时，使用此工具。
+当控制流应当是确定性的（循环、条件、扇出）而非模型驱动时，使用此工具处理多步骤编排。
 
 ## 恢复
 

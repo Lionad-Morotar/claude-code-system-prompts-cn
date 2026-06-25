@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Streaming reference — Python'
-description: Python streaming reference including sync/async streaming and handling different content types
-ccVersion: 2.1.118
+description: Python 流式传输参考，包括同步/异步流式传输以及处理不同类型内容的方式
+ccVersion: 2.1.154
 -->
 # 流式传输 — Python
 
@@ -10,7 +10,7 @@ ccVersion: 2.1.118
 ```python
 with client.messages.stream(
     model="{{OPUS_ID}}",
-    max_tokens=1024,
+    max_tokens=64000,
     messages=[{"role": "user", "content": "Write a story"}]
 ) as stream:
     for text in stream.text_stream:
@@ -22,7 +22,7 @@ with client.messages.stream(
 ```python
 async with async_client.messages.stream(
     model="{{OPUS_ID}}",
-    max_tokens=1024,
+    max_tokens=64000,
     messages=[{"role": "user", "content": "Write a story"}]
 ) as stream:
     async for text in stream.text_stream:
@@ -51,12 +51,12 @@ for event in client.messages.create(
 
 Claude 可能返回文本、思考块或工具使用。请分别处理：
 
-> **Opus 4.7 / Opus 4.6:** 使用 `thinking: {type: "adaptive"}`。在旧模型上，请改用 `thinking: {type: "enabled", budget_tokens: N}`。
+> **Opus 4.8 / Opus 4.7 / Opus 4.6:** 使用 `thinking: {type: "adaptive"}`。在旧模型上，请改用 `thinking: {type: "enabled", budget_tokens: N}`。
 
 ```python
 with client.messages.stream(
     model="{{OPUS_ID}}",
-    max_tokens=16000,
+    max_tokens=64000,
     thinking={"type": "adaptive"},
     messages=[{"role": "user", "content": "Analyze this problem"}]
 ) as stream:
@@ -83,7 +83,7 @@ Python 工具运行器目前返回完整的消息。如果您需要在工具使�
 ```python
 with client.messages.stream(
     model="{{OPUS_ID}}",
-    max_tokens=4096,
+    max_tokens=64000,
     tools=tools,
     messages=messages
 ) as stream:
@@ -101,7 +101,7 @@ with client.messages.stream(
 ```python
 with client.messages.stream(
     model="{{OPUS_ID}}",
-    max_tokens=1024,
+    max_tokens=64000,
     messages=[{"role": "user", "content": "Hello"}]
 ) as stream:
     for text in stream.text_stream:
@@ -118,7 +118,7 @@ with client.messages.stream(
 
 ```python
 def stream_with_progress(client, **kwargs):
-    """Stream a response with progress updates."""
+    """流式传输响应并显示进度更新。"""
     total_tokens = 0
     content_parts = []
 
@@ -148,17 +148,17 @@ def stream_with_progress(client, **kwargs):
 try:
     with client.messages.stream(
         model="{{OPUS_ID}}",
-        max_tokens=1024,
+        max_tokens=64000,
         messages=[{"role": "user", "content": "Write a story"}]
     ) as stream:
         for text in stream.text_stream:
             print(text, end="", flush=True)
 except anthropic.APIConnectionError:
-    print("\nConnection lost. Please retry.")
+    print("\n连接丢失，请重试。")
 except anthropic.RateLimitError:
-    print("\nRate limited. Please wait and retry.")
+    print("\n速率受限，请等待后重试。")
 except anthropic.APIStatusError as e:
-    print(f"\nAPI error: {e.status_code}")
+    print(f"\nAPI 错误: {e.status_code}")
 ```
 
 ---

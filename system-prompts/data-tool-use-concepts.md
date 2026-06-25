@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Tool use concepts'
-description: Conceptual foundations of tool use with the Claude API including tool definitions, tool choice, and best practices
-ccVersion: 2.1.128
+description: Claude API 工具使用的概念基础，包括工具定义、工具选择和最佳实践
+ccVersion: 2.1.154
 -->
 # 工具使用概念
 
@@ -11,7 +11,7 @@ ccVersion: 2.1.128
 
 ### 工具定义结构
 
-> **注意：** 使用工具运行器（beta）时，工具模式会自动从您的函数签名（Python）、Zod 模式（TypeScript）、注解类（Java）、`jsonschema` 结构标签（Go）或 `BaseTool` 子类（Ruby）生成。下面的原始 JSON 模式格式适用于手动方法 —— 包括 PHP 的 `BetaRunnableTool`，它将运行闭包包裹在手写模式周围 —— 或没有工具运行器支持的 SDK。
+> **注意：** 使用工具运行器（Tool Runner，Beta）时，工具模式会自动从函数签名（Python）、Zod 模式（TypeScript）、注解类（Java）、`jsonschema` 结构标签（Go）或 `BaseTool` 子类（Ruby）生成。下面的原始 JSON 模式格式适用于手动方法 —— 包括 PHP 的 `BetaRunnableTool`，它将运行闭包包裹在手写模式周围 —— 或没有工具运行器支持的 SDK。
 
 每个工具都需要名称、描述和输入的 JSON Schema：
 
@@ -64,9 +64,9 @@ ccVersion: 2.1.128
 
 ### 工具运行器与手动循环
 
-**工具运行器（推荐）：** SDK 的工具运行器自动处理代理循环 —— 它调用 API、检测工具使用请求、执行您的工具函数、将结果反馈给 Claude，并重复直到 Claude 停止调用工具。在 Python、TypeScript、Java、Go、Ruby 和 PHP SDK（beta）中可用。Python SDK 还提供 MCP 转换助手（`anthropic.lib.tools.mcp`）来转换 MCP 工具、提示和资源以供工具运行器使用 —— 详见 `python/claude-api/tool-use.md`。
+**工具运行器（推荐）：** SDK 的工具运行器自动处理代理循环 —— 它调用 API、检测工具使用请求、执行工具函数、将结果反馈给 Claude，并重复直到 Claude 停止调用工具。在 Python、TypeScript、Java、Go、Ruby 和 PHP SDK（Beta）中可用。Python SDK 还提供 MCP 转换助手（`anthropic.lib.tools.mcp`）来转换 MCP 工具、提示和资源以供工具运行器使用 —— 详见 `python/claude-api/tool-use.md`。
 
-**手动代理循环：** 当您需要对循环进行细粒度控制时使用（例如自定义日志记录、条件工具执行、人机协作审批）。循环直到 `stop_reason == "end_turn"`，始终附加完整的 `response.content` 以保留 tool_use 块，并确保每个 `tool_result` 包含匹配的 `tool_use_id`。
+**手动代理循环：** 当需要对循环进行细粒度控制时使用（例如自定义日志记录、条件工具执行、人机协作审批）。循环直到 `stop_reason == "end_turn"`，始终追加完整的 `response.content` 以保留 tool_use 块，并确保每个 `tool_result` 包含匹配的 `tool_use_id`。
 
 **服务器端工具的停止原因：** 使用服务器端工具（代码执行、网页搜索等）时，API 会运行服务器端采样循环。如果此循环达到默认的 10 次迭代限制，响应将具有 `stop_reason: "pause_turn"`。要继续，重新发送用户消息和助手响应并发出另一个 API 请求 —— 服务器将从上次中断的地方继续。不要添加额外的用户消息如 "Continue." —— API 检测到末尾的 `server_tool_use` 块后会自动知道继续。
 
@@ -85,13 +85,13 @@ if response.stop_reason == "pause_turn":
 
 设置 `max_continuations` 限制（例如 5）以防止无限循环。完整指南请参见：`https://platform.claude.com/docs/en/build-with-claude/handling-stop-reasons`
 
-> **安全：** 工具运行器会在 Claude 请求时自动执行您的工具函数。对于具有副作用的工具（发送邮件、修改数据库、金融交易），请在工具函数内验证输入，并考虑对破坏性操作要求确认。如果您需要在每次工具执行前进行人机协作审批，请使用手动代理循环。
+> **安全：** 工具运行器会在 Claude 请求时自动执行工具函数。对于具有副作用的工具（发送邮件、修改数据库、金融交易），请在工具函数内验证输入，并考虑对破坏性操作要求确认。如果需要在每次工具执行前进行人机协作审批，请使用手动代理循环。
 
 ---
 
 ### 处理工具结果
 
-当 Claude 使用工具时，响应包含一个 `tool_use` 块。您必须：
+当 Claude 使用工具时，响应包含一个 `tool_use` 块。你必须：
 
 1. 使用提供的输入执行工具
 2. 在 `tool_result` 消息中返回结果
@@ -105,7 +105,7 @@ if response.stop_reason == "pause_turn":
 
 ## 服务器端工具：代码执行
 
-代码执行工具让 Claude 在安全的沙盒容器中运行代码。与用户定义工具不同，服务器端工具在 Anthropic 的基础设施上运行 —— 您不需要在客户端执行任何操作。只需包含工具定义，Claude 就会处理其余部分。
+代码执行工具让 Claude 在安全的沙盒容器中运行代码。与用户定义工具不同，服务器端工具在 Anthropic 的基础设施上运行 —— 不需要在客户端执行任何操作。只需包含工具定义，Claude 就会处理其余部分。
 
 ### 关键事实
 
@@ -176,9 +176,9 @@ Claude 自动获得 `bash_code_execution`（运行 shell 命令）和 `text_edit
 ]
 ```
 
-### 动态过滤（Opus 4.7 / Opus 4.6 / Sonnet 4.6）
+### 动态过滤（Opus 4.8 / Opus 4.7 / Opus 4.6 / Sonnet 4.6）
 
-`web_search_20260209` 和 `web_fetch_20260209` 版本支持**动态过滤** —— Claude 编写并执行代码以在搜索结果到达上下文窗口之前对其进行过滤，从而提高准确性和令牌效率。动态过滤内置于这些工具版本中并自动激活；您不需要单独声明 `code_execution` 工具或传递任何 beta 标头。
+`web_search_20260209` 和 `web_fetch_20260209` 版本支持**动态过滤** —— Claude 编写并执行代码以在搜索结果到达上下文窗口之前对其进行过滤，从而提高准确性和令牌效率。动态过滤内置于这些工具版本中并自动激活；不需要单独声明 `code_execution` 工具或传递任何 beta 标头。
 
 ```json
 {
@@ -191,7 +191,7 @@ Claude 自动获得 `bash_code_execution`（运行 shell 命令）和 `text_edit
 
 没有动态过滤的情况下，之前的 `web_search_20250305` 版本也可用。
 
-> **注意：** 仅当您的应用程序需要独立于网页搜索的代码执行（数据分析、文件处理、可视化）时才包含独立的 `code_execution` 工具。将其与 `_20260209` 网页工具一起使用会创建第二个执行环境，可能会使模型困惑。
+> **注意：** 仅当应用程序需要独立于网页搜索的代码执行（数据分析、文件处理、可视化）时才包含独立的 `code_execution` 工具。将其与 `_20260209` 网页工具一起使用会创建第二个执行环境，可能会使模型困惑。
 
 ---
 
@@ -209,7 +209,7 @@ Claude 自动获得 `bash_code_execution`（运行 shell 命令）和 `text_edit
 
 ## 服务器端工具：工具搜索
 
-工具搜索工具让 Claude 从大型库中动态发现工具，而无需将所有定义加载到上下文窗口中。当您有许多工具但任何给定查询只有少数相关时使用。发现的工具模式被追加到请求中，而非替换 —— 这保留了提示缓存（参见 `agent-design.md` §代理的缓存策略）。
+工具搜索工具让 Claude 从大型库中动态发现工具，而无需将所有定义加载到上下文窗口中。当有许多工具但任何给定请求只有少数相关时使用。发现的工具模式被追加到请求中，而非替换 —— 这保留了提示缓存（参见 `agent-design.md` §代理的缓存策略）。
 
 完整文档请使用 WebFetch：
 
@@ -219,7 +219,7 @@ Claude 自动获得 `bash_code_execution`（运行 shell 命令）和 `text_edit
 
 ## 技能
 
-技能封装了任务特定的指令，Claude 只应在相关时加载。每个技能是一个包含 `SKILL.md` 文件的文件夹。技能的简短描述默认存在于上下文中；Claude 在当前任务需要时读取完整文件。使用技能可以将专业指令保留在基础系统提示词之外，同时不丧失可发现性。
+技能封装了任务特定的指令，Claude 只在相关时加载。每个技能是一个包含 `SKILL.md` 文件的文件夹。技能的简短描述默认存在于上下文中；Claude 在当前任务需要时读取完整文件。使用技能可以将专业指令保留在基础系统提示词之外，同时不丧失可发现性。
 
 完整文档请使用 WebFetch：
 
@@ -229,7 +229,7 @@ Claude 自动获得 `bash_code_execution`（运行 shell 命令）和 `text_edit
 
 ## 工具使用示例
 
-您可以直接在工具定义中提供示例工具调用来演示使用模式并减少参数错误。这有助于 Claude 理解如何正确格式化工具输入，特别是对于具有复杂模式的工具。
+可以直接在工具定义中提供示例工具调用来演示使用模式并减少参数错误。这有助于 Claude 理解如何正确格式化工具输入，特别是对于具有复杂模式的工具。
 
 完整文档请使用 WebFetch：
 
@@ -239,7 +239,7 @@ Claude 自动获得 `bash_code_execution`（运行 shell 命令）和 `text_edit
 
 ## 服务器端工具：计算机使用
 
-计算机使用让 Claude 与桌面环境交互（截图、鼠标、键盘）。可以是 Anthropic 托管（服务器端，如代码执行）或自托管（您提供环境并在客户端执行操作）。
+计算机使用让 Claude 与桌面环境交互（截图、鼠标、键盘）。可以是 Anthropic 托管（服务器端，如代码执行）或自托管（提供环境并在客户端执行操作）。
 
 完整文档请使用 WebFetch：
 
@@ -259,7 +259,7 @@ Claude 自动获得 `bash_code_execution`（运行 shell 命令）和 `text_edit
 
 ## 服务器端工具：Advisor（Beta）
 
-Advisor 工具让 Claude 在对话过程中咨询辅助模型。Advisor 使用你指定的模型运行自己的 API 调用，并将其分析结果返回给主模型。当你想要第二意见、专业知识或跨模型验证，但又不想自行管理编排时使用。
+Advisor 工具让 Claude 在对话过程中咨询辅助模型。Advisor 使用指定模型运行自己的 API 调用，并将其分析结果返回给主模型。当想要第二意见、专业知识或跨模型验证，但又不想自行管理编排时使用。
 
 ### 工具定义
 
@@ -283,7 +283,7 @@ Advisor 工具让 Claude 在对话过程中咨询辅助模型。Advisor 使用�
 
 ### 关键事实
 
-- 客户端工具 —— 您通过实现控制存储
+- 客户端工具 —— 通过实现控制存储
 - 支持命令：`view`、`create`、`str_replace`、`insert`、`delete`、`rename`
 - 对 `/memories` 目录中的文件进行操作
 - Python、TypeScript 和 Java SDK 为实现记忆后端提供助手类/函数
@@ -307,7 +307,7 @@ Advisor 工具让 Claude 在对话过程中咨询辅助模型。Advisor 使用�
 
 **支持的模型：** {{OPUS_NAME}}、{{SONNET_NAME}} 和 {{HAIKU_NAME}}。旧模型（Claude Opus 4.5、Claude Opus 4.1）也支持结构化输出。
 
-> **推荐：** 使用 `client.messages.parse()` 自动根据您的模式验证响应。直接使用 `messages.create()` 时，使用 `output_config: {format: {...}}`。`output_format` 便捷参数也被某些 SDK 方法接受（例如 `.parse()`），但 `output_config.format` 是规范的 API 级参数。
+> **推荐：** 使用 `client.messages.parse()` 自动根据模式验证响应。直接使用 `messages.create()` 时，使用 `output_config: {format: {...}}`。`output_format` 便捷参数也被某些 SDK 方法接受（例如 `.parse()`），但 `output_config.format` 是规范的 API 级参数。
 
 ### JSON 模式限制
 
@@ -331,7 +331,7 @@ Python 和 TypeScript SDK 通过从发送到 API 的模式中删除不支持的�
 ### 重要说明
 
 - **首次请求延迟**：新模式会产生一次性编译成本。使用相同模式的后续请求使用 24 小时缓存。
-- **拒绝**：如果 Claude 因安全原因拒绝（`stop_reason: "refusal"`），输出可能不符合您的模式。
+- **拒绝**：如果 Claude 因安全原因拒绝（`stop_reason: "refusal"`），输出可能不符合模式。
 - **令牌限制**：如果 `stop_reason: "max_tokens"`，输出可能不完整。增加 `max_tokens`。
 - **不兼容**：引用（返回 400 错误）、消息预填充。
 - **兼容**：批处理 API、流式传输、令牌计数、扩展思考。

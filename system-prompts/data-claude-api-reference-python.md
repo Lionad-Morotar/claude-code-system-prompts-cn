@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Python'
-description: Python SDK reference including installation, client initialization, basic requests, thinking, and multi-turn conversation
-ccVersion: 2.1.128
+description: Python SDK 参考，包括安装、客户端初始化、基本请求、思考和多轮对话
+ccVersion: 2.1.154
 -->
 # Claude API — Python
 
@@ -16,10 +16,12 @@ pip install anthropic
 ```python
 import anthropic
 
-# 默认（使用 ANTHROPIC_API_KEY 环境变量）
+# 默认 —— 从环境解析凭据：
+# ANTHROPIC_API_KEY、ANTHROPIC_AUTH_TOKEN 或 `ant auth login` 配置文件。
+# 本地开发推荐此方式；不要硬编码密钥。
 client = anthropic.Anthropic()
 
-# 显式指定 API 密钥
+# 显式指定 API 密钥（仅在必须注入特定密钥时使用）
 client = anthropic.Anthropic(api_key="your-api-key")
 
 # 异步客户端
@@ -94,7 +96,7 @@ client = Anthropic(
 ```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
-    max_tokens=1024,
+    max_tokens=16000,
     messages=[
         {"role": "user", "content": "What is the capital of France?"}
     ]
@@ -113,9 +115,26 @@ for block in response.content:
 ```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
-    max_tokens=1024,
+    max_tokens=16000,
     system="You are a helpful coding assistant. Always provide examples in Python.",
     messages=[{"role": "user", "content": "How do I read a JSON file?"}]
+)
+```
+
+### 对话中途系统消息（Beta，模型限制）
+
+对于在对话中途到达的操作指令（模式切换、注入状态），将 `{"role": "system", ...}` 追加到 `messages` 中，而不是编辑顶层 `system` —— 这样可以保留缓存前缀并携带操作员权限。必须跟在用户消息之后；不能作为 `messages[0]`。不支持的模型返回 400（`role 'system' is not supported on this model`）。关于何时使用此方式与顶层 `system`，请参阅 `shared/prompt-caching.md`。
+
+```python
+response = client.messages.create(
+    model=MODEL_ID,  # 必须支持对话中途系统消息
+    max_tokens=16000,
+    system=[{"type": "text", "text": STABLE_SYSTEM, "cache_control": {"type": "ephemeral"}}],
+    messages=history + [
+        {"role": "user", "content": user_message},
+        {"role": "system", "content": "Terse mode enabled — keep responses under 40 words."},
+    ],
+    extra_headers={"anthropic-beta": "mid-conversation-system-2026-04-07"},
 )
 ```
 
@@ -133,7 +152,7 @@ with open("image.png", "rb") as f:
 
 response = client.messages.create(
     model="{{OPUS_ID}}",
-    max_tokens=1024,
+    max_tokens=16000,
     messages=[{
         "role": "user",
         "content": [
@@ -156,7 +175,7 @@ response = client.messages.create(
 ```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
-    max_tokens=1024,
+    max_tokens=16000,
     messages=[{
         "role": "user",
         "content": [
@@ -181,12 +200,12 @@ response = client.messages.create(
 
 ### 自动缓存（推荐）
 
-使用顶级的 `cache_control` 来自动缓存请求中最后一个可缓存的块——无需逐个标注内容块：
+使用顶层的 `cache_control` 来自动缓存请求中最后一个可缓存的块——无需逐个标注内容块：
 
 ```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
-    max_tokens=1024,
+    max_tokens=16000,
     cache_control={"type": "ephemeral"},  # 自动缓存最后一个可缓存块
     system="You are an expert on this large document...",
     messages=[{"role": "user", "content": "Summarize the key points"}]
@@ -200,7 +219,7 @@ response = client.messages.create(
 ```python
 response = client.messages.create(
     model="{{OPUS_ID}}",
-    max_tokens=1024,
+    max_tokens=16000,
     system=[{
         "type": "text",
         "text": "You are an expert on this large document...",
@@ -212,7 +231,7 @@ response = client.messages.create(
 # 使用显式 TTL（存活时间）
 response = client.messages.create(
     model="{{OPUS_ID}}",
-    max_tokens=1024,
+    max_tokens=16000,
     system=[{
         "type": "text",
         "text": "You are an expert on this large document...",
@@ -236,11 +255,11 @@ print(response.usage.input_tokens)                 # 未缓存的 token（全额
 
 ## 扩展思考
 
-> **Opus 4.7、Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在 Opus 4.7 上已移除（如发送则返回 400）；在 Opus 4.6 和 Sonnet 4.6 上已弃用。
+> **Opus 4.8、Opus 4.7、Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在 Opus 4.8 和 4.7 上已移除（如发送则返回 400）；在 Opus 4.6 和 Sonnet 4.6 上已弃用。
 > **旧版模型：** 使用 `thinking: {type: "enabled", budget_tokens: N}`（必须小于 `max_tokens`，最小 1024）。
 
 ```python
-# Opus 4.7 / 4.6：自适应思考（推荐）
+# Opus 4.8 / 4.7 / 4.6：自适应思考（推荐）
 response = client.messages.create(
     model="{{OPUS_ID}}",
     max_tokens=16000,
@@ -333,7 +352,7 @@ class ConversationManager:
 
         response = self.client.messages.create(
             model=self.model,
-            max_tokens=kwargs.get("max_tokens", 1024),
+            max_tokens=kwargs.get("max_tokens", 16000),
             system=self.system,
             messages=self.messages,
             **kwargs
@@ -359,14 +378,15 @@ response2 = conversation.send("What's my name?")  # Claude 记得 "Alice"
 
 **规则：**
 
-- 消息必须在 `user` 和 `assistant` 之间交替
+- 允许连续相同角色的消息 —— API 会将它们合并为单轮
 - 第一条消息必须是 `user`
+- 在支持的模型上，`role: "system"` 消息允许通过 `mid-conversation-system-2026-04-07` beta 在对话中途使用 —— 请参阅上文 § 对话中途系统消息
 
 ---
 
 ### 压缩（长对话）
 
-> **Beta 版，Opus 4.7、Opus 4.6 和 Sonnet 4.6。** 当对话接近 200K 上下文窗口时，压缩会在服务端自动总结较早的上下文。API 会返回一个 `compaction` 块；你必须在后续请求中将其传回——追加 `response.content`，而不仅仅是文本。
+> **Beta 版，Opus 4.8、Opus 4.7、Opus 4.6 和 Sonnet 4.6。** 当对话接近 200K 上下文窗口时，压缩会在服务端自动总结较早的上下文。API 会返回一个 `compaction` 块；你必须在后续请求中将其传回——追加 `response.content`，而不仅仅是文本。
 
 ```python
 import anthropic
@@ -380,7 +400,7 @@ def chat(user_message: str) -> str:
     response = client.beta.messages.create(
         betas=["compact-2026-01-12"],
         model="{{OPUS_ID}}",
-        max_tokens=4096,
+        max_tokens=16000,
         messages=messages,
         context_management={
             "edits": [{"type": "compact_20260112"}]
@@ -433,7 +453,7 @@ if response.stop_reason == "refusal" and response.stop_details:
 # 自动缓存（最简单——缓存最后一个可缓存块）
 response = client.messages.create(
     model="{{OPUS_ID}}",
-    max_tokens=1024,
+    max_tokens=16000,
     cache_control={"type": "ephemeral"},
     system=large_document_text,  # 例如，50KB 的上下文
     messages=[{"role": "user", "content": "Summarize the key points"}]
@@ -449,14 +469,14 @@ response = client.messages.create(
 # 默认使用 Opus 处理大多数任务
 response = client.messages.create(
     model="{{OPUS_ID}}",  # 每 100 万 token $5.00/$25.00
-    max_tokens=1024,
+    max_tokens=16000,
     messages=[{"role": "user", "content": "Explain quantum computing"}]
 )
 
 # 对高容量生产工作负载使用 Sonnet
 standard_response = client.messages.create(
     model="{{SONNET_ID}}",  # 每 100 万 token $3.00/$15.00
-    max_tokens=1024,
+    max_tokens=16000,
     messages=[{"role": "user", "content": "Summarize this document"}]
 )
 

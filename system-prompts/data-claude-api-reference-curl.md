@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — cURL'
-description: Raw API reference for Claude API for use with cURL or else Raw HTTP
-ccVersion: 2.1.111
+description: Claude API 原始 API 参考，适用于 cURL 或 Raw HTTP
+ccVersion: 2.1.154
 -->
 # Claude API — cURL / Raw HTTP
 
@@ -24,7 +24,7 @@ curl https://api.anthropic.com/v1/messages \
   -H "anthropic-version: 2023-06-01" \
   -d '{
     "model": "{{OPUS_ID}}",
-    "max_tokens": 1024,
+    "max_tokens": 16000,
     "messages": [
       {"role": "user", "content": "What is the capital of France?"}
     ]
@@ -42,7 +42,7 @@ response=$(curl -s https://api.anthropic.com/v1/messages \
   -H "Content-Type: application/json" \
   -H "x-api-key: $ANTHROPIC_API_KEY" \
   -H "anthropic-version: 2023-06-01" \
-  -d '{"model":"{{OPUS_ID}}","max_tokens":1024,"messages":[{"role":"user","content":"Hello"}]}')
+  -d '{"model":"{{OPUS_ID}}","max_tokens":16000,"messages":[{"role":"user","content":"Hello"}]}')
 
 # 打印第一个文本块（-r 去除 JSON 引号）
 echo "$response" | jq -r '.content[0].text'
@@ -70,7 +70,7 @@ curl https://api.anthropic.com/v1/messages \
   -H "anthropic-version: 2023-06-01" \
   -d '{
     "model": "{{OPUS_ID}}",
-    "max_tokens": 1024,
+    "max_tokens": 64000,
     "stream": true,
     "messages": [{"role": "user", "content": "Write a haiku"}]
   }'
@@ -109,7 +109,7 @@ curl https://api.anthropic.com/v1/messages \
   -H "anthropic-version: 2023-06-01" \
   -d '{
     "model": "{{OPUS_ID}}",
-    "max_tokens": 1024,
+    "max_tokens": 16000,
     "tools": [{
       "name": "get_weather",
       "description": "Get current weather for a location",
@@ -134,7 +134,7 @@ curl https://api.anthropic.com/v1/messages \
   -H "anthropic-version: 2023-06-01" \
   -d '{
     "model": "{{OPUS_ID}}",
-    "max_tokens": 1024,
+    "max_tokens": 16000,
     "tools": [{
       "name": "get_weather",
       "description": "Get current weather for a location",
@@ -186,11 +186,11 @@ curl https://api.anthropic.com/v1/messages \
 
 ## 扩展思考
 
-> **Opus 4.7、Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在 Opus 4.7 上已移除（如发送则返回 400）；在 Opus 4.6 和 Sonnet 4.6 上已弃用。
+> **Opus 4.8、Opus 4.7、Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在 Opus 4.8 和 4.7 上已移除（如发送则返回 400）；在 Opus 4.6 和 Sonnet 4.6 上已弃用。
 > **旧版本模型：** 使用 `"type": "enabled"` 配合 `"budget_tokens": N`（必须小于 `max_tokens`，最小 1024）。
 
 ```bash
-# Opus 4.7 / 4.6: 自适应思考（推荐）
+# Opus 4.8 / 4.7 / 4.6：自适应思考（推荐）
 curl https://api.anthropic.com/v1/messages \
   -H "Content-Type: application/json" \
   -H "x-api-key: $ANTHROPIC_API_KEY" \

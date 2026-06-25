@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — Go'
-description: Go SDK reference
-ccVersion: 2.1.128
+description: Go SDK 参考
+ccVersion: 2.1.154
 -->
 # Claude API — Go
 
@@ -34,7 +34,7 @@ client := anthropic.NewClient(
 
 ## 模型常量
 
-Go SDK 提供了类型化的模型常量：`anthropic.ModelClaudeOpus4_7`、`anthropic.ModelClaudeOpus4_6`、`anthropic.ModelClaudeSonnet4_6`、`anthropic.ModelClaudeHaiku4_5_20251001`。除非用户另有指定，否则使用 `ModelClaudeOpus4_7`。
+Go SDK 提供了类型化的模型常量：`anthropic.ModelClaudeOpus4_8`、`anthropic.ModelClaudeOpus4_7`、`anthropic.ModelClaudeSonnet4_6`、`anthropic.ModelClaudeHaiku4_5_20251001`。除非用户另有指定，否则使用 `ModelClaudeOpus4_8`。
 
 ---
 
@@ -42,8 +42,8 @@ Go SDK 提供了类型化的模型常量：`anthropic.ModelClaudeOpus4_7`、`ant
 
 ```go
 response, err := client.Messages.New(context.Background(), anthropic.MessageNewParams{
-    Model:     anthropic.ModelClaudeOpus4_6,
-    MaxTokens: 1024,
+    Model:     anthropic.ModelClaudeOpus4_8,
+    MaxTokens: 16000,
     Messages: []anthropic.MessageParam{
         anthropic.NewUserMessage(anthropic.NewTextBlock("What is the capital of France?")),
     },
@@ -66,7 +66,7 @@ for _, block := range response.Content {
 ```go
 stream := client.Messages.NewStreaming(context.Background(), anthropic.MessageNewParams{
     Model:     anthropic.ModelClaudeOpus4_6,
-    MaxTokens: 1024,
+    MaxTokens: 64000,
     Messages: []anthropic.MessageParam{
         anthropic.NewUserMessage(anthropic.NewTextBlock("Write a haiku")),
     },
@@ -145,7 +145,7 @@ runner := client.Beta.Messages.NewToolRunner(
     anthropic.BetaToolRunnerParams{
         BetaMessageNewParams: anthropic.BetaMessageNewParams{
             Model:     anthropic.ModelClaudeOpus4_6,
-            MaxTokens: 1024,
+            MaxTokens: 16000,
             Messages: []anthropic.BetaMessageParam{
                 anthropic.NewBetaUserMessage(anthropic.NewBetaTextBlock("What's the weather in Paris?")),
             },
@@ -221,7 +221,7 @@ func main() {
     for {
         resp, err := client.Messages.New(context.Background(), anthropic.MessageNewParams{
             Model:     anthropic.ModelClaudeSonnet4_6,
-            MaxTokens: 1024,
+            MaxTokens: 16000,
             Messages:  messages,
             Tools:     tools,
         })
@@ -289,12 +289,12 @@ func main() {
 
 **自适应思考是 Claude 4.6+ 模型的推荐模式。** Claude 动态决定何时以及思考多少。结合 `effort` 参数进行成本-质量控制。
 
-源自 `anthropic-sdk-go/message.go`（`ThinkingConfigParamUnion`、`NewThinkingConfigAdaptiveParam`）。
+源自 `anthropic-sdk-go/message.go`（`ThinkingConfigParamUnion`、`ThinkingConfigAdaptiveParam`）。
 
 ```go
 // 没有 ThinkingConfigParamOfAdaptive 辅助函数 —— 直接构造 union
 // 结构体字面量并获取变体的地址。
-adaptive := anthropic.NewThinkingConfigAdaptiveParam()
+adaptive := anthropic.ThinkingConfigAdaptiveParam{}
 params := anthropic.MessageNewParams{
     Model:     anthropic.ModelClaudeSonnet4_6,
     MaxTokens: 16000,
@@ -360,6 +360,19 @@ Tools: []anthropic.ToolUnionParam{
 
 ---
 
+## 停止详情
+
+当 `StopReason` 为 `anthropic.StopReasonRefusal` 时，响应包含结构化的 `StopDetails`：
+
+```go
+if resp.StopReason == anthropic.StopReasonRefusal {
+    fmt.Println("Category:", resp.StopDetails.Category)     // "cyber" | "bio" | ""
+    fmt.Println("Explanation:", resp.StopDetails.Explanation)
+}
+```
+
+---
+
 ## PDF / 文档输入
 
 `NewDocumentBlock` 通用辅助函数接受任何源类型。`MediaType`/`Type` 自动设置。
@@ -377,20 +390,7 @@ msg := anthropic.NewUserMessage(
 
 ---
 
-## 停止详情
-
-当 `StopReason` 为 `anthropic.StopReasonRefusal` 时，响应包含结构化的 `StopDetails`：
-
-```go
-if resp.StopReason == anthropic.StopReasonRefusal {
-    fmt.Println("Category:", resp.StopDetails.Category)     // "cyber" | "bio" | ""
-    fmt.Println("Explanation:", resp.StopDetails.Explanation)
-}
-```
-
----
-
-## 文件 API（测试版）
+## Files API（测试版）
 
 位于 `client.Beta.Files` 下。方法是 **`Upload`**（不是 `New`/`Create`），参数结构体是 `BetaFileUploadParams`。`File` 字段接受 `io.Reader`；使用 `anthropic.File()` 附加文件名 + 内容类型用于多部分编码。
 
@@ -416,7 +416,7 @@ meta, err := client.Beta.Files.Upload(ctx, anthropic.BetaFileUploadParams{
 ```go
 params := anthropic.BetaMessageNewParams{
     Model:     anthropic.ModelClaudeOpus4_6,  // 也支持：ModelClaudeSonnet4_6
-    MaxTokens: 1024,
+    MaxTokens: 16000,
     Betas:     []anthropic.AnthropicBeta{"compact-2026-01-12"},
     ContextManagement: anthropic.BetaContextManagementConfigParam{
         Edits: []anthropic.BetaContextManagementConfigEditUnionParam{

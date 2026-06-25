@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Managed Agents reference — Python'
-description: Reference guide for using the Anthropic Python SDK to create and manage agents, sessions, environments, streaming, custom tools, files, and MCP servers
-ccVersion: 2.1.128
+description: 使用 Anthropic Python SDK 创建和管理智能体、会话、环境、流式传输、自定义工具、文件及 MCP 服务器的参考指南
+ccVersion: 2.1.154
 -->
 # Managed Agents — Python
 
@@ -20,10 +20,12 @@ pip install anthropic
 ```python
 import anthropic
 
-# 默认（使用 ANTHROPIC_API_KEY 环境变量）
+# 默认 —— 从环境解析凭据：
+# ANTHROPIC_API_KEY，或 ANTHROPIC_AUTH_TOKEN，或 `ant auth login` profile。
+# 本地开发时优先使用此方式；不要硬编码密钥。
 client = anthropic.Anthropic()
 
-# 显式 API key
+# 显式 API key（仅在必须注入特定密钥时使用）
 client = anthropic.Anthropic(api_key="your-api-key")
 ```
 

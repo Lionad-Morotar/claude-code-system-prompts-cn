@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Agent Design Patterns'
-description: Reference guide covering decision heuristics for building agents on the Claude API, including tool surface design, context management, caching strategies, and composing tool calls
-ccVersion: 2.1.91
+description: 在 Claude API 上构建代理的决策启发式参考指南，涵盖工具界面设计、上下文管理、缓存策略和工具调用组合
+ccVersion: 2.1.154
 -->
 # Agent 设计模式
 
@@ -95,7 +95,7 @@ Claude 不知道你的应用程序的安全边界、审批策略或 UX 面。Cla
 
 | 约束（来自 `prompt-caching.md`） | 代理特定解决方案 |
 | --- | --- |
-| 在会话中间编辑系统提示词会使缓存失效。 | 在 `messages` 数组中追加 `<system-reminder>` 块代替。缓存前缀保持不变。Claude Code 使用此方法进行时间更新和模式切换。 |
+| 在会话中间编辑系统提示词会使缓存失效。 | 改为在 `messages[]` 中追加 `{"role": "system", ...}` 消息（Beta，需支持的模型 —— 参见 `prompt-caching.md` §对话中间的系统消息）。缓存前缀保持不变，模型将其视为操作者权限指令而非用户文本。在不支持此功能的模型上，回退到用户轮次中的 `<system-reminder>` 文本块。 |
 | 在会话中间切换模型会使缓存失效。 | 使用更便宜模型的 **子代理** 处理子任务；主循环保持在一个模型上。Claude Code 的 Explore 子代理使用 Haiku 就是这种方式。 |
 | 在会话中间添加/移除工具会使缓存失效。 | 使用 **工具搜索** 进行动态发现 —— 它追加工具模式而非替换，因此现有前缀得以保留。 |
 

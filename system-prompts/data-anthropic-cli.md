@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Anthropic CLI'
 description: ant CLI 的参考文档，涵盖安装、认证、命令结构、输入输出控制、托管智能体工作流和脚本化使用模式
-ccVersion: 2.1.145
+ccVersion: 2.1.154
 -->
 # Anthropic CLI (`ant`)
 
@@ -33,7 +33,28 @@ curl -fsSL "https://github.com/anthropics/anthropic-cli/releases/download/v${VER
 go install github.com/anthropics/anthropic-cli/cmd/ant@latest
 ```
 
-认证通过环境变量 `ANTHROPIC_API_KEY` 进行。用 `ANTHROPIC_BASE_URL` 或 `--base-url` 覆盖主机地址。
+**认证** —— CLI 解析凭据的方式与 SDK 相同（先匹配的优先）：显式标志，然后是 `ANTHROPIC_API_KEY` / `ANTHROPIC_AUTH_TOKEN` 环境变量，然后是 `ANTHROPIC_PROFILE`，最后是 `ant auth login` 中的活动 profile。用 `ANTHROPIC_BASE_URL` 或 `--base-url` 覆盖主机地址。
+
+- **API key**：在环境中设置 `ANTHROPIC_API_KEY`。
+- **OAuth profile**（无需管理静态密钥）：`ant auth login` 打开浏览器，交换短期令牌，并将 profile 存储在 `~/.config/anthropic/` 下。后续 `ant`（和 SDK）调用会自动识别。`ant auth status` 显示活动 profile；`ant auth logout` 清除它。
+
+将活动凭据传递给子进程或原始 HTTP 脚本：
+
+```sh
+# 裸访问令牌 —— 用于 curl 的 Authorization 头
+curl https://api.anthropic.com/v1/messages \
+  -H "Authorization: Bearer $(ant auth print-credentials --access-token)" \
+  -H "anthropic-version: 2023-06-01" \
+  -H "content-type: application/json" \
+  -d '{"model": "{{OPUS_ID}}", "max_tokens": 1024, "messages": [{"role": "user", "content": "Hello"}]}'
+
+# .env 格式 —— 设置 ANTHROPIC_AUTH_TOKEN（如果 profile 中有的话，也会设置 ANTHROPIC_BASE_URL）。
+# 输出是裸的 KEY=value（没有 `export`），因此使用 `set -a` 自动为子进程导出：
+set -a; eval "$(ant auth print-credentials --env)"; set +a
+python my_script.py   # SDK 会识别 ANTHROPIC_AUTH_TOKEN
+```
+
+OAuth 令牌放在 `Authorization: Bearer` 上（不是 `x-api-key:`）。令牌是短期的，通过环境变量传递时不会自动刷新，因此对于长时间运行的脚本，请在过期前重新运行 `print-credentials`。如果同时设置了 `ANTHROPIC_API_KEY` 和 `ANTHROPIC_AUTH_TOKEN`，SDK 会发送两个头，API 会拒绝请求——在 `eval` 执行 `--env` 输出之前，先 unset `ANTHROPIC_API_KEY`。
 
 ## 命令结构
 
@@ -41,7 +62,7 @@ go install github.com/anthropics/anthropic-cli/cmd/ant@latest
 ant <resource>[:<subresource>] <action> [flags]
 ```
 
-Beta 资源（agents, sessions, environments, deployments, skills, vaults, memory stores）位于 `beta:` 下——CLI 自动发送正确的 `anthropic-beta` 头，因此除非用 `--beta <header>` 覆盖，否则不要自行传递。 对于自托管环境，`ant beta:worker poll/run` 和 `ant beta:environments:work stats/stop` 用于驱动和监控工作队列——参见 `shared/managed-agents-self-hosted-sandboxes.md`。
+Beta 资源（agents, sessions, environments, deployments, skills, vaults, memory stores）位于 `beta:` 下——CLI 自动发送正确的 `anthropic-beta` 头，因此除非用 `--beta <header>` 覆盖，否则不要自行传递。对于自托管环境，`ant beta:worker poll/run` 和 `ant beta:environments:work stats/stop` 用于驱动和监控工作队列——参见 `shared/managed-agents-self-hosted-sandboxes.md`。
 
 ```sh
 ant models list

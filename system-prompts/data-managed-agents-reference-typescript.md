@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Managed Agents reference — TypeScript'
-description: Reference guide for using the Anthropic TypeScript SDK to create and manage agents, sessions, environments, streaming, custom tools, file uploads, and MCP server integration
-ccVersion: 2.1.128
+description: 使用 Anthropic TypeScript SDK 创建和管理智能体、会话、环境、流式传输、自定义工具、文件上传及 MCP 服务器集成的参考指南
+ccVersion: 2.1.154
 -->
 # Managed Agents — TypeScript
 
@@ -20,10 +20,12 @@ npm install @anthropic-ai/sdk
 ```typescript
 import Anthropic from "@anthropic-ai/sdk";
 
-// Default (uses ANTHROPIC_API_KEY env var)
+// 默认 —— 从环境解析凭据：
+// ANTHROPIC_API_KEY，或 ANTHROPIC_AUTH_TOKEN，或 `ant auth login` profile。
+// 本地开发时优先使用此方式；不要硬编码密钥。
 const client = new Anthropic();
 
-// Explicit API key
+// 显式 API key（仅在必须注入特定密钥时使用）
 const client = new Anthropic({ apiKey: "your-api-key" });
 ```
 
@@ -48,12 +50,12 @@ console.log(environment.id); // env_...
 
 ## 创建代理（必需的第一步）
 
-> ⚠️ **There is no inline agent config.** `model`/`system`/`tools` live on the agent object, not the session. Always start with `agents.create()` — the session only takes `agent: { type: "agent", id: agent.id }`.
+> ⚠️ **不存在内联代理配置。** `model`/`system`/`tools` 存在于代理对象上，而非会话。始终从 `agents.create()` 开始——会话只接受 `agent: { type: "agent", id: agent.id }`。
 
 ### 最简示例
 
 ```typescript
-// 1. Create the agent (reusable, versioned)
+// 1. 创建代理（可复用，带版本管理）
 const agent = await client.beta.agents.create(
   {
     name: "Coding Assistant",
@@ -62,7 +64,7 @@ const agent = await client.beta.agents.create(
   },
 );
 
-// 2. Start a session
+// 2. 启动会话
 const session = await client.beta.sessions.create(
   {
     agent: { type: "agent", id: agent.id, version: agent.version },
@@ -141,7 +143,7 @@ await client.beta.sessions.events.send(
 ## 流式事件（SSE）
 
 ```typescript
-// Stream-first: open stream and send concurrently
+// 流优先：同时打开流和发送
 const [events] = await Promise.all([
   collectStream(session.id),
   client.beta.sessions.events.send(
@@ -150,7 +152,7 @@ const [events] = await Promise.all([
   ),
 ]);
 
-// Standalone stream iteration:
+// 独立的流迭代：
 const stream = await client.beta.sessions.events.stream(
   session.id,
 );
@@ -165,7 +167,7 @@ for await (const event of stream) {
       }
       break;
     case "agent.custom_tool_use":
-      // Custom tool invocation — session is now idle
+      // 自定义工具调用——会话现在处于 idle 状态
       console.log(`\
 Custom tool call: ${event.name}`);
       console.log(`Input: ${JSON.stringify(event.input)}`);
@@ -280,7 +282,7 @@ const file = await client.beta.files.upload({
   purpose: "agent",
 });
 
-// Use in a session
+// 在会话中使用
 const session = await client.beta.sessions.create(
   {
     agent: { type: "agent", id: agent.id, version: agent.version },
@@ -299,7 +301,7 @@ const session = await client.beta.sessions.create(
 ```typescript
 import fs from "fs";
 
-// List files associated with a session
+// 列出与某个会话关联的文件
 const files = await client.beta.files.list({
   scope_id: session.id,
   betas: ["managed-agents-2026-04-01"],
@@ -307,7 +309,7 @@ const files = await client.beta.files.list({
 for (const f of files.data) {
   console.log(f.filename, f.size_bytes);
 
-  // Download and save to disk
+  // 下载并保存到磁盘
   const resp = await client.beta.files.download(f.id);
   const buffer = Buffer.from(await resp.arrayBuffer());
   fs.writeFileSync(f.filename, buffer);
@@ -321,17 +323,17 @@ for (const f of files.data) {
 ## 会话管理
 
 ```typescript
-// Get session details
+// 获取会话详情
 const session = await client.beta.sessions.retrieve("sesn_011CZxAbc123Def456");
 console.log(session.status, session.usage);
 
-// List sessions
+// 列出会话
 const sessions = await client.beta.sessions.list();
 
-// Delete a session
+// 删除会话
 await client.beta.sessions.delete("sesn_011CZxAbc123Def456");
 
-// Archive a session
+// 归档会话
 await client.beta.sessions.archive("sesn_011CZxAbc123Def456");
 ```
 
@@ -340,7 +342,7 @@ await client.beta.sessions.archive("sesn_011CZxAbc123Def456");
 ## MCP 服务器集成
 
 ```typescript
-// Agent declares MCP server (no auth here — auth goes in a vault)
+// 代理声明 MCP 服务器（这里不涉及认证——认证放在 vault 中）
 const agent = await client.beta.agents.create({
   name: "MCP Agent",
   model: "{{OPUS_ID}}",
@@ -353,7 +355,7 @@ const agent = await client.beta.agents.create({
   ],
 });
 
-// Session attaches vault(s) containing credentials for those MCP server URLs
+// 会话附加包含这些 MCP 服务器 URL 凭据的 vault(s)
 const session = await client.beta.sessions.create({
   agent: agent.id,
   environment_id: environment.id,

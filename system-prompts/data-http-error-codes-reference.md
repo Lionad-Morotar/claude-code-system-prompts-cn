@@ -1,7 +1,7 @@
 <!--
 name: 'Data: HTTP error codes reference'
-description: Reference for HTTP error codes returned by the Claude API with common causes and handling strategies
-ccVersion: 2.1.128
+description: Claude API 返回的 HTTP 错误代码参考，包含常见原因和处理策略
+ccVersion: 2.1.154
 -->
 # HTTP 错误代码参考
 
@@ -60,8 +60,10 @@ ccVersion: 2.1.128
 - 缺少 `x-api-key` 头或 `Authorization` 头
 - API 密钥格式无效
 - API 密钥已撤销或删除
+- OAuth bearer 令牌通过 `x-api-key` 发送，而不是 `Authorization: Bearer`
+- 同时设置了 `ANTHROPIC_API_KEY` 和 `ANTHROPIC_AUTH_TOKEN` —— SDK 会发送两个头，API 会拒绝请求
 
-**解决方法：** 确保 `ANTHROPIC_API_KEY` 环境变量设置正确。
+**解决方法：** 设置 `ANTHROPIC_API_KEY`，或运行 `ant auth login` 并让客户端构造函数保持空。对于使用 OAuth 令牌的原始 HTTP，使用 `Authorization: Bearer <token>`（而不是 `x-api-key:`）。
 
 ---
 
@@ -110,7 +112,7 @@ ccVersion: 2.1.128
 - 扩展思考中 `budget_tokens` >= `max_tokens`
 - 工具定义模式无效
 
-**Opus 4.7 上的特定 400 错误：**
+**Opus 4.8 / 4.7 上的模型特定 400 错误：**
 
 - `temperature`、`top_p`、`top_k` 已被移除 — 发送其中任何一个参数都会返回 400。请删除这些参数；参见 `shared/model-migration.md` → Per-SDK Syntax Reference。
 - `thinking: {type: "enabled", budget_tokens: N}` 已被移除 — 发送此参数会返回 400。请改用 `thinking: {type: "adaptive"}`。
@@ -171,8 +173,8 @@ thinking: budget_tokens=10000, max_tokens=16000
 
 | 错误                         | 错误代码            | 解决方法                                                     |
 | ------------------------------- | ---------------- | ------------------------------------------------------- |
-| `temperature`/`top_p`/`top_k`（Opus 4.7） | 400    | 删除这些参数（参见 `shared/model-migration.md`）  |
-| `budget_tokens`（Opus 4.7）     | 400              | 改用 `thinking: {type: "adaptive"}`                      |
+| `temperature`/`top_p`/`top_k`（Opus 4.8 / 4.7） | 400 | 删除这些参数（参见 `shared/model-migration.md`）  |
+| `budget_tokens`（Opus 4.8 / 4.7） | 400              | 改用 `thinking: {type: "adaptive"}`                      |
 | `budget_tokens` >= `max_tokens`（旧版模型） | 400              | 确保 `budget_tokens` < `max_tokens`                   |
 | 模型 ID 拼写错误                | 404              | 使用有效的模型 ID，如 `{{OPUS_ID}}`               |
 | 第一条消息是 `assistant`    | 400              | 第一条消息必须是 `user`                            |
@@ -219,7 +221,7 @@ try {
 
 所有异常类都继承自 `Anthropic.APIError`，它具有 `status` 属性。使用 `instanceof` 检查时，从最具体的到最不具体的顺序进行（例如，在 `APIError` 之前检查 `RateLimitError`）。
 
-## 错误 `.type` 字段
+### 错误 `.type` 字段
 
 所有 `APIStatusError` 子类现在都暴露一个 `.type` 属性（Python：`.type`，TypeScript：`.type`，Java：`.errorType()`，Go：`.Type()`，Ruby：`.type`，PHP：`.type`），返回 API 错误类型字符串（例如 `"invalid_request_error"`、`"authentication_error"`、`"rate_limit_error"`、`"overloaded_error"`）。当你需要比 HTTP 状态码更细粒度的分类时使用此属性 —— 例如，区分 `"billing_error"` 和 `"permission_error"`（两者都映射到 403）。
 

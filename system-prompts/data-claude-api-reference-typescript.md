@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Claude API reference — TypeScript'
-description: TypeScript SDK reference including installation, client initialization, basic requests, thinking, and multi-turn conversation
-ccVersion: 2.1.128
+description: TypeScript SDK 参考，包括安装、客户端初始化、基本请求、思考和多轮对话
+ccVersion: 2.1.154
 -->
 # Claude API — TypeScript
 
@@ -16,10 +16,12 @@ npm install @anthropic-ai/sdk
 ```typescript
 import Anthropic from "@anthropic-ai/sdk";
 
-// 默认（使用 ANTHROPIC_API_KEY 环境变量）
+// 默认 —— 从环境解析凭据：
+// ANTHROPIC_API_KEY、ANTHROPIC_AUTH_TOKEN 或 `ant auth login` 配置文件。
+// 本地开发推荐此方式；不要硬编码密钥。
 const client = new Anthropic();
 
-// 显式指定 API 密钥
+// 显式指定 API 密钥（仅在必须注入特定密钥时使用）
 const client = new Anthropic({ apiKey: "your-api-key" });
 ```
 
@@ -30,7 +32,7 @@ const client = new Anthropic({ apiKey: "your-api-key" });
 ```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
-  max_tokens: 1024,
+  max_tokens: 16000,
   messages: [{ role: "user", content: "What is the capital of France?" }],
 });
 // response.content 是 ContentBlock[] — 一个可辨识的联合类型。在使用前需通过 .type 进行类型收窄
@@ -49,11 +51,36 @@ for (const block of response.content) {
 ```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
-  max_tokens: 1024,
+  max_tokens: 16000,
   system:
     "You are a helpful coding assistant. Always provide examples in Python.",
   messages: [{ role: "user", content: "How do I read a JSON file?" }],
 });
+```
+
+### 对话中途系统消息（Beta，模型限制）
+
+对于在对话中途到达的操作指令（模式切换、注入状态），将 `{role: "system", ...}` 追加到 `messages` 中，而不是编辑顶层 `system` —— 这样可以保留缓存前缀并携带操作员权限。必须跟在用户消息之后；不能作为 `messages[0]`。不支持的模型返回 400（`role 'system' is not supported on this model`）。关于何时使用此方式与顶层 `system`，请参阅 `shared/prompt-caching.md`。
+
+```typescript
+// messages 中 role:"system" 的 SDK 类型尚待更新 —— 在 SDK 更新之前直接传入 beta 头，
+// 之后切换为使用 client.beta.messages.create 并设置 betas: ["mid-conversation-system-2026-04-07"]。
+const response = await client.messages.create(
+  {
+    model: MODEL_ID, // 必须支持对话中途系统消息
+    max_tokens: 16000,
+    system: [
+      { type: "text", text: STABLE_SYSTEM, cache_control: { type: "ephemeral" } },
+    ],
+    messages: [
+      ...history,
+      { role: "user", content: userMessage },
+      // @ts-expect-error — role:"system" 等待 SDK 类型更新
+      { role: "system", content: "Terse mode enabled — keep responses under 40 words." },
+    ],
+  },
+  { headers: { "anthropic-beta": "mid-conversation-system-2026-04-07" } },
+);
 ```
 
 ---
@@ -65,7 +92,7 @@ const response = await client.messages.create({
 ```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
-  max_tokens: 1024,
+  max_tokens: 16000,
   messages: [
     {
       role: "user",
@@ -90,7 +117,7 @@ const imageData = fs.readFileSync("image.png").toString("base64");
 
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
-  max_tokens: 1024,
+  max_tokens: 16000,
   messages: [
     {
       role: "user",
@@ -119,7 +146,7 @@ const response = await client.messages.create({
 ```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
-  max_tokens: 1024,
+  max_tokens: 16000,
   cache_control: { type: "ephemeral" }, // 自动缓存最后一个可缓存的块
   system: "You are an expert on this large document...",
   messages: [{ role: "user", content: "Summarize the key points" }],
@@ -133,7 +160,7 @@ const response = await client.messages.create({
 ```typescript
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
-  max_tokens: 1024,
+  max_tokens: 16000,
   system: [
     {
       type: "text",
@@ -147,7 +174,7 @@ const response = await client.messages.create({
 // 显式指定 TTL（存活时间）
 const response2 = await client.messages.create({
   model: "{{OPUS_ID}}",
-  max_tokens: 1024,
+  max_tokens: 16000,
   system: [
     {
       type: "text",
@@ -157,7 +184,6 @@ const response2 = await client.messages.create({
   ],
   messages: [{ role: "user", content: "Summarize the key points" }],
 });
-```
 ```
 
 ### 验证缓存命中
@@ -174,11 +200,11 @@ console.log(response.usage.input_tokens);                // 未缓存的 token�
 
 ## 扩展思考
 
-> **Opus 4.7、Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在 Opus 4.7 上已移除（如发送则返回 400）；在 Opus 4.6 和 Sonnet 4.6 上已弃用。
+> **Opus 4.8、Opus 4.7、Opus 4.6 和 Sonnet 4.6：** 使用自适应思考。`budget_tokens` 在 Opus 4.8 和 4.7 上已移除（如发送则返回 400）；在 Opus 4.6 和 Sonnet 4.6 上已弃用。
 > **旧版模型：** 使用 `thinking: {type: "enabled", budget_tokens: N}`（必须小于 `max_tokens`，最小值为 1024）。
 
 ```typescript
-// Opus 4.7 / 4.6：自适应思考（推荐）
+// Opus 4.8 / 4.7 / 4.6：自适应思考（推荐）
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
   max_tokens: 16000,
@@ -239,7 +265,7 @@ const messages: Anthropic.MessageParam[] = [
 
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
-  max_tokens: 1024,
+  max_tokens: 16000,
   messages: messages,
 });
 ```
@@ -254,7 +280,7 @@ const response = await client.messages.create({
 
 ### 压缩（长对话）
 
-> **Beta 功能，Opus 4.7、Opus 4.6 和 Sonnet 4.6。** 当对话接近 200K 上下文窗口时，压缩功能会自动在服务端总结早期上下文。API 会返回一个 `compaction` 块；你必须在后续请求中将其传回 —— 追加 `response.content`，而不仅仅是文本。
+> **Beta 功能，Opus 4.8、Opus 4.7、Opus 4.6 和 Sonnet 4.6。** 当对话接近 200K 上下文窗口时，压缩功能会自动在服务端总结早期上下文。API 会返回一个 `compaction` 块；你必须在后续请求中将其传回 —— 追加 `response.content`，而不仅仅是文本。
 
 ```typescript
 import Anthropic from "@anthropic-ai/sdk";
@@ -268,7 +294,7 @@ async function chat(userMessage: string): Promise<string> {
   const response = await client.beta.messages.create({
     betas: ["compact-2026-01-12"],
     model: "{{OPUS_ID}}",
-    max_tokens: 4096,
+    max_tokens: 16000,
     messages,
     context_management: {
       edits: [{ type: "compact_20260112" }],
@@ -326,7 +352,7 @@ if (response.stop_reason === "refusal" && response.stop_details) {
 // 自动缓存（最简单 —— 缓存最后一个可缓存的块）
 const response = await client.messages.create({
   model: "{{OPUS_ID}}",
-  max_tokens: 1024,
+  max_tokens: 16000,
   cache_control: { type: "ephemeral" },
   system: largeDocumentText, // 例如，50KB 的上下文
   messages: [{ role: "user", content: "Summarize the key points" }],

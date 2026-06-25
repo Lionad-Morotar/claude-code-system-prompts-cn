@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Prompt Caching — Design & Optimization'
-description: Document on how to design prompt-building code for effective caching, including placement patterns and anti-patterns.
-ccVersion: 2.1.145
+description: 如何设计提示构建代码以实现高效缓存，包括放置模式和反模式
+ccVersion: 2.1.154
 -->
 # 提示缓存 — 设计与优化
 
@@ -69,7 +69,7 @@ messages[-1].content[-1].cache_control = {"type": "ephemeral"}
 
 ### 对话中途的系统消息
 
-**仅限 {{OPUS_NAME}}；无需 beta 头。** 当操作指令在对话中途到达时——模式切换、更新的上下文、动态注入的状态——将其作为 `{"role": "system", "content": "..."}` 追加到 `messages[]` 中，而不是编辑顶层的 `system`。编辑顶层的 `system` 会更改整个对话历史之前的前缀，导致每个已缓存的轮次都被重新处理而不使用缓存；而 `role: "system"` 消息位于历史之后，保持已缓存的前缀完好无损。
+**Beta 功能，受模型限制。** 当操作指令在对话中途到达时——模式切换、更新的上下文、动态注入的状态——将其作为 `{"role": "system", "content": "..."}` 追加到 `messages[]` 中，而不是编辑顶层的 `system`。编辑顶层的 `system` 会更改整个对话历史之前的前缀，导致每个已缓存的轮次都被重新处理而不使用缓存；而 `role: "system"` 消息位于历史之后，保持已缓存的前缀完好无损。
 
 ```json
 // 顶层 system 保持字节一致；新指令放在已缓存的历史之后
@@ -83,7 +83,7 @@ messages[-1].content[-1].cache_control = {"type": "ephemeral"}
 
 这也是将操作指令嵌入为用户轮次中的文本（`<system-reminder>` 模式）的防提示注入替代方案：两者具有相同的缓存特征，但 `role: "system"` 是防伪造的操作通道，而用户/工具内容中的文本可以被任何写入用户可见输入的内容伪造。
 
-适用于 {{OPUS_NAME}}；无需 beta 头。必须跟在 `role: "user"` 消息之后（或以服务器工具使用结尾的 `assistant` 消息之后），且必须是 `messages` 中的最后一条记录，或后跟 `assistant` 轮次；不能作为 `messages[0]`——对初始提示使用顶层 `system`。内容仅限文本。不支持的模型返回 400（`BadRequestError`：`role 'system' is not supported on this model`）；捕获该错误并回退到将指令放入用户轮次的 `<system-reminder>` 块中。
+需要 `anthropic-beta: mid-conversation-system-2026-04-07`。必须跟在 `role: "user"` 消息之后（或以服务器工具结果结尾的 assistant 消息之后）；不能作为 `messages[0]`——对初始提示使用顶层 `system`。内容仅限文本。受模型限制——不支持的模型返回 400（`BadRequestError`：`role 'system' is not supported on this model`）；捕获该错误并回退到将指令放入用户轮次的 `<system-reminder>` 块中。
 
 ### 每次从头变化的提示
 
@@ -135,10 +135,10 @@ messages[-1].content[-1].cache_control = {"type": "ephemeral"}
 | 模型 | 最小值 |
 |---|---:|
 | Opus 4.8、Opus 4.7、Opus 4.6、Opus 4.5、Haiku 4.5 | 4096 令牌 |
-| Fable 5、Sonnet 4.6、Haiku 3.5、Haiku 3 | 2048 令牌 |
+| Sonnet 4.6、Haiku 3.5、Haiku 3 | 2048 令牌 |
 | Sonnet 4.5、Sonnet 4.1、Sonnet 4、Sonnet 3.7 | 1024 令牌 |
 
-一个 3K 令牌的提示词在 Sonnet 4.5 和 Fable 5 上可以缓存，但在 Opus 4.8 上则不会。
+一个 3K 令牌的提示词在 Sonnet 4.5 上可以缓存，但在 Opus 4.8 上则不会。
 
 **经济学：** 缓存读取成本约为基础输入价格的 0.1 倍。缓存写入成本为 **5 分钟 TTL 的 1.25 倍、1 小时 TTL 的 2 倍**。盈亏平衡取决于 TTL：使用 5 分钟 TTL，两个请求即可平衡（1.25× + 0.1× = 1.35× 对比无缓存的 2×）；使用 1 小时 TTL，至少需要三个请求（2× + 0.2× = 2.2× 对比无缓存的 3×）。1 小时 TTL 能在突发流量的间隙中保持条目存活，但双倍的写入成本意味着需要更多读取才能回本。
 
