@@ -1,7 +1,7 @@
 <!--
 name: 'Tool Description: SendMessageTool'
 description: 团队代理版的 SendMessage 工具描述
-ccVersion: 2.1.118
+ccVersion: 2.1.147
 -->
 
 # SendMessage

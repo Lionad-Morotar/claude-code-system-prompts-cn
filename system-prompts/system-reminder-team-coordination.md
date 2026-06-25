@@ -1,7 +1,7 @@
 <!--
 name: 'System Reminder: Team Coordination'
 description: System reminder for team coordination
-ccVersion: 2.1.16
+ccVersion: 2.1.147
 variables:
   - TEAM_OBJECT
 -->
@@ -21,13 +21,13 @@ variables:
 
 读取团队配置以发现你的队友名称。定期检查任务列表。当应该划分工作时创建新任务。完成后标记任务已解决。
 
-**重要：** 始终按其名称（例如，"team-lead"、"analyzer"、"researcher"）引用队友，绝不通过 UUID。发送消息时，直接使用名称：
+**重要：** 始终按其名称引用活跃队友（例如 "team-lead"、"analyzer"、"researcher"）。仅在恢复已完成的后台代理时使用 `agentId`（格式 `a...-...`，来自生成结果）。发送消息时，直接使用名称：
 
 ```json
 {
-  "operation": "write",
-  "target_agent_id": "team-lead",
-  "value": "Your message here"
+  "to": "team-lead",
+  "message": "Your message here",
+  "summary": "Brief 5-10 word preview"
 }
 ```
 </system-reminder>

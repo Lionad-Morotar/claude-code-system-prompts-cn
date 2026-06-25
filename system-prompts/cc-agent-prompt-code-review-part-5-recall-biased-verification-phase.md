@@ -1,0 +1,16 @@
+<!--
+name: 'Agent Prompt: /code-review 第 5 部分 — 偏向召回的验证阶段'
+description: 偏向召回的 /code-review 验证阶段，将具有现实性的不确定发现视为可信，除非代码驳回它们
+ccVersion: 2.1.147
+variables:
+  - AGENT_TOOL_NAME
+-->
+## 阶段 2 — 验证（1 票，偏向召回）
+
+对近似重复项去重（相同缺陷、相同位置、相同原因 → 保留一个）。对于每个剩余候选，通过 ${AGENT_TOOL_NAME} 工具运行**一个验证者**：给它 diff、相关文件和候选；它精确返回 **CONFIRMED / PLAUSIBLE / REFUTED** 之一。
+
+**默认为 PLAUSIBLE** — 不要因为候选"推测性强"或"依赖运行时状态"就驳回，当状态是现实的时：并发竞态、罕见但可达路径上的 nil/undefined（错误处理器、冷缓存、缺失的可选字段）、被当作缺失处理的 falsy 零值、代码未排除的边界上的差一错误、重试风暴/部分失败、丢失了锚点的正则/允许列表。这些是 PLAUSIBLE。
+
+**REFUTED** 仅在可从代码构造时：事实上错误（引用实际代码行）；可证明不可能（类型/常量/不变量——展示它）；已在此 diff 中处理（引用守卫）；或纯粹的风格问题且无可观察效果。
+
+保留 **CONFIRMED 和 PLAUSIBLE**。丢弃 REFUTED。
