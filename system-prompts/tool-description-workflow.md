@@ -1,10 +1,9 @@
 <!--
-name: 'Tool Description: Workflow'
+name: '工具说明：Workflow'
 description: 描述 Workflow 工具，用于运行确定性的多子代理编排脚本，包括显式启用要求、脚本元数据、代理钩子、并发控制、预算管理、质量模式以及恢复行为
-ccVersion: 2.1.160
+ccVersion: 2.1.166
 variables:
   - WORKFLOW_TOOL_NAME
-  - WORKFLOW_SCRIPT_PATH_NOTE
   - WORKFLOW_AGENT_ISOLATION_OPTION
   - WORKFLOW_AGENT_ISOLATION_NOTE
   - WORKFLOW_GROUP_PREFIX
@@ -14,13 +13,13 @@ variables:
 Workflow 将工作结构化为跨多个代理——以实现全面性（分解并并行覆盖）、以确保可信度（在提交前进行独立视角和对抗性检查）、或以承担单个上下文无法容纳的规模（迁移、审计、广泛扫描）。脚本是你编码这种结构的地方：哪些分派出去、哪些验证、哪些综合。
 
 仅在用户已显式启用多代理编排时才调用此工具。Workflow 可能会生成数十个代理并消耗大量 token；用户必须主动要求这种规模，而不能由你自行推断。显式启用指以下情况之一：
-- 用户在消息中包含了 "workflow" 或 "workflows" 关键词（你会看到系统提醒确认这一点）。
-- Ultracode 已开启（系统提醒会确认）—— 参见下方 **Ultracode**。
-- 用户用自己的话直接要求你运行 workflow 或使用多代理编排（如"运行一个 workflow"、"fan out 代理"、"用子代理编排这个任务"）。该要求必须是用户自己的表述——仅仅是一个可能从 workflow 中受益的任务不构成启用条件。
+- 用户在消息中包含了 "ultracode" 关键词（你会看到系统提醒确认这一点）。
+- Ultracode 在当前会话中已开启（系统提醒会确认）——参见下方 **Ultracode**。
+- 用户用自己的话直接要求你运行 workflow 或使用多代理编排（如"使用 workflow"、"运行一个 workflow"、"fan out 代理"、"用子代理编排这个任务"）。该要求必须是用户自己的表述——仅仅是一个可能从 workflow 中受益的任务不构成启用条件。
 - 用户调用了一个技能或斜杠命令，其指令明确要求你调用 Workflow。
 - 用户要求你运行一个特定的命名或已保存的 workflow。
 
-对于任何其他任务——即使该任务明显能从并行处理中受益——不要调用此工具。使用 Agent 工具处理单个子代理，或简要描述多代理 workflow 能做什么以及大致成本，并询问用户是否要运行。可以提一下，他们可以在未来的消息中包含 "workflow" 来跳过询问。
+对于任何其他任务——即使该任务明显能从并行处理中受益——不要调用此工具。使用 Agent 工具处理单个子代理，或简要描述多代理 workflow 能做什么以及大致成本，并询问用户是否要运行。可以提一下，他们可以在未来的消息中使用 "use a workflow" 来跳过询问。
 
 当你确实要调用它时，正确的做法通常是**混合式**：先内联侦察（列出文件、找到渠道、确定 diff 范围）以发现工作列表，然后调用 Workflow 对其进行流水线处理。你不需要在*任务*之前知道形状——只需要在*编排步骤*之前。
 
@@ -54,7 +53,7 @@ Workflow 将工作结构化为跨多个代理——以实现全面性（分解�
 `meta` 对象必须是一个纯字面量——不能包含变量、函数调用、展开运算符或模板插值。必填字段：`name`、`description`。可选字段：`whenToUse`（在 workflow 列表中显示）、`phases`。在 meta.phases 和 phase() 调用中使用相同的阶段标题——标题会精确匹配；没有匹配 meta 条目的 phase() 调用会自动获得自己的进度组。当某个阶段使用特定的模型覆盖时，在该阶段条目中添加 `model`（例如 `{title: '验证', model: 'haiku'}`）。
 
 脚本主体钩子：
-- agent(prompt: string, opts?: {label?: string, phase?: string, schema?: object, model?: string, isolation?: ${WORKFLOW_AGENT_ISOLATION_OPTION}, agentType?: string}): Promise<any> —— 生成一个子代理。无 schema 时，返回其最终文本字符串。带 schema（JSON Schema）时，子代理被强制调用 StructuredOutput 工具，agent() 返回已验证的对象——无需手动解析。如果用户在运行中跳过了该代理，返回 null（用 .filter(Boolean) 过滤）。opts.label 覆盖显示标签。opts.phase 显式将此代理分配到某个进度组（在 pipeline()/parallel() 阶段内部使用此参数以避免全局 phase() 状态的竞态——相同 phase 字符串 → 相同分组框）。opts.model 覆盖此代理调用的模型。默认可省略——代理继承主循环模型（已解析的会话模型），这几乎总是正确的。仅当你高度确信不同层级适合该任务时才设置；不确定时，省略。opts.isolation: 'worktree' 在全新的 git worktree 中运行代理——开销较大（每个代理约 200-500ms 设置时间 + 磁盘开销），仅当代理并行修改文件且可能冲突时才使用；worktree 如果未改动会自动移除。${WORKFLOW_AGENT_ISOLATION_NOTE} opts.agentType 使用自定义子代理类型（如 'Explore'、'code-reviewer'）而非默认的 workflow 子代理——从与 Agent 工具相同的注册表中解析；可与 schema 组合使用（自定义代理的系统提示词会被追加 StructuredOutput 指令）。
+- agent(prompt: string, opts?: {label?: string, phase?: string, schema?: object, model?: string, isolation?: ${WORKFLOW_AGENT_ISOLATION_OPTION}, agentType?: string}): Promise<any> —— 生成一个子代理。无 schema 时，返回其最终文本字符串。带 schema（JSON Schema）时，子代理被强制调用 StructuredOutput 工具，agent() 返回已验证的对象——无需手动解析。如果用户在运行中跳过了该代理或子代理在重试后死于终端 API 错误，返回 null（用 .filter(Boolean) 过滤）。opts.label 覆盖显示标签。opts.phase 显式将此代理分配到某个进度组（在 pipeline()/parallel() 阶段内部使用此参数以避免全局 phase() 状态的竞态——相同 phase 字符串 → 相同分组框）。opts.model 覆盖此代理调用的模型。默认可省略——代理继承主循环模型（已解析的会话模型），这几乎总是正确的。仅当你高度确信不同层级适合该任务时才设置；不确定时，省略。opts.isolation: 'worktree' 在全新的 git worktree 中运行代理——开销较大（每个代理约 200-500ms 设置时间 + 磁盘开销），仅当代理并行修改文件且可能冲突时才使用；worktree 如果未改动会自动移除。${WORKFLOW_AGENT_ISOLATION_NOTE} opts.agentType 使用自定义子代理类型（如 'Explore'、'code-reviewer'）而非默认的 workflow 子代理——从与 Agent 工具相同的注册表中解析；可与 schema 组合使用（自定义代理的系统提示词会被追加 StructuredOutput 指令）。
 - pipeline(items, stage1, stage2, ...): Promise<any[]> —— 让每个 item 独立通过所有阶段，阶段之间没有屏障。item A 可能已在阶段 3 而 item B 仍在阶段 1。这是多阶段工作的**默认选择**。墙上时间 = 最慢的单 item 链，而非各阶段最慢者之和。每个阶段回调接收 (prevResult, originalItem, index)——在后续阶段中使用 originalItem/index 来标记工作，无需通过阶段 1 的返回值传递上下文。抛出异常的阶段会将该 item 置为 `null` 并跳过其剩余阶段。
 - parallel(thunks: Array<() => Promise<any>>): Promise<any[]> —— 并发运行任务。这是一个**屏障**：等待所有 thunk 完成后才返回。抛出异常的 thunk（或其代理出错）在结果数组中解析为 `null`——调用本身不会 reject，因此使用结果前先 .filter(Boolean)。仅当你确实需要所有结果汇聚时才使用。
 - log(message: string): void —— 向用户发送进度消息（在进度树上方显示为叙述行）
@@ -87,7 +86,7 @@ Workflow 代理可以通过 ToolSearch 访问所有会话连接的 MCP 工具—
   const c = await parallel(b.map(...))
 中间的 transform 不需要屏障。将其改写为 pipeline，把 transform 放在一个阶段内部。有疑问时：用 pipeline。
 
-并发 agent() 调用上限为 min(16, CPU 核心数 - 2) 每个 workflow——超出部分排队，有空闲槽位时运行。你仍然可以向 parallel()/pipeline() 传入 100 个 item，它们都会完成；只是任何时刻大约只有 10 个在运行。每个 workflow 生命周期内的代理总数上限为 1000——这是一个防止失控循环的后备限制，远高于任何实际 workflow 的需求。
+并发 agent() 调用上限为 min(16, CPU 核心数 - 2) 每个 workflow——超出部分排队，有空闲槽位时运行。你仍然可以向 parallel()/pipeline() 传入 100 个 item，它们都会完成；只是任何时刻大约只有 10 个在运行。每个 workflow 生命周期内的代理总数上限为 1000——这是一个防止失控循环的后备限制，远高于任何实际 workflow 的需求。单次 parallel()/pipeline() 调用最多接受 4096 个 item；传入更多会显式报错，而非静默截断。
 
 典范的多阶段模式——默认 pipeline，每个维度在审查完成后立即验证：
   export const meta = {
