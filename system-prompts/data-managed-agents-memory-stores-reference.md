@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Managed Agents memory stores reference'
-description: Reference documentation for Managed Agents memory stores, including store creation, session attachment, FUSE mounts, memory CRUD, concurrency, versions, redaction, and endpoint paths
-ccVersion: 2.1.119
+description: Reference documentation for managed agents memory stores, memory versions, attachment, and direct memory management
+ccVersion: 2.1.203
 -->
 # 托管智能体 —— 记忆存储
 
@@ -10,6 +10,8 @@ ccVersion: 2.1.119
 会话默认是临时的 —— 会话结束后，代理学到的所有内容都会丢失。**记忆存储**是一个工作区范围内的文本文档集合，可以跨会话持久化。当存储通过 `resources[]` 挂载到会话时，它会以文件系统目录的形式挂载到容器中；代理使用普通的文件工具读写它，系统提示词中会有一条说明告知代理挂载点的存在。
 
 对记忆的每次修改都会产生一个不可变的**记忆版本**（`memver_...`），为你提供审计跟踪和按时间点回滚/编辑的能力。
+
+> ⚠️ **永远不要在记忆存储中存储凭据、API key 或令牌。** 记忆跨会话持久化，并在未来的上下文中逐字返回 —— 写入一次的密钥会在每个挂载该存储的后续会话中重放。请改用 vault 的 `environment_variable` 凭据（`shared/managed-agents-tools.md` → Vaults）。如果密钥已经被写入，删除该记忆并编辑受影响的版本（参见下方的"编辑版本"）。
 
 ## 对象模型
 

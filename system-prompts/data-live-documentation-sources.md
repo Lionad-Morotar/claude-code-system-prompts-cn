@@ -1,7 +1,7 @@
 <!--
 name: '数据：在线文档来源'
 description: 用于从官方来源获取 Claude API 和 Agent SDK 当前文档的 WebFetch URL
-ccVersion: 2.1.169
+ccVersion: 2.1.203
 -->
 # 在线文档来源
 
@@ -110,7 +110,7 @@ ccVersion: 2.1.169
 
 ### Anthropic CLI
 
-`ant` CLI 提供对 Claude API 的终端访问。每个 API 资源作为子命令暴露。它是从版本控制的 YAML 创建代理、环境、会话和其他资源，并交互式检查响应的便捷方式。
+`ant` CLI 提供对 Claude API 的终端访问。每个 API 资源作为子命令暴露。它是从版本控制的 YAML 创建代理和环境的推荐方式（`ant beta:agents create < agent.yaml` ——参见 `shared/anthropic-cli.md`），同时也暴露 session 及所有其他 API 资源，可用于脚本编写和交互式检查。
 
 | 主题         | URL                                                     | 提取提示                                                                                  |
 | ------------- | ------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |

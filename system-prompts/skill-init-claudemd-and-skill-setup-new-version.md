@@ -1,8 +1,10 @@
 <!--
 name: 'Skill: /init CLAUDE.md 与技能设置（新版本）'
 description: 为当前仓库设置 CLAUDE.md 及相关技能和钩子的完整引导流程，包括代码库探索、用户访谈和迭代式方案优化。
-ccVersion: 2.1.162
--->
+ccVersion: 2.1.213
+variables:
+  - IS_IMPORT_ENABLED_FN
+  - IMPORT_OFFER_NOTE-->
 为本仓库设置一个精简的 CLAUDE.md（以及可选的技能和钩子）。CLAUDE.md 会在每个 Claude Code 会话中加载，因此必须简洁——只包含没有它 Claude 就会出错的内容。
 
 ## 阶段 0：检查是否已存在 CLAUDE.md
@@ -48,7 +50,13 @@ ccVersion: 2.1.162
 ## 阶段 2：探索代码库
 
 启动一个子代理来勘查代码库，要求它阅读关键文件以了解项目：清单文件（package.json、Cargo.toml、pyproject.toml、go.mod、pom.xml 等）、README、Makefile/构建配置、CI 配置、已有的 CLAUDE.md、.claude/rules/、AGENTS.md、.cursor/rules 或 .cursorrules、.github/copilot-instructions.md、.devin/rules/ 或 .windsurf/rules/ 或 .windsurfrules、.clinerules、.mcp.json。
+${IS_IMPORT_ENABLED_FN()?`
+还要让子代理对以下内容做廉价的存在性检查（不是读取——内容由导入适配器处理）：
+- OpenAI Codex 配置：~/.codex/config.toml 或 ./.codex/
+- Gemini CLI 配置：~/.gemini/settings.json、./.gemini/ 或项目根目录的 GEMINI.md
 
+记录这些是否存在——阶段 8 会用到。
+`:""}
 检测：
 - 构建、测试和 lint 命令（尤其是非标准的）
 - 语言、框架和包管理器
@@ -220,8 +228,8 @@ description: <what the skill does and when to use it>
 
 然后告诉用户，你将根据发现的内容，再介绍一些优化他们的代码库和 Claude Code 设置的建议。以单个格式良好的待办列表形式呈现，其中每项都与本仓库相关。将最有影响的事项放在前面。
 
-构建列表时，逐一检查以下内容，只包含适用的：
-- 如果检测到前端代码（React、Vue、Svelte 等）：`/plugin install frontend-design@claude-plugins-official` 为 Claude 提供设计原则和组件模式，使其产出精致的 UI；`/plugin install playwright@claude-plugins-official` 让 Claude 可以启动真实浏览器、截取构建的截图并自行修复视觉问题。
+构建列表时，逐一检查以下内容，只包含适用的：${IS_IMPORT_ENABLED_FN()?`
+- 如果阶段 2 发现了 Codex 或 Gemini CLI 配置：${IMPORT_OFFER_NOTE} 将此放在首位——它节省重新输入已有配置的时间。`:""}- 如果检测到前端代码（React、Vue、Svelte 等）：`/plugin install frontend-design@claude-plugins-official` 为 Claude 提供设计原则和组件模式，使其产出精致的 UI；`/plugin install playwright@claude-plugins-official` 让 Claude 可以启动真实浏览器、截取构建的截图并自行修复视觉问题。
 - 如果在阶段 7 发现了差距（缺少 GitHub CLI、缺少 linting）且用户说了"不"：在此列出，并附上每条有帮助的单行理由。
 - 如果测试缺失或稀少：建议设置测试框架，以便 Claude 可以验证自己的更改。
 - 为了帮助你创建技能并使用评估来优化现有技能，Claude Code 有一个官方的 skill-creator 插件可以安装。使用 `/plugin install skill-creator@claude-plugins-official` 安装，然后运行 `/skill-creator <skill-name>` 来创建新技能或优化任何现有技能。（始终包含此项。）

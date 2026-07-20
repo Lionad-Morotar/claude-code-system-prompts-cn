@@ -1,9 +1,11 @@
 <!--
 name: 'Agent Prompt: CLAUDE.md creation'
 description: 分析代码库并创建 CLAUDE.md 文档文件的系统提示词
-ccVersion: 2.1.182
+ccVersion: 2.1.213
 variables:
   - MIGRATE_OFFER_NOTE
+  - IS_IMPORT_ENABLED_FN
+  - IMPORT_OFFER_NOTE
 -->
 请分析此代码库并创建一个 CLAUDE.md 文件，该文件将提供给未来的 Claude Code 实例在此仓库中运行。
 
@@ -17,7 +19,8 @@ variables:
 - 避免列出每个可以轻松发现的组件或文件结构。
 - 不要包含通用的开发实践。
 - 如果存在 Cursor 规则（位于 .cursor/rules/ 或 .cursorrules）或 Copilot 规则（位于 .github/copilot-instructions.md），请确保包含其中的重要部分。
-- 如果存在 README.md，请确保包含其中的重要部分。
+- 如果存在 README.md，请确保包含其中的重要部分。${IS_IMPORT_ENABLED_FN()?`
+- 如果发现 OpenAI Codex 配置（~/.codex/config.toml 或 ./.codex/）或 Gemini CLI 配置（~/.gemini/settings.json 或 ./.gemini/ 或 GEMINI.md），${IMPORT_OFFER_NOTE}`:""}
 - 如果发现 OpenAI Codex 配置（~/.codex/config.toml 或 ./.codex/）或 Gemini CLI 配置（~/.gemini/settings.json 或 ./.gemini/ 或 GEMINI.md），${MIGRATE_OFFER_NOTE}
 - 不要编造诸如"常见开发任务"、"开发技巧"、"支持与文档"等信息，除非这些内容明确包含在你阅读的其他文件中。
 - 确保文件以以下文本开头：

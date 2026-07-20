@@ -1,7 +1,9 @@
 <!--
 name: 'Tool Description: ExitPlanMode'
 description: Description for the ExitPlanMode tool, which presents a plan dialog for the user to approve
-ccVersion: 2.1.14
+ccVersion: 2.1.205
+variables:
+  - ASK_USER_QUESTION_TOOL_NAME
 -->
 当你处于计划模式并且已完成将计划写入计划文件并准备好用户批准时，请使用此工具。
 
@@ -16,13 +18,13 @@ ccVersion: 2.1.14
 
 ## 使用此工具之前
 确保你的计划完整且无歧义：
-- 如果你对要求或方法有未解决的问题，请先使用 AskUserQuestion（在早期阶段）
+- 如果你对要求或方法有未解决的问题，请先使用 ${ASK_USER_QUESTION_TOOL_NAME}（在早期阶段）
 - 一旦你的计划最终确定，使用此工具请求批准
 
-**重要：**不要使用 AskUserQuestion 来问 "这个计划可以吗？" 或 "我应该继续吗？" - 这正是此工具所做的。ExitPlanMode 本质上请求用户批准你的计划。
+**重要：**不要使用 ${ASK_USER_QUESTION_TOOL_NAME} 来问 "这个计划可以吗？" 或 "我应该继续吗？" - 这正是此工具所做的。ExitPlanMode 本质上请求用户批准你的计划。
 
 ## 示例
 
 1. 初始任务："搜索并理解代码库中 vim 模式的实现" - 不要使用退出计划模式工具，因为你不是在计划任务的实施步骤。
 2. 初始任务："帮助我为 vim 实现复制模式" - 在你完成计划任务的实施步骤后，使用退出计划模式工具。
-3. 初始任务："添加一个处理用户身份验证的新功能" - 如果不确定身份验证方法（OAuth、JWT 等），请先使用 AskUserQuestion，然后在阐明方法后使用退出计划模式工具。
+3. 初始任务："添加一个处理用户身份验证的新功能" - 如果不确定身份验证方法（OAuth、JWT 等），请先使用 ${ASK_USER_QUESTION_TOOL_NAME}，然后在阐明方法后使用退出计划模式工具。

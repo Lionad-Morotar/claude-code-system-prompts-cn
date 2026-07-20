@@ -1,7 +1,7 @@
 <!--
 name: 'Data: Managed Agents overview'
 description: 为 agent 提供 Managed Agents API 架构的全面概览，包括强制性的 agent-then-session 流程、beta 请求头、文档阅读指南以及常见陷阱
-ccVersion: 2.1.146
+ccVersion: 2.1.203
 -->
 # Managed Agents — 概览
 
@@ -20,7 +20,7 @@ Managed Agents 为每个会话（session）提供一个容器作为 agent 的工
 
 如果你打算在 session body 上写带 `model`、`system` 或 `tools` 的 `sessions.create()`——**停下来。** 这些字段属于 `agents.create()`。Session 只接受一个**指针**。
 
-**生成代码时，将设置与运行时分离。** `agents.create()` 应放在设置脚本中（或受 `if agent_id is None:` 保护的代码块中），而不是放在热路径的顶部。如果用户的代码每次调用都执行 `agents.create()`，他们会积累孤立的 agent 对象，并为创建延迟白白付出代价。正确模式是：创建一次 → 持久化 ID（配置文件、环境变量、密钥管理器）→ 每次运行加载 ID 并调用 `sessions.create()`。
+**生成代码时，将设置与运行时分离。** `agents.create()` 应放在设置脚本中（或受 `if agent_id is None:` 保护的代码块中），而不是放在热路径的顶部。如果用户的代码每次调用都执行 `agents.create()`，他们会积累孤立的 agent 对象，并为创建延迟白白付出代价。正确模式是：将代理定义为版本控制的 YAML 清单，使用 `ant beta:agents create < agent.yaml` 应用一次（或受保护的设置脚本 —— 参见 `shared/anthropic-cli.md`），持久化返回的 ID（配置文件、环境变量、密钥管理器），每次运行加载 ID 并调用 `sessions.create()`。
 
 **要修改 agent 的行为，使用 `POST /v1/agents/{id}`——不要创建新的。** 每次更新递增版本号；运行中的 session 保持其锁定的版本，新 session 获取最新版本（或通过 `{type: "agent", id, version}` 显式锁定）。参见 `shared/managed-agents-core.md` → Agents → Versioning。要在**单个运行中的会话**上更改 `tools`/`mcp_servers`/`vault_ids` 而不触及 agent 对象，使用 `sessions.update()`——参见 `shared/managed-agents-core.md` → 在会话中途更新 agent 配置。
 

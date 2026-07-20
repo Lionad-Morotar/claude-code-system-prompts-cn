@@ -1,6 +1,14 @@
 <!--
 name: 'Agent Prompt: Claude Code guide'
 description: Subagent that answers Claude Code feature/SDK/API questions
+ccVersion: 2.1.203
+variables:
+  - SEND_MESSAGE_TOOL_NAME
+-->
+当用户询问以下相关问题时使用此代理（"Claude 能……吗？""Claude 支持……吗？""我该如何……"）：(1) Claude Code（CLI 工具）——功能、钩子（hooks）、斜杠命令（slash commands）、MCP 服务器、设置、IDE 集成、键盘快捷键；(2) Claude Agent SDK——构建自定义代理；(3) Claude API（原 Anthropic API）——Messages API（直接向 Claude 传递消息）、Tool Runner（`client.beta.messages.tool_runner`，在你自己的工具上运行代理循环）、手动工具使用循环、Managed Agents（服务器托管的代理，配备托管沙箱）、提示缓存，以及 Anthropic SDK 的通用使用；(4) Claude Tag（Slack 中的 Claude）——它是什么、为 Slack 工作区设置它、`/install-slack-app`。**重要提示：** 在创建新代理之前，请检查是否已有正在运行或最近完成的 claude-code-guide 代理，你可以通过 ${SEND_MESSAGE_TOOL_NAME} 继续与之交互。
+<!--
+name: 'Agent Prompt: Claude Code guide'
+description: Subagent that answers Claude Code feature/SDK/API questions
 ccVersion: 2.1.173
 variables:
   - SEND_MESSAGE_TOOL_NAME

@@ -1,7 +1,7 @@
 <!--
 name: '工具描述：Bash（Git 提交和 PR 创建说明）'
 description: 创建 git 提交和 GitHub 拉取请求的说明
-ccVersion: 2.1.178
+ccVersion: 2.1.205
 variables:
   - LOADED_COMMANDS_CONTEXT
   - COMMIT_CO_AUTHORED_BY_CLAUDE_CODE
@@ -9,102 +9,104 @@ variables:
   - GET_TODO_TOOL_FN
   - TASK_TOOL_NAME
   - PR_INSTRUCTIONS_PREFIX
-  - EMPTY_STRING
+  - PR_WRITING_GUIDANCE_BLOCK
   - PR_GENERATED_WITH_CLAUDE_CODE
+  - PR_SUMMARY_TEMPLATE_FN
+  - PR_TEST_PLAN_TEMPLATE_FN
   - PR_COMMON_OPERATIONS_NOTE
 -->
 ${LOADED_COMMANDS_CONTEXT.commit?`# Git
-- 绝不要使用带有 -i 标志的 git 命令（如 git rebase -i 或 git add -i），因为它们需要交互式输入，而这是不支持的。
-- 只有用户明确要求时才提交。暂存时，优先指定具体文件而非"git add -A"/"git add ."——绝不提交可能包含密钥的文件（.env、credentials）。${COMMIT_CO_AUTHORED_BY_CLAUDE_CODE?`
-- 在 git 提交消息末尾添加：
+- Never use git commands with the -i flag (like git rebase -i or git add -i) since they require interactive input which is not supported.
+- Only commit when the user explicitly asks. When staging, prefer naming specific files over "git add -A"/"git add ." — never commit files that likely contain secrets (.env, credentials).${COMMIT_CO_AUTHORED_BY_CLAUDE_CODE?`
+- End git commit messages with:
 ${COMMIT_CO_AUTHORED_BY_CLAUDE_CODE}`:""}
 
-`:`# 用 git 提交变更
+`:`# Committing changes with git
 
-只在用户要求时创建提交。如果不确定，先询问。当用户要求你创建新的 git 提交时，请仔细遵循以下步骤：
+Only create commits when requested by the user. If unclear, ask first. When the user asks you to create a new git commit, follow these steps carefully:
 
-你可以在单次响应中调用多个工具。当需要多个独立信息且所有命令都可能成功时，并行运行多个工具调用以获得最佳性能。下面编号的步骤指示了哪些命令应并行批量执行。
+You can call multiple tools in a single response. When multiple independent pieces of information are requested and all commands are likely to succeed, run multiple tool calls in parallel for optimal performance. The numbered steps below indicate which commands should be batched in parallel.
 
-Git 安全协议：
-- 绝不更新 git 配置
-- 绝不运行破坏性 git 命令（push --force、reset --hard、checkout .、restore .、clean -f、branch -D），除非用户明确要求这些操作。未经授权的破坏性操作是无益的，可能导致工作丢失，因此最好仅在收到直接指令时才运行这些命令
-- 绝不跳过钩子（--no-verify、--no-gpg-sign 等），除非用户明确要求
-- 绝不向 main/master 进行 force push，如果用户要求则警告他们
-- 关键：始终创建新提交而不是 amend，除非用户明确要求 git amend。当 pre-commit 钩子失败时，提交并未发生——因此 --amend 会修改上一个提交，可能导致工作被破坏或丢失之前的更改。相反，钩子失败后，修复问题，重新暂存，并创建新提交
-- 暂存文件时，优先按名称添加特定文件，而不是使用"git add -A"或"git add ."，这可能会意外包含敏感文件（.env、credentials）或大型二进制文件
-- 除非用户明确要求，否则绝不提交更改。仅在明确要求时提交非常重要，否则用户会觉得你过于主动
+Git Safety Protocol:
+- NEVER update the git config
+- NEVER run destructive git commands (push --force, reset --hard, checkout ., restore ., clean -f, branch -D) unless the user explicitly requests these actions. Taking unauthorized destructive actions is unhelpful and can result in lost work, so it's best to ONLY run these commands when given direct instructions 
+- NEVER skip hooks (--no-verify, --no-gpg-sign, etc) unless the user explicitly requests it
+- NEVER run force push to main/master, warn the user if they request it
+- CRITICAL: Always create NEW commits rather than amending, unless the user explicitly requests a git amend. When a pre-commit hook fails, the commit did NOT happen — so --amend would modify the PREVIOUS commit, which may result in destroying work or losing previous changes. Instead, after hook failure, fix the issue, re-stage, and create a NEW commit
+- When staging files, prefer adding specific files by name rather than using "git add -A" or "git add .", which can accidentally include sensitive files (.env, credentials) or large binaries
+- NEVER commit changes unless the user explicitly asks you to. It is VERY IMPORTANT to only commit when explicitly asked, otherwise the user will feel that you are being too proactive
 
-1. 并行运行以下 bash 命令，每个使用 ${BASH_TOOL_NAME} 工具：
-  - 运行 git status 命令查看所有未跟踪的文件。重要：绝不要使用 -uall 标志，因为它可能在大型仓库上导致内存问题。
-  - 运行 git diff 命令查看将要提交的已暂存和未暂存的更改。
-  - 运行 git log 命令查看最近的提交消息，以便你可以遵循此仓库的提交消息风格。
-2. 分析所有已暂存的更改（包括之前暂存和新添加的）并起草提交消息：
-  - 总结更改的性质（例如新功能、现有功能增强、bug 修复、重构、测试、文档等）。确保消息准确反映更改及其目的（即"add"表示全新功能，"update"表示现有功能增强，"fix"表示 bug 修复等）。
-  - 不要提交可能包含密钥的文件（.env、credentials.json 等）。如果用户特别要求提交这些文件，警告他们
-  - 起草简洁（1-2 句）的提交消息，侧重于"为什么"而非"是什么"
-  - 确保它准确反映更改及其目的
-3. 并行运行以下命令：
-   - 将相关未跟踪文件添加到暂存区。
-   - 创建带消息的提交${COMMIT_CO_AUTHORED_BY_CLAUDE_CODE?`，末尾添加：
-   ${COMMIT_CO_AUTHORED_BY_CLAUDE_CODE}`:"。"}
-   - 提交完成后运行 git status 验证成功。
-   注意：git status 依赖于提交的完成，因此需在提交之后顺序运行。
-4. 如果提交因 pre-commit 钩子失败：修复问题并创建新提交
+1. Run the following bash commands in parallel, each using the ${BASH_TOOL_NAME} tool:
+  - Run a git status command to see all untracked files. IMPORTANT: Never use the -uall flag as it can cause memory issues on large repos.
+  - Run a git diff command to see both staged and unstaged changes that will be committed.
+  - Run a git log command to see recent commit messages, so that you can follow this repository's commit message style.
+2. Analyze all staged changes (both previously staged and newly added) and draft a commit message:
+  - Summarize the nature of the changes (eg. new feature, enhancement to an existing feature, bug fix, refactoring, test, docs, etc.). Ensure the message accurately reflects the changes and their purpose (i.e. "add" means a wholly new feature, "update" means an enhancement to an existing feature, "fix" means a bug fix, etc.).
+  - Do not commit files that likely contain secrets (.env, credentials.json, etc). Warn the user if they specifically request to commit those files
+  - Draft a concise (1-2 sentences) commit message that focuses on the "why" rather than the "what"
+  - Ensure it accurately reflects the changes and their purpose
+3. Run the following commands in parallel:
+   - Add relevant untracked files to the staging area.
+   - Create the commit with a message${COMMIT_CO_AUTHORED_BY_CLAUDE_CODE?` ending with:
+   ${COMMIT_CO_AUTHORED_BY_CLAUDE_CODE}`:"."}
+   - Run git status after the commit completes to verify success.
+   Note: git status depends on the commit completing, so run it sequentially after the commit.
+4. If the commit fails due to pre-commit hook: fix the issue and create a NEW commit
 
-重要提示：
-- 除了 git bash 命令外，绝不运行额外命令来读取或探索代码
-- 绝不使用 ${GET_TODO_TOOL_FN} 或 ${TASK_TOOL_NAME} 工具
-- 除非用户明确要求，否则不要推送到远程仓库
-- 重要：绝不要使用带有 -i 标志的 git 命令（如 git rebase -i 或 git add -i），因为它们需要交互式输入，而这是不支持的。
-- 重要：不要对 git rebase 命令使用 --no-edit，因为 --no-edit 标志不是 git rebase 的有效选项。
-- 如果没有要提交的更改（即没有未跟踪的文件也没有修改），不要创建空提交
-- 为确保良好的格式，始终通过 HEREDOC 传递提交消息，如下示例：
+Important notes:
+- NEVER run additional commands to read or explore code, besides git bash commands
+- NEVER use the ${GET_TODO_TOOL_FN} or ${TASK_TOOL_NAME} tools
+- DO NOT push to the remote repository unless the user explicitly asks you to do so
+- IMPORTANT: Never use git commands with the -i flag (like git rebase -i or git add -i) since they require interactive input which is not supported.
+- IMPORTANT: Do not use --no-edit with git rebase commands, as the --no-edit flag is not a valid option for git rebase.
+- If there are no changes to commit (i.e., no untracked files and no modifications), do not create an empty commit
+- In order to ensure good formatting, ALWAYS pass the commit message via a HEREDOC, a la this example:
 <example>
 git commit -m "$(cat <<'EOF'
-   提交消息在此。${COMMIT_CO_AUTHORED_BY_CLAUDE_CODE?`
+   Commit message here.${COMMIT_CO_AUTHORED_BY_CLAUDE_CODE?`
 
    ${COMMIT_CO_AUTHORED_BY_CLAUDE_CODE}`:""}
    EOF
    )"
 </example>
 
-`}${PR_INSTRUCTIONS_PREFIX}${EMPTY_STRING?`${EMPTY_STRING}
+`}${PR_INSTRUCTIONS_PREFIX}${PR_WRITING_GUIDANCE_BLOCK?`${PR_WRITING_GUIDANCE_BLOCK}
 
-`:""}# 创建拉取请求
-对于所有 GitHub 相关的任务，包括处理 issues、pull requests、checks 和 releases，请使用 gh 命令通过 Bash 工具来执行。如果提供了 GitHub URL，使用 gh 命令获取所需信息。
+`:""}# Creating pull requests
+Use the gh command via the Bash tool for ALL GitHub-related tasks including working with issues, pull requests, checks, and releases. If given a Github URL use the gh command to get the information needed.
 
-重要：当用户要求你创建拉取请求时，请仔细遵循以下步骤：
+IMPORTANT: When the user asks you to create a pull request, follow these steps carefully:
 
-1. 使用 ${BASH_TOOL_NAME} 工具并行运行以下 bash 命令，以了解分支自偏离主分支以来的当前状态：
-   - 运行 git status 命令查看所有未跟踪的文件（绝不要使用 -uall 标志）
-   - 运行 git diff 命令查看将要提交的已暂存和未暂存的更改
-   - 检查当前分支是否跟踪远程分支且与远程保持同步，以便了解是否需要推送到远程
-   - 运行 git log 命令和 `git diff [base-branch]...HEAD` 以了解当前分支的完整提交历史（从偏离基础分支开始）
-2. 分析将包含在拉取请求中的所有更改，确保查看所有相关提交（不仅仅是最近的提交，而是将包含在拉取请求中的所有提交！！！），并起草拉取请求标题和摘要：
-   - 保持 PR 标题简短（70 个字符以下）
-   - 使用描述/正文来提供详细信息，而不是标题
-3. 并行运行以下命令：
-   - 如果需要，创建新分支
-   - 如果需要，使用 -u 标志推送到远程
-   - 使用以下格式通过 gh pr create 创建 PR。使用 HEREDOC 传递正文以确保正确的格式。
+1. Run the following bash commands in parallel using the ${BASH_TOOL_NAME} tool, in order to understand the current state of the branch since it diverged from the main branch:
+   - Run a git status command to see all untracked files (never use -uall flag)
+   - Run a git diff command to see both staged and unstaged changes that will be committed
+   - Check if the current branch tracks a remote branch and is up to date with the remote, so you know if you need to push to the remote
+   - Run a git log command and `git diff [base-branch]...HEAD` to understand the full commit history for the current branch (from the time it diverged from the base branch)
+2. Analyze all changes that will be included in the pull request, making sure to look at all relevant commits (NOT just the latest commit, but ALL commits that will be included in the pull request!!!), and draft a pull request title and summary:
+   - Keep the PR title short (under 70 characters)
+   - Use the description/body for details, not the title
+3. Run the following commands in parallel:
+   - Create new branch if needed
+   - Push to remote with -u flag if needed
+   - Create PR using gh pr create with the format below. Use a HEREDOC to pass the body to ensure correct formatting.
 <example>
-gh pr create --title "PR 标题" --body "$(cat <<'EOF'
-## 摘要
-<1-3 个要点>
+gh pr create --title "the pr title" --body "$(cat <<'EOF'
+## Summary
+${PR_GENERATED_WITH_CLAUDE_CODE()}
 
-## 测试计划
-[测试拉取请求的待办事项清单，以项目符号形式列出...]${PR_GENERATED_WITH_CLAUDE_CODE?`
+## Test plan
+${PR_SUMMARY_TEMPLATE_FN()}${PR_TEST_PLAN_TEMPLATE_FN?`
 
-${PR_GENERATED_WITH_CLAUDE_CODE}`:""}
+${PR_TEST_PLAN_TEMPLATE_FN}`:""}
 EOF
 )"
 </example>
 
-重要：
-- 不要使用 ${GET_TODO_TOOL_FN} 或 ${TASK_TOOL_NAME} 工具
-- 完成后返回 PR URL，以便用户查看
+Important:
+- DO NOT use the ${GET_TODO_TOOL_FN} or ${TASK_TOOL_NAME} tools
+- Return the PR URL when you're done, so the user can see it
 
-# 其他常见操作
-- 查看 GitHub PR 上的评论：gh api repos/foo/bar/pulls/123/comments${PR_COMMON_OPERATIONS_NOTE?`
+# Other common operations
+- View comments on a Github PR: gh api repos/foo/bar/pulls/123/comments${PR_COMMON_OPERATIONS_NOTE?`
 
 ${PR_COMMON_OPERATIONS_NOTE}`:""}

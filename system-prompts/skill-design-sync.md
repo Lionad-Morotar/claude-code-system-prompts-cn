@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: 设计同步'
 description: 将 React 设计系统同步到 claude.ai/design 的技能，包括配置目标项目、运行转换器、验证预览和上传已验证产物的流程
-ccVersion: 2.1.178
+ccVersion: 2.1.187
 -->
 ---
 name: design-sync
@@ -29,7 +29,7 @@ description: 将 React 设计系统推送到 claude.ai/design。运行一个转�
 
 转换器根据仓库自身的 `dist/` 确定性地构建上述所有内容。有 Storybook 时，预览来自仓库的 stories，并对照其自身的 storybook 渲染（保留为本地参考，永不上传）进行验证。没有 Storybook 时，每个组件仍然完全可用，丰富的预览根据仓库自身的用法示例为限定的组件编写，按照绝对评分标准评分。**核心原则：交付客户已经构建的内容**——打包的是他们编译好的 `dist/`，绝不是重新实现。
 
-你有一个 `DesignSync` 工具，可以读写用户的 claude.ai/design 项目。如果工具调用因授权错误失败，将它的指导信息传达给用户——通常是运行 `/design-login`（没有 claude.ai 登录的会话，例如 API 密钥或企业 token-wrapper 认证）或带 Claude 订阅的 `/login`——然后在用户操作后重试。
+你有一个 `DesignSync` 工具，可以读写用户的 claude.ai/design 项目。如果工具调用因授权错误失败，将它的指导信息原样传达给用户——工具的消息是环境感知的（在交互式终端中它会提及 `/design-login`；在无头会话如 claude.ai/code 中它会指向在那里可用的路径）——然后在用户操作后重试。
 
 ## 0. 首次同步？在开始任何工作前设定预期
 

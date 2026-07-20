@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Run web server API example'
 description: Run 技能示例文件，展示如何记录服务器或 API 的生命周期，包括后台启动、就绪检查、curl 验证和关闭
-ccVersion: 2.1.145
+ccVersion: 2.1.213
 -->
 # 示例：Web 服务器 / API
 
@@ -50,9 +50,12 @@ ccVersion: 2.1.145
 
 > ```bash
 > kill $SERVER_PID
-> # 或者，如果丢失了 PID：
-> pkill -f "node.*server.js"
+> # $! 是 npm 包装器的 PID，npm 不会将 SIGTERM 转发给
+> # 它启动的服务器——杀死端口监听者才是可靠释放它的方式：
+> lsof -ti:3000 -sTCP:LISTEN | xargs -r kill
 > ```
+
+优先使用捕获的 PID 或端口而非 `pkill -f "<pattern>"`。宽泛的模式如 `pkill -f "next|vite|node"` 会匹配代理自身的命令行，可能杀死运行它们的会话。
 
 ## 值得记录的细节
 
@@ -85,10 +88,10 @@ ccVersion: 2.1.145
 > # → {"status":"ok","version":"1.2.3"}
 > ```
 >
-> 日志位于 `/tmp/api.log`。使用以下命令停止：
+> 日志位于 `/tmp/api.log`。通过杀死端口监听者停止（`npm run dev &` 后的 `$!` 是 npm 包装器，npm 不会将 SIGTERM 转发给它启动的服务器）：
 >
 > ```bash
-> pkill -f "tsx watch src/index.ts"
+> lsof -ti:3000 -sTCP:LISTEN | xargs -r kill
 > ```
 >
 > ### 环境变量

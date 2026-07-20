@@ -1,26 +1,12 @@
 <!--
-name: '工具描述：Artifact'
-description: 描述 Artifact 工具，用于部署自包含的 HTML 或 Markdown 页面，包括文件优先使用、更新行为、CSP 约束、响应式设计和 favicon 要求
-ccVersion: 2.1.178
+name: 'Tool Description: Artifact'
+description: Describes the Artifact tool for deploying self-contained HTML or Markdown pages, including file-first usage, update behavior, CSP constraints, responsive design, and favicon requirements
+ccVersion: 2.1.212
+variables:
+  - ARTIFACT_DESIGN_SKILL_NAME
 -->
-将 HTML 或 Markdown 文件渲染为 Artifact——一个默认私有的托管在 claude.ai 上的网页，用户后续可以选择与队友分享。当通过图像、图表或富 HTML/Markdown 进行视觉传达比终端文本更清晰时使用此工具。
+将 HTML 或 Markdown 文件渲染为 Artifact — 一个默认私有的网页，托管在 claude.ai 上，用户可以选择稍后与团队成员分享。当可视化沟通比终端文本更清晰时使用此工具。对于你自己的工作成果，可以主动发布 — artifact 默认为私有。例外情况是可能被传播后造成误导或损害的内容：模仿真实组织、个人或记录的任何内容，或用户标记为敏感的内容。将这些构建为文件，让用户决定是否获取 URL。
 
-先将内容写入文件（通过 Write/Edit），然后使用其路径调用 Artifact。该文件在发布时会被包装在 `<!doctype html>…<head>…</head><body>` 骨架中，因此直接写入页面内容——不要添加自己的 `<!DOCTYPE>`、`<html>`、`<head>` 或 `<body>` 标签。除非用户指定了位置，否则将文件放在你的临时文件目录中（如果你的系统提示词中列出了的话）。
+**在编写页面之前，你**必须**加载 `${ARTIFACT_DESIGN_SKILL_NAME}` 技能**，以评估这个特定请求需要多少设计投入。然后将内容写入文件（通过 Write/Edit），并用其路径调用 Artifact。文件在发布时会被包裹在 `<!doctype html>…<head>…</head><body>` 骨架中，因此直接编写页面内容 — 不要使用你自己的 `<!DOCTYPE>`、`<html>`、`<head>` 或 `<body>` 标签。文件包含一个最小化的 CSS 重置。除非用户指定了位置，否则将文件放在系统提示中列出的暂存目录中（如果有的话）。
 
-**内容**：渐进式披露：先高层面，再支撑细节。假设读者不在会话中——在会话记录中显而易见的内容对他们并不明显。在简洁和深度之间平衡：顶部可浏览，下方完整。
-
-**设计**：设计服务于信息层次——页面应该比纯文本更容易解析，否则就不该做成页面。使用大小、粗细、颜色和空间让重要内容突出，支撑内容低调。坚持清晰的美学方向。系统字体栈是可以的（CSP 阻止字体 CDN）。
-
-**标题**：在 HTML 中设置简洁的 `<title>`——它命名浏览器标签页、画廊和列表中的 artifact。保持标题在重新部署时稳定，除非页面的用途真正发生了变化；没有标题的文件回退到基本文件名，因此仍然要选择简短、有辨识度的文件名（例如 `token-usage.html`）。
-
-**更新**：编辑文件，然后使用相同的文件路径再次调用 Artifact——它重新部署到相同的 URL。不同的文件路径会申请新的 URL，因此只有在打算创建单独的新 Artifact 时才使用不同的路径。
-
-**更新用户给你 URL 的 artifact**（不是本会话中发布的 artifact 链接）：将 URL 作为 `url` 传入。没有它，新会话始终会生成新的 URL——没有其他方式可以定位已有的 artifact。
-
-**读取已有 artifact 的内容**：使用 WebFetch 并传入其 URL。
-
-**仅限自包含**：严格的 CSP 阻止对任何外部主机的请求——CDN 脚本、外部样式表、字体、远程图像、fetch/XHR/WebSockets。被阻止的资源不会使页面报错；它仅在不包含它们的情况下渲染。相对路径不会解析（没有其他内容与页面一起部署）。内联所有 CSS/JS，并将资源嵌入为 data: URI。
-
-**响应式**：viewport 未知，可能是移动设备或桌面浏览器。使用相对单位（%、vw/vh、em）、flexbox/grid、图像上使用 `max-width:100%`。宽内容（表格、图表、代码块）必须在其自身容器内滚动——将其包装在 `overflow-x: auto` 的 div 中。页面主体绝不应水平滚动。
-
-**Favicon**（必需）：传入一个或两个 emoji 作为 `favicon`（例如 `"📊"`、`"🐛"`、`"⚡🔥"`）。它成为浏览器标签页的图标。仅限 emoji——不要 SVG、不要标记。在 artifact 的重新部署中保持相同的图标——用户通过图标找到他们的标签页，更改的 favicon 会被解读为不同的页面。仅在 artifact 的主题发生重大转变（新调查、新交付物）时选择新 emoji，而不是增量更新。
+**标题**：在 HTML 中设置简洁的 `<title>` — 它在浏览器标签和画廊中命名 artifact；对于 HTML 发布，`title` 参数在文件没有该标签时填充（Markdown 页面始终保留其文件名标识）。在重新部署时保持稳定。传入一句话的 `description` 参数 — 它成为画廊卡片的副标题。

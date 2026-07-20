@@ -1,7 +1,7 @@
 <!--
 name: 'Skill: Run browser-driven web app example'
 description: Run app 技能的示例文件，展示如何启动 Web 开发服务器、用 chromium-cli 驱动它、截取屏幕截图，以及记录应用特定的坑点
-ccVersion: 2.1.145
+ccVersion: 2.1.213
 -->
 # 示例：浏览器驱动的 Web 应用
 
@@ -19,13 +19,12 @@ README），在后台启动它，等待它真正开始提供服务：
 
 ```bash
 npm run dev &   # 或 yarn dev、pnpm dev、make serve、./dev.sh
-echo $! > /tmp/dev.pid
 timeout 30 bash -c 'until curl -sf http://localhost:3000 >/dev/null; do sleep 1; done'
 ```
 
-不要 `sleep 5`——轮询端口。在重新启动前用
-`kill $(cat /tmp/dev.pid)`（或 `pkill -f 'npm run dev'`）
-停止，否则下次运行会遇到 `EADDRINUSE`。
+不要 `sleep 5`——轮询端口。通过杀死端口监听者来停止
+`lsof -ti:3000 -sTCP:LISTEN | xargs -r kill`
+停止，否则下次运行会遇到 `EADDRINUSE`。（`npm run dev &` 后的 `$!` 只是 npm 包装器；npm 不会将 SIGTERM 转发给它启动的服务器，所以杀死端口才是真正释放它的方式。）避免使用带宽泛模式的 `pkill -f`——它可能匹配代理自身的命令行并杀死会话。
 
 ## 驱动
 
@@ -68,7 +67,7 @@ EOF
 仅包含项目特定的部分。`chromium-cli` 处理机制层面的东西。
 
 - **开发命令 + 端口 + 停止方式。** 精确的启动命令、所需的任何环境变量，
-  以及停止它的 `kill`/`pkill` 命令。
+  以及停止它的 `kill` 命令。
 - **认证。** 获得已登录会话所需的任何内容——一行 `set-cookie`，
   一个 `fill`/`click` 登录序列，或一个执行 API 流程
   并输出 cookie 的辅助脚本。

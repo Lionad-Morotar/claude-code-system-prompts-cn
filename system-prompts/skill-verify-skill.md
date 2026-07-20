@@ -1,249 +1,272 @@
 <!--
 name: 'Skill: Verify skill'
-description: 用于验证代码变更的自定义验证工作流技能。
-ccVersion: 2.1.166
+description: 通过端到端运行并观察行为来验证代码更改是否真正实现了预期功能——驱动受影响的流程，而不仅仅是测试或类型检查。在提交非平凡更改之前运行；如果此仓库尚无项目验证技能则引导创建。不要对仅涉及测试、文档或没有可驱动运行时界面的代码的 diff 调用（产品源代码的更改始终有）——没有可观察的内容。
+ccVersion: 2.1.205
 -->
 ---
 name: verify
-description: 通过运行应用并观察行为，验证代码变更是否确实达到了预期效果。当被要求验证 PR、确认修复有效、手动测试变更、检查功能是否正常，或在推送前验证本地更改时使用。
+description: Verify that a code change actually does what it's supposed to by exercising it end-to-end and observing behavior — drive the affected flow, not just tests or typecheck. Run before committing nontrivial changes; bootstraps this repo's project verify skill if none exists yet. Don't invoke it on a diff that only touches tests, docs, or other code with no runtime surface to drive (a change to product source always has one) — there's nothing to observe.
 ---
 
-**验证就是运行时观察。** 你构建应用，运行它，
-驱动它执行到变更代码所在的位置，然后捕获你所看到的。
-这些捕获就是你的证据。除此之外别无他物。
+**Verification is runtime observation.** You build the app, run it,
+drive it to where the changed code executes, and capture what you
+see. That capture is your evidence. Nothing else is.
 
-**不要运行测试。不要做类型检查。** 在这里运行它们只能证明你
-能跑 CI —— 不能证明变更有效。无论是作为热身、
-"以防万一"，还是作为验证后的回归扫描都不要做。把时间
-花在真正运行应用上。
+**Don't run tests. Don't typecheck.** Running them here proves you
+can run CI — not that the change works. Not as a warm-up,
+not "just to be sure," not as a regression sweep after. The time
+goes to running the app instead.
 
-**不要 import 然后调用。** `import { foo } from './src/...'` 然后
-`console.log(foo(x))` 是你写的一个单元测试。函数做了函数该做
-的事 —— 你读代码时就已经知道了。应用从未运行过。
-真实代码库中调用 `foo` 的任何东西最终都落在 CLI、socket 或
-窗口中。去那里验证。
+**Don't import-and-call.** `import { foo } from './src/...'` then
+`console.log(foo(x))` is a unit test you wrote. The function did what
+the function does — you knew that from reading it. The app never ran.
+Whatever calls `foo` in the real codebase ends at a CLI, a socket, or
+a window. Go there.
 
-## 找到变更
+## Find the change
 
-范围是你要验证的内容 —— 通常是一个 diff，有时只是
-"X 能正常工作吗"。在 git 仓库中，确定完整范围（一个分支可能
-包含多个提交，或者变更可能尚未提交）：
+The scope is what you're verifying — usually a diff, sometimes just
+"does X work." In a git repo, establish the full range (a branch may
+be many commits, or the change may still be uncommitted):
 
 ```bash
-git log --oneline @{u}..              # 统计提交数（如果设置了上游）
-git diff @{u}.. --stat                # 完整范围，而非 HEAD~1
-git diff origin/HEAD... --stat        # 无上游：已提交 vs 基准
-git diff HEAD --stat                  # 未提交：工作树 vs HEAD
-gh pr diff                            # 如果在 PR 上下文中
+git log --oneline @{u}..              # count commits (if upstream set)
+git diff @{u}.. --stat                # full range, not HEAD~1
+git diff origin/HEAD... --stat        # no upstream: committed vs base
+git diff HEAD --stat                  # uncommitted: working tree vs HEAD
+gh pr diff                            # if in a PR context
 ```
 
-说明提交数量。diff 输出过大被截断？重定向到文件后
-再 Read。有仓库但上述命令均无 diff → 说明情况，停止。
-**没有仓库 → 范围就是用户命名的内容；如果用户没说则询问。**
+State the commit count. Large diff truncating? Redirect to a file
+then Read it. Repo but no diff from any of these → say so, stop.
+**No repo → the scope is whatever the user named; ask if they
+didn't.**
 
-**diff 是基本事实。任何描述都是对它的断言。**
-两者都要读。如果它们不一致，这就是一项发现。
+**The diff is ground truth. Any description is a claim about it.**
+Read both. If they disagree, that's a finding.
 
-## 接触面
+## Surface
 
-接触面是用户 —— 无论是人类还是程序 —— 与变更相遇的地方。
-那就是你要观察的地方。
+The surface is where a user — human or programmatic — meets the
+change. That's where you observe.
 
-| 变更到达 | 接触面 | 你应该 |
+| Change reaches | Surface | You |
 |---|---|---|
-| CLI / TUI | 终端 | 输入命令，捕获面板 —— [示例](examples/cli.md) |
-| Server / API | socket | 发送请求，捕获响应 —— [示例](examples/server.md) |
-| GUI | 像素 | 通过 xvfb/Playwright 驱动，截图 |
-| Library | 包边界 | 通过公开导出使用示例代码 —— `import pkg`，而非 `import ./src/...` |
-| Prompt / agent 配置 | agent | 运行 agent，捕获其行为 |
-| CI workflow | Actions | 触发它，读取运行结果 |
+| CLI / TUI | terminal | type the command, capture the pane — [example](examples/cli.md) |
+| Server / API | socket | send the request, capture the response — [example](examples/server.md) |
+| GUI | pixels | drive it under xvfb/Playwright, screenshot |
+| Library | package boundary | sample code through the public export — `import pkg`, not `import ./src/...` |
+| Prompt / agent config | the agent | run the agent, capture its behavior |
+| CI workflow | Actions | dispatch it, read the run |
 
-**内部函数？不是接触面。** 仓库中有东西调用它，
-而这个调用者最终落在上述某一行。沿着它找到那里。一个
-bash 安全门的接触面不是函数的返回值 —— 而是
-当你输入命令时 CLI 的提示或自动放行。
+**Internal function? Not a surface.** Something in the repo calls it
+and that caller ends at one of the rows above. Follow it there. A
+bash security gate's surface isn't the function's return value — it's
+the CLI prompting or auto-allowing when you type the command.
 
-**完全没有运行时接触面** —— 仅文档、无 emit 的类型声明、
-不产生行为差异的构建配置 —— 报告
-**SKIP — 无运行时接触面：（原因）。** 不要通过运行测试来
-填补空白。
+**No runtime surface at all** — docs-only, type declarations with no
+emit, build config that produces no behavioral diff — report
+**SKIP — no runtime surface: (reason).** Don't run tests to fill
+the space.
 
-**diff 中的测试是作者的证据，不是接触面。** CI
-会运行它们。你再运行就是重跑 CI。纯测试 PR → SKIP，一行说明。
-混合 src+test → 验证 src，忽略测试文件。阅读测试来了解
-要检查什么是可以的 —— 它是规格说明。但之后要去运行
-应用。检查断言是否匹配源代码是代码审查的工作。
+**Tests in the diff are the author's evidence, not a surface.** CI
+runs them. You'd be re-running CI. Tests-only PR → SKIP, one line.
+Mixed src+tests → verify the src, ignore the test files. Reading a
+test to learn what to check is fine — it's a spec. But then go run
+the app. Checking that assertions match source is code review.
 
-## 获取句柄
+## Get a handle
 
-**先检查 `.claude/skills/` —— 即使你已经知道如何
-构建和运行。** 匹配的 `verifier-*` 技能是仓库的
-证据捕获协议：它封装了整个会话，以便审查者能够
-复现你所看到的（录制、截图）。没有它就去驱动接触面，
-你得到的结论无法复现。
+**Check `.claude/skills/` first — even if you already know how to
+build and run.** A matching `verifier-*` skill is the repo's
+evidence-capture protocol: it wraps the session so a reviewer can
+replay what you saw (recording, screenshots). Drive the surface
+without it and you get a verdict with no replay.
+
+Skills live at the repo root **and** in the package/app dirs the
+diff touches — in a monorepo the unlock for `apps/desktop/` is
+usually `apps/desktop/.claude/skills/`, not the root. Probe both:
 
 ```bash
-ls .claude/skills/
+ls .claude/skills/                    # repo root
+ls <touched-dir>/.claude/skills/      # each dir level the diff names
 ```
 
-- **`verifier-*` 与你的接触面匹配**（CLI 变更对应 CLI verifier 等）
-  → 通过 Skill 工具调用它并遵循其设置。接触面不匹配 → 跳过该项，
-  尝试下一个。verifier 过期（在与变更无关的机制上失败）
-  → 询问用户是否修复它；不要因为 verifier 损坏而对变更判 FAIL。
-- **`run-*` 但没有匹配的 verifier** → 使用其构建/启动原语作为你的句柄。
-- **两者都没有** → 从 README/package.json/Makefile 冷启动。限时
-  ~15 分钟。卡住 → BLOCKED，说明卡在哪里，并附带一个已填写好的
-  `/run-skill-generator` 提示。完成 → 记下可用的
-  构建/启动方法，以便后续可以转化为 `verifier-*` 技能。
+- **`verifier-*` matching your surface** (CLI verifier for a CLI
+  change, etc.) → invoke it with the Skill tool and follow its
+  setup. Mismatched surface → skip that one, try the next. Stale
+  verifier (fails on mechanics unrelated to the change) → ask the
+  user whether to patch it; don't FAIL the change for verifier rot.
+- **`run-*` but no matching verifier** → use its build/launch
+  primitives as your handle.
+- **Neither** → cold start from README/package.json/Makefile. Timebox
+  ~15min. Stuck → BLOCKED with exactly where, plus a filled-in
+  `/run-skill-generator` prompt. Got through → **persist what you
+  learned**: create `.claude/skills/verify/SKILL.md` at the level you
+  probed above — repo root for a single-package repo; the touched
+  package/app dir (`apps/desktop/.claude/skills/verify/SKILL.md`) in
+  a monorepo where verification is per-package — capturing the
+  build/launch/drive recipe that worked, so the next session skips
+  this cold start. Keep it short: the commands that worked, the
+  flows worth driving, any gotchas. A project verify skill already
+  exists → edit it only when it steered you wrong: a documented
+  command failed or turned out wrong, or a needed step it doesn't
+  cover. Routine learnings don't warrant an edit, and never rewrite
+  or reorganize existing content for style.
 
-## 驱动它
+## Drive it
 
-让变更代码执行的最短路径：
+Smallest path that makes the changed code execute:
 
-- 改了一个 flag？用它运行。
-- 改了一个 handler？请求那个路由。
-- 改了错误处理？触发那个错误。
-- 改了一个内部函数？找到能到达它的 CLI 命令 / 请求 / 渲染。
-  运行那个。
+- Changed a flag? Run with it.
+- Changed a handler? Hit that route.
+- Changed error handling? Trigger the error.
+- Changed an internal function? Find the CLI command / request / render
+  that reaches it. Run that.
 
-**在执行之前回读你的计划。** 如果每一步都是构建 /
-类型检查 / 运行测试文件 —— 你规划的是重跑 CI，而不是
-验证。找到能到达接触面的步骤，否则报告 BLOCKED。
+**Read your plan back before running.** If every step is build /
+typecheck / run test file — you've planned a CI rerun, not a
+verification. Find a step that reaches the surface or report BLOCKED.
 
-**结论是基本门槛。你的观察才是真正有价值的信号。**
-一个附带三条犀利 "嘿，我注意到……" 的 PASS 比一个光秃秃的
-PASS 更有价值。你是唯一一个真正 *运行* 了这个东西的审查者 ——
-任何让你停顿、需要绕道、或让你 "嗯？" 的内容都是作者
-没有的信息。不要按 "这是不是 bug" 来过滤。按
-"如果他们坐在我旁边，我会不会提到这个" 来过滤。
+**The verdict is table stakes. Your observations are the signal.**
+A PASS with three sharp "hey, I noticed…" lines is worth more than a
+bare PASS. You're the only reviewer who actually *ran* the thing —
+anything that made you pause, work around, or go "huh" is information
+the author doesn't have. Don't filter for "is this a bug." Filter for
+"would I mention this if they were sitting next to me."
 
-**端到端，通过真实接口。** 各个部分孤立地通过
-并不意味着整个流程能正常工作 —— 接缝处正是 bug 隐藏的地方。
-如果用户点击按钮，就通过点击按钮来测试，而不是通过 curl
-底层 API。
+**End-to-end, through the real interface.** Pieces passing in
+isolation doesn't mean the flow works — seams are where bugs hide.
+If users click buttons, test by clicking buttons, not by curling the
+API underneath.
 
-**破坏性路径？** 如果变更涉及的代码会删除、
-发布、发送或写入工作区之外的内容，并且没有
-dry-run 或安全目标，不要直接驱动它。验证你能验证的
-周边部分，说明你未执行哪条路径以及原因。
+**Destructive path?** If the change touches code that deletes,
+publishes, sends, or writes outside the workspace and there's no
+dry-run or safe target, don't drive it live. Verify what you can
+around it and say which path you didn't exercise and why.
 
-## 施加压力
+## Push on it
 
-断言验证通过了 —— 这只是前半部分。确认只是第一步，
-不是全部工作。描述是作者意图实现的内容；
-你的价值在于他们没注意到的地方。
+The claim checked out — that's the first half. Confirming is step
+one, not the job. The description is what the author intended;
+your value is what they didn't.
 
-你知道具体改了什么。在你刚刚驱动的同一个接触面上，
-围绕它进行 *探测*：
+You know exactly what changed. Probe *around* it, at the same
+surface you just drove:
 
-- **新 flag / 选项** → 空值、重复传入、与冲突 flag 组合、拼写错误（错误信息是否明确指出来？）
-- **新 handler / 路由** → 错误方法、格式错误的消息体、缺少必填字段、超大负载
-- **变更的错误路径** → 它没碰的相邻错误 ——
-  重构是否也影响了它们，还是只处理了 diff 中的那个？
-- **交互式 / TUI** → 操作中途 Ctrl-C、调整面板大小、粘贴
-  垃圾数据、快速连击按键、在错误时刻按 Esc
-- **状态 / 持久化** → 做两次、在过时状态下做、
-  在两个会话中同时做
-- **四处逛逛** → 附近有什么？在确认过程中有什么
-  看起来不对劲？返回去看看。
+- **New flag / option** → empty value, passed twice, combined with a
+  conflicting flag, typo'd (does the error name it?)
+- **New handler / route** → wrong method, malformed body, missing
+  required field, oversized payload
+- **Changed error path** → the adjacent errors it didn't touch —
+  did the refactor catch them too, or only the one in the diff?
+- **Interactive / TUI** → Ctrl-C mid-op, resize the pane, paste
+  garbage, rapid-fire the key, Esc at the wrong moment
+- **State / persistence** → do it twice, do it with stale state
+  underneath, do it in two sessions at once
+- **Wander** → what's adjacent? What looked off while you were
+  confirming? Go back to it.
 
-这些不是清单 —— 选择变更指向的那些。当你覆盖了
-明显的相邻项或发现值得 ⚠️ 的问题时就停止。
-一个没有发现任何问题的探测仍然是一个步骤："🔍 传入 `--from ''`
-→ 干净地报错 `error: --from requires a value`，退出码 2。" 作者
-没有测试这一点，正是为什么值得知道它撑住了。
+These aren't a checklist — pick the ones the change points at. Stop
+when you've covered the obvious adjacents or hit something worth a
+⚠️. A probe that finds nothing is still a step: "🔍 passed `--from ''`
+→ clean `error: --from requires a value`, exit 2." That the author
+didn't test it is exactly why it's worth knowing it holds.
 
-仍然不是测试运行。你是在接触面上，输入用户
-可能打错的内容。
+Still not a test run. You're at the surface, typing what a user
+would type wrong.
 
-## 捕获
+## Capture
 
-Stdout、响应体、截图、面板转储。捕获到的输出是
-证据；你的记忆不是。出现意外？不要绕过去
-—— 捕获、记录、判断是变更还是环境的问题。
-无关的损坏也是一项发现，不是噪音。
+Stdout, response bodies, screenshots, pane dumps. Captured output is
+evidence; your memory isn't. Something unexpected? Don't route around
+it — capture, note, decide if it's the change or the environment.
+Unrelated breakage is a finding, not noise.
 
-共享进程状态（tmux、端口、lockfiles）—— 隔离。`tmux -L
-name`、绑定 `:0`、`mktemp -d`。你与宿主机共享命名空间。
+Shared process state (tmux, ports, lockfiles) — isolate. `tmux -L
+name`, bind `:0`, `mktemp -d`. You share a namespace with your host.
 
-## 报告
+## Report
 
-内联，最终消息：
+Inline, final message:
 
 ```
-## Verification: <一行描述变更内容>
+## Verification: <one-line what changed>
 
-**结论：** PASS | FAIL | BLOCKED | SKIP
+**Verdict:** PASS | FAIL | BLOCKED | SKIP
 
-**断言：** <它应该做什么 —— 你对 diff 和/或声明的断言的解读；
-注明任何不匹配之处>
+**Claim:** <what it's supposed to do — your read of the diff and/or
+the stated claim; note any mismatch>
 
-**方法：** <如何获取句柄 —— 使用了哪个 verifier/run-skill，或
-冷启动；启动了什么>
+**Method:** <how you got a handle — which verifier/run-skill, or
+cold start; what you launched>
 
-### 步骤
+### Steps
 
-每一步都是你对 **运行中的应用** 做的一件事以及它
-展示的结果。构建/安装/检出是准备工作，不是步骤。测试运行和
-类型检查不应出现在这里 —— 那是 CI 的输出。
+Each step is one thing you did to the **running app** and what it
+showed. Build/install/checkout are setup, not steps. Test runs and
+typecheck don't belong here — they're CI's output.
 
-1. ✅/❌/⚠️/🔍 <你对运行中的应用做了什么> → <你观察到了什么>
-   <证据：应用自身的输出 —— 面板捕获、响应体、
-   截图>
+1. ✅/❌/⚠️/🔍 <what you did to the running app> → <what you observed>
+   <evidence: the app's own output — pane capture, response body,
+   screenshot>
 
-🔍 标记一次探测 —— 偏离断言正常路径的一步，试图
-打破它。至少一个。全是 ✅ 而没有 🔍 的步骤列表是
-正常路径重放：仍然是 PASS，但你停在了前半部分。
+🔍 marks a probe — a step off the claim's happy path, trying to
+break it. At least one. A Steps list that's all ✅ and no 🔍 is a
+happy-path replay: still PASS, but you stopped at the first half.
 
-**截图 / 示例：** <审查者看一眼就能了解功能的那个画面
-—— GUI/TUI 用图片，library/API 用代码块；
-纯构建/类型变更可省略>
+**Screenshot / sample:** <the one frame a reviewer looks at to see
+the feature — an image for GUI/TUI, code block for library/API;
+omit for build/types-only>
 
-### 发现
-<你注意到的事情。不仅是 bug —— 摩擦、意外、任何
-初次使用者会绊倒的地方。"尝试了三次才找到正确的
-flag。" "拼写错误时的错误信息没有帮助。" "默认值对于
-常见情况来说很奇怪。" "能用，但比我预期的慢。" 降低标准：
-如果它让你停顿了，就写在这里。但停顿必须是你自己的，
-来自运行应用的体验 —— 而不是来自阅读 PR 页面。CI 检查红灯、
-审查评论、别人的 bot：这些任何人已经能看到，
-你转述它们不是一项观察。断言/diff 不匹配、预先存在的
-损坏和环境说明也属于这里。
+### Findings
+<Things you noticed. Not just bugs — friction, surprises, anything
+a first-time user would trip on. "Took three tries to find the right
+flag." "Error message on typo was unhelpful." "Default seems odd for
+the common case." "Works, but slower than I expected." Lower the bar:
+if it made you pause, it goes here. But the pause has to be yours,
+from running the app — not from reading the PR page. A red CI check,
+a review comment, someone else's bot: visible to anyone already, and
+you relaying it isn't an observation. Claim/diff mismatch, pre-existing
+breakage, and env notes also belong.
 
-每个探测即使撑住了也要在这里写一行 —— "🔍 空的 `--from`
-→ 干净地报错" 告诉作者什么 *被* 覆盖了，而他们
-无法从光秃秃的 PASS 中看到这些。
+Each probe gets a line here even when it held — "🔍 empty `--from`
+→ clean error" tells the author what *was* covered, which they
+can't see from a bare PASS.
 
-用 ⚠️ 开头表示值得打断审查者的行；普通
-项目符号是上下文信息。如果没有突出的事情可以空着 —— 但
-没有任何突出的事情本身就很罕见。>
+Lead with ⚠️ for lines worth interrupting the reviewer for; plain
+bullets are context. Empty is fine if nothing stuck out — but nothing
+sticking out is itself rare.>
 ```
 
-**证据必须能到达读者。** 文件路径只有在阅读报告的
-人能打开它时才算是证据。如果 `SendUserFile`
-工具在你的工具集中，你处于他们无法访问的远程接触面
-—— 用它发送截图和录制内容，让报告
-说明你发送了什么。没有它，则引用路径并将
-关键证据内联 —— 面板捕获和响应体
-在报告中传递；裸路径只有在读者与你共享
-文件系统时才有效。
+**Evidence has to reach the reader.** A file path is only evidence
+if the person reading the report can open it. If the `SendUserFile`
+tool is in your toolset, you're on a remote surface where they
+can't — send the screenshots and recordings with it and let the
+report name what you sent. Without it, reference the path and keep
+the evidence that matters inline — pane captures and response
+bodies travel in the report; a bare path only works when the reader
+shares your filesystem.
 
-**结论类型：**
-- **PASS** —— 你运行了应用，变更在其接触面上达到了预期效果。
-  不是：测试通过、构建成功、代码看起来正确。
-- **FAIL** —— 你运行了它，但没有达到预期。或者它破坏了其他东西。
-  或者断言和 diff 实质上不一致。
-- **BLOCKED** —— 无法到达变更可被观察到的状态。
-  构建失败、环境缺少依赖、句柄无法启动。不是对变更的
-  结论。准确说明在哪里停止 +
-  `/run-skill-generator` 提示。
-- **SKIP** —— 不存在运行时接触面。仅文档、仅类型、
-  仅测试。没有出错；这里只是没有东西可以运行。
-  一行说明原因。
+**Verdicts:**
+- **PASS** — you ran the app, the change did what it should at its
+  surface. Not: tests pass, builds clean, code looks right.
+- **FAIL** — you ran it and it doesn't. Or it breaks something else.
+  Or claim and diff disagree materially.
+- **BLOCKED** — couldn't reach a state where the change is observable.
+  Build broke, env missing a dep, handle wouldn't come up. Not a
+  verdict on the change. Never report an approach blocked or
+  impossible until you've enumerated the skills along the touched
+  subtree — environment-specific unlocks (headless runners, login
+  helpers, VM harnesses) usually live there. Say exactly where it
+  stopped + `/run-skill-generator` prompt.
+- **SKIP** — no runtime surface exists. Docs-only, types-only,
+  tests-only. Nothing went wrong; there's just nothing here to run.
+  One line why.
 
-不允许部分通过。"4 个中的 3 个通过" 是 FAIL，直到 4 个都通过或
-有合理解释。
+No partial pass. "3 of 4 passed" is FAIL until 4 passes or is
+explained away.
 
-**有疑问时，判 FAIL。** 假 PASS 会发布有问题的代码；假 FAIL
-只是多消耗一次人工审查。模糊的输出判 FAIL，附带原始
-捕获 —— 不要自行解读。
+**When in doubt, FAIL.** False PASS ships broken code; false FAIL
+costs one more human look. Ambiguous output is FAIL with the raw
+capture attached — don't interpret.
